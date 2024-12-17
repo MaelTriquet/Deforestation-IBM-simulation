@@ -1,11 +1,12 @@
 #pragma once
 #include <vector>
+#include "Animal.cpp"
 
 class Simulation {
 private:
-    std::vector<Animal> m_pop;
 public:
+    std::vector<Animal> m_pop;
     Simulation();
 
-    void update() {}
+    void update();
 };

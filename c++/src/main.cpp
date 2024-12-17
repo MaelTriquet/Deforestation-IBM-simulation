@@ -30,7 +30,7 @@ int main() {
         }
 
         simulation.update();
-        window.clear(sf::Color::White);
+        window.clear(sf::Color::Black);
         renderer.render(simulation);
 		window.display();
     }
