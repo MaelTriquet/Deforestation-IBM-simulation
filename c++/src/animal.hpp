@@ -10,6 +10,7 @@ class Animal {
         sf::Vector2f position;
         sf::Vector2f velocity;
         bool is_dead;
+        sf::Color color;
 
         Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_);
 

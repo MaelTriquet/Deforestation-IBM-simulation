@@ -1,4 +1,3 @@
-#pragma once
 #include <SFML/Graphics.hpp>
 
 #define RADIUS 10

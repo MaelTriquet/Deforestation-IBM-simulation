@@ -1,6 +1,6 @@
 #include <vector>
 #include "animal.hpp"
-#include "tree.hpp"
+#include "tree.cpp"
 #include <memory>
 
 struct Cell
@@ -12,6 +12,8 @@ struct Cell
     Cell(int index_)
         : index{index_}
     {}
+
+    Cell() = default;
 };
 
 
@@ -24,7 +26,7 @@ class Grid {
     Grid(int win_width, int win_height, int radius_);
     ~Grid();
 
-    void update_content();
+    void update_content(std::vector<Animal>& pop, std::vector<Tree>& trees) const;
 
     std::unique_ptr<std::vector<Cell>> get_neighbours(int index);
 };
