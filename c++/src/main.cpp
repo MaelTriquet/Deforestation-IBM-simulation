@@ -5,8 +5,6 @@
 
 int main() {
 
-    Animal animal(100, sf::Vector2f(50, 50), sf::Vector2f(1, 1), 10);
-
     // Create window
     constexpr int32_t window_width  = 800;
     constexpr int32_t window_height = 800;
@@ -30,7 +28,7 @@ int main() {
         }
 
         simulation.update();
-        window.clear(sf::Color::White);
+        window.clear(sf::Color::Black);
         renderer.render(simulation);
 		window.display();
     }
