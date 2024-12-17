@@ -5,7 +5,7 @@
 
 int main() {
 
-    Animal animal(100, sf::Vector2f(50, 50), sf::Vector2f(1, 1), 10.0f);
+    Animal animal(100, sf::Vector2f(50, 50), sf::Vector2f(1, 1), 10);
 
     // Create window
     constexpr int32_t window_width  = 800;
