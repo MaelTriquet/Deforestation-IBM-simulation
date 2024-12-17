@@ -1,4 +1,3 @@
-#pragma once
 #include "tree.hpp"
 
 Tree::Tree(sf::Vector2f position_, float hiding_prob_) :

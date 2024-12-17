@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 #include "animal.hpp"
-#include "tree.hpp"
 
 class Simulation {
 private:

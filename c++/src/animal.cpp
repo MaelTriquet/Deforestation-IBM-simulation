@@ -1,4 +1,3 @@
-#pragma once
 #include "animal.hpp"
 
 Animal::Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_) : 
