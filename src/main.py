@@ -1,4 +1,5 @@
-from processing_py import *
+from processing_py import * #type: ignore
+from simulation import *
 
 def main():
     app = App(800, 800)
