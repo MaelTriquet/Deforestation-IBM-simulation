@@ -1,35 +1,25 @@
 #pragma once
-#include <SFML/Graphics.hpp>
+#include "animal.hpp"
 
-#define RADIUS 10
+Animal::Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_) : 
+    energy(energy_),
+    position(position_),
+    velocity(velocity_),
+    is_dead(false)
+{};
 
-class Animal {
-    public:
-        int radius = RADIUS;
-        int energy;
-        sf::Vector2f position;
-        sf::Vector2f velocity;
-        bool is_dead;
-        
-        Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_) : 
-            energy(energy_),
-            position(position_),
-            velocity(velocity_),
-            is_dead(false)
-        {};
+void Animal::move() {
+    position += velocity;
+};
 
-        void move() {
-            position += velocity;
-        }
+void Animal::eat() {
 
-        void eat() {
-        }
+};
 
-        void reproduce() {
-        }
+void Animal::reproduce() {
 
-        void die() {
-            is_dead = (energy <= 0);
-        }
-        
+};
+
+void Animal::die() {
+    is_dead = (energy <= 0);
 };

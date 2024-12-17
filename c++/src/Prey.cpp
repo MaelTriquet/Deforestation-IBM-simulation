@@ -1,14 +1,6 @@
 #pragma once
-#include <SFML/Graphics.hpp>
-#include "Animal.cpp"
+#include "prey.hpp"
 
-class Prey : public Animal {
-    public:
-        sf::Color color{0, 0, 255};
-        float max_velocity;
-
-        Prey(int energy_, sf::Vector2f position_, sf::Vector2f velocity_) : 
-        Animal(energy_, position_, velocity_)
-        {}
-
-};
+Prey::Prey(int energy_, sf::Vector2f position_, sf::Vector2f velocity_) : 
+    Animal(energy_, position_, velocity_)
+{};
