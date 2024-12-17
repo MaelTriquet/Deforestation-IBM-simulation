@@ -25,7 +25,7 @@ class Grid:
             y = int(element.position[1])
             self.cells[x // self.radius + y // self.radius * self.width].add(element) # maybe element.index??
 
-    def get_neighbours(self, index) -> list[Cell]:
+    def get_neighbours(self, index : int) -> list[Cell]:
         """returns the list of cells neighbouring the index cell
 
         Keyword arguments:
