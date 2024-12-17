@@ -1,3 +1,5 @@
+/*
+
 #include "grid.hpp"
 #include <array>
 
@@ -26,3 +28,4 @@ void Grid::update_content(vector<Animal>& pop, vector<Tree>& trees) const {
         int i = 
     }
 }
+*/

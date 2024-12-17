@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
-#include "animal.cpp"
+#include "animal.hpp"
+#include "tree.hpp"
 
 class Simulation {
 private:

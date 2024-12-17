@@ -1,6 +1,5 @@
 #include "renderer.hpp"
 
-explicit
 Renderer::Renderer(sf::RenderTarget& target):
     m_target{target}
 {}

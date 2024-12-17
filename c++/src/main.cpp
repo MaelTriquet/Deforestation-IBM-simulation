@@ -1,7 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include "renderer.hpp"
 #include "simulation.hpp"
-#include "animal.cpp"
 
 int main() {
 
