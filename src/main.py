@@ -1,4 +1,4 @@
-from processing_py import *
+from processing_py import * #type: ignore
 
 def main():
     app = App(800, 800)
