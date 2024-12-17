@@ -32,4 +32,5 @@ class Animal {
         void die() {
             is_dead = (energy <= 0);
         }
+        
 };
