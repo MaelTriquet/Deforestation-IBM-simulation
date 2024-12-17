@@ -11,7 +11,6 @@ def main():
 
 def draw(app):
     app.redraw()
-    print(app.frameRate())
     app.background(30)
 
 
