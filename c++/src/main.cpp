@@ -1,7 +1,12 @@
 #include <SFML/Graphics.hpp>
 #include "renderer.hpp"
 #include "simulation.hpp"
+#include "Animal.cpp"
+
 int main() {
+
+    Animal animal(100, sf::Vector2f(50, 50), sf::Vector2f(1, 1), 10.0f);
+
     // Create window
     constexpr int32_t window_width  = 800;
     constexpr int32_t window_height = 800;
