@@ -1,0 +1,6 @@
+class Renderer {
+private:
+
+public:
+
+};
