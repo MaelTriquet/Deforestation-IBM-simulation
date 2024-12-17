@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "Animal.cpp"
+#include "animal.cpp"
 
 class Simulation {
 private:
