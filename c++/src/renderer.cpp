@@ -11,4 +11,10 @@ void Renderer::render(const Simulation& simulation) const {
         shape.setPosition(a->position);
         m_target.draw(shape);
     }
+    for (const Tree* t : simulation.m_trees) {
+        sf::CircleShape shape(t->radius);
+        shape.setFillColor(t->color);
+        shape.setPosition(t->position);
+        m_target.draw(shape);
+    }
 }
