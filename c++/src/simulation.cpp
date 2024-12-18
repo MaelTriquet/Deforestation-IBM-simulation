@@ -31,8 +31,17 @@ Simulation::~Simulation() {
 }
 
 void Simulation::update() {
-    for (Animal* a : m_pop)
-        a->move(window_width, window_height);
+    for (int i = m_pop.size() - 1; i > -1; i--) {
+        if (!m_pop[i]->is_dead) {
+            m_pop[i]->move(window_width, window_height);
+            continue;
+        }
+        if (m_pop[i]->rotting-- > 0) continue;
+
+        delete m_pop[i];
+        m_pop.erase(m_pop.begin() + i);
+    }
+
     grid.update_animals(m_pop);
     fill_ray_visions();
 }

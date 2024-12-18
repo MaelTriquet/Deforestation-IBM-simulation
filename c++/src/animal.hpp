@@ -6,6 +6,7 @@
 #define RADIUS 10
 #define NB_RAY 5
 #define RAY_LENGTH 50
+#define ROT_TIME 30
 
 struct Vision {
     int energy;
@@ -45,6 +46,7 @@ public:
     bool is_pred;
     bool is_prey;
     bool is_colliding = false;
+    int rotting = ROT_TIME;
 
     Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, int index_);
 
