@@ -15,44 +15,82 @@ Simulation::Simulation(int window_width_, int window_height_) :
         Predator* pred = new Predator(1, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{-1, 1});
         m_pop.push_back(pred);
     }
-    for (int i = 0; i < 100; i++) {
-        Tree* tree = new Tree(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, 0.25);
-        m_trees.push_back(tree);
+    for (int i = 0; i < 150; i++) {
+        m_trees.emplace_back(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, 0.25);
     }
+
+    grid.init_trees(m_trees);
 }
 
 Simulation::~Simulation() {
     for (int i = 0; i < m_pop.size(); i++)
         delete m_pop[i];
-    for (int i = 0; i < m_trees.size(); i++)
-        delete m_trees[i];
 }
 
 void Simulation::update() {
-    for (Animal* a : m_pop)
+    for (Animal* a : m_pop) {
+        a->is_colliding = false;
         a->move(window_width, window_height);
+    }
+    grid.update_animals(m_pop);
+    detect_collisions();
 }
 
 void Simulation::detect_collisions() {
+
     /*
+    objectifs :
+    - prendre en compte le tore
+    */
+
+    // anonymous function to detect if two given animals / trees are colliding
+    auto is_colliding_with_animal = [](Animal* animal_1, Animal* animal_2) {
+        sf::Vector2f temp_vect = (animal_1->position - animal_2->position);
+        float squared_distance = temp_vect.x*temp_vect.x + temp_vect.y*temp_vect.y;
+        float squared_radius = (animal_1->radius + animal_2->radius)*(animal_1->radius + animal_2->radius);
+        return (squared_distance < squared_radius);
+    };
+
+    // anonymous function to detect if two given animals / trees are colliding
+    auto is_colliding_with_tree = [](Animal* animal, Tree* tree) {
+        sf::Vector2f temp_vect = (animal->position - tree->position);
+        float squared_distance = temp_vect.x*temp_vect.x + temp_vect.y*temp_vect.y;
+        float squared_radius = (animal->radius + tree->radius)*(animal->radius + tree->radius);
+        return (squared_distance < squared_radius);
+    };
+
+    // iterating on the cells
     for (int i = 0; i < grid.width * grid.height; i++) {
         Cell actual_cell = grid.cells[i];
-        std::unique_ptr<std::vector<Cell&>> neighbours = grid.get_neighbours(i);
+        std::unique_ptr<std::vector<Cell*>> neighbours = grid.get_neighbours(i);
+
+        // iterating on the neighbours of the cell
         for (int j = 0; j < 9; j++) {
-            Cell neighbour_cell = (*neighbours)[j];
+            Cell* neighbour_cell = (*neighbours)[j];
+
+            // iterating on the animals of the cell
             for (int k = 0; k < actual_cell.animals.size(); k++) {
-                for (int l = 0; l < neighbour_cell.trees.size(); l++) {
-                    sf::Vector2f temp_vect = (actual_cell.animals[k].position - neighbour_cell.animals[l].position);
-                    float squared_distance = pow(temp_vect.x, 2) + pow(temp_vect.y, 2);
-                    float squared_radius = pow(actual_cell.animals[k].radius + neighbour_cell.animals[l].radius, 2);
-                    if (squared_distance < squared_radius) {
-                        actual_cell.animals[k].is_collisioning = true;
+
+                // iterating on the animals of the neighour cell
+                for (int l = 0; l < neighbour_cell->animals.size(); l++) {
+                    if (actual_cell.animals[k] == neighbour_cell->animals[l]) {
+                        continue;
+                    }
+                    if (is_colliding_with_animal(actual_cell.animals[k], neighbour_cell->animals[l])) {
+                        actual_cell.animals[k]->is_colliding = true;
+                        neighbour_cell->animals[l]->is_colliding = true;
+                    }
+                }
+
+                // iterating on the trees of the neighbour cell
+                for (int l = 0; l < neighbour_cell->trees.size(); l++) {
+                    if (is_colliding_with_tree(actual_cell.animals[k], neighbour_cell->trees[l])) {
+                        actual_cell.animals[k]->is_colliding = true;
                     }
                 }
             }
         }
     }
-    */
 }
 
 void Simulation::fill_ray_visions() {

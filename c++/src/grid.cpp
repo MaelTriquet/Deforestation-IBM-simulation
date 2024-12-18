@@ -1,10 +1,11 @@
 #include "grid.hpp"
+#include "iostream"
 
 Grid::Grid(int win_width, int win_height, int radius_)
     : radius{radius_}
 {
-    width = (win_width - 1) / radius;
-    height = (win_height - 1) / radius;
+    width = (win_width - 1) / radius + 1;
+    height = (win_height - 1) / radius + 1;
     cells = new Cell[width * height];
     for (int i = 0; i < height; i++)
         for (int j = 0; j < width; j++)
@@ -15,14 +16,14 @@ Grid::~Grid() {
     delete[] cells;
 }
 
-void Grid::update_animals(std::vector<Animal>& pop) const {
+void Grid::update_animals(std::vector<Animal*>& pop) const {
     for (int i = 0; i < width * height; i++)
         cells[i].animals.clear();
     int i, j;
-    for (Animal& a : pop) {
-        j = std::floor(a.position.x) / radius;
-        i = std::floor(a.position.y) / radius;
-        cells[i * width + j].animals.push_back(&a);
+    for (Animal* a : pop) {
+        j = std::floor(a->position.x) / radius;
+        i = std::floor(a->position.y) / radius;
+        cells[i * width + j].animals.push_back(a);
     }
 }
 

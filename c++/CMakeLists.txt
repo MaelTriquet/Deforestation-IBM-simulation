@@ -24,3 +24,7 @@ target_link_libraries(MySFMLProject sfml-system sfml-window sfml-graphics sfml-n
 
 # If you are using additional libraries, link them here
 # target_link_libraries(MySFMLProject additional_library)
+
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
+endif()

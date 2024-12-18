@@ -39,7 +39,7 @@ public:
     sf::Color color;
     int fleeing = 0;
     Vision vision;
-    bool is_collisioning = false;
+    bool is_colliding = false;
 
     Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_);
 

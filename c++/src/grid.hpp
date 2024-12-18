@@ -29,7 +29,7 @@ public:
     Grid(int win_width, int win_height, int radius_);
     ~Grid();
 
-    void update_animals(std::vector<Animal>& pop) const;
+    void update_animals(std::vector<Animal*>& pop) const;
     void init_trees(std::vector<Tree>& trees) const;
 
     std::unique_ptr<std::vector<Cell*>> get_neighbours(int index);
