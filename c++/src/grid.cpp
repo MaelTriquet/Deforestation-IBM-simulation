@@ -1,4 +1,5 @@
 #include "grid.hpp"
+#include "iostream"
 
 Grid::Grid(int win_width, int win_height, int radius_)
     : radius{radius_}

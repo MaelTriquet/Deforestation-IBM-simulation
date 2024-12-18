@@ -11,7 +11,7 @@ private:
 public:
     static int id;
     std::vector<Animal*> m_pop;
-    std::vector<Tree*> m_trees;
+    std::vector<Tree> m_trees;
     int window_width;
     int window_height;
     Grid grid;
