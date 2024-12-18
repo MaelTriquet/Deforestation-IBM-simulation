@@ -1,10 +1,11 @@
 #include "animal.hpp"
 
-Animal::Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_) : 
+Animal::Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, int index_) : 
     energy(energy_),
     position(position_),
     velocity(velocity_),
-    is_dead(false)
+    is_dead(false),
+    index{index_}
 {};
 
 sf::Vector2f Animal::considerate_bounds(sf::Vector2f theoretical_position, int window_width, int window_height) {

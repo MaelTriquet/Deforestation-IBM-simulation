@@ -1,17 +1,19 @@
 #include "simulation.hpp"
 #include "random.hpp"
 
+int Simulation::id = 0;
+
 Simulation::Simulation(int window_width_, int window_height_) :
     window_width(window_width_),
     window_height(window_height_),
     grid{window_width, window_height, RADIUS}
 {
     for (int i = 0; i < 100; i++) {
-        Prey* prey = new Prey(1, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{1, 1});
+        Prey* prey = new Prey(1, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{1, 1}, id++);
         m_pop.push_back(prey);
     }
     for (int i = 0; i < 100; i++) {
-        Predator* pred = new Predator(1, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{-1, 1});
+        Predator* pred = new Predator(1, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{-1, 1}, id++);
         m_pop.push_back(pred);
     }
     for (int i = 0; i < 100; i++) {
@@ -39,18 +41,37 @@ void Simulation::fill_ray_visions() {
         for (Animal* a : grid.cells[i].animals) {
             sf::Vector2f ray;
             for (int i = 0; i < NB_RAY; i++) {
-                // float theta = -a.max_ray_angle + i * a.max_ray_angle / (float)NB_RAY;
-                // float alpha;
-                // if (a.position.x == 0)
-                //     alpha = a.position.y < 0 ? M_PI_2 : -M_PI_2;
-                // else if (a.position.x > 0)
-                //     alpha = std::atan(-a.position.y / a.position.x);
-                // else
-                //     alpha = M_PI - std::atan(-a.position.y / a.position.x);
-                // ray = sf::Vector2f(std::cos(alpha + theta), -std::sin(alpha = theta));
-                // ray *= (float)RAY_LENGTH;
+                float theta = -a->max_ray_angle + i * a->max_ray_angle / (float)NB_RAY;
+                float alpha;
+                if (a->position.x == 0)
+                    alpha = a->position.y < 0 ? M_PI_2 : -M_PI_2;
+                else if (a->position.x > 0)
+                    alpha = std::atan(-a->position.y / a->position.x);
+                else
+                    alpha = M_PI - std::atan(-a->position.y / a->position.x);
+                ray = sf::Vector2f(std::cos(alpha + theta), -std::sin(alpha = theta));
+                ray *= (float)RAY_LENGTH;
+                for (Cell* neigh : *neighbours) {
+                    for (Animal* a2 : neigh->animals) {
+                        if (a-> index == a2->index) continue;
+                        float dist = std::sqrt((a->position.x - a2->position.x) * (a->position.x - a2->position.x) + (a->position.y - a2->position.y) * (a->position.y - a2->position.y));
+                        if (dist > RAY_LENGTH + RADIUS) continue;
+                        float res = segmentIntersectsCircle(a->position, ray, a2->position, RADIUS);
+                        if (res < 0) continue;
+                        if (a2->is_pred)
+                            a->vision.rays[i] = res;
+                        else 
+                            a->vision.rays[i + NB_RAY] = res;
+                    }
 
-
+                    for (Tree* t : neigh->trees) {
+                        float dist = std::sqrt((a->position.x - t->position.x) * (a->position.x - t->position.x) + (a->position.y - t->position.y) * (a->position.y - t->position.y));
+                        if (dist > RAY_LENGTH + RADIUS) continue;
+                        float res = segmentIntersectsCircle(a->position, ray, t->position, RADIUS);
+                        if (res < 0) continue; 
+                        a->vision.rays[i + 2*NB_RAY] = res;
+                    }
+                }
             }
         }
     }

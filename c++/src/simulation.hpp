@@ -9,6 +9,7 @@
 class Simulation {
 private:
 public:
+    static int id;
     std::vector<Animal*> m_pop;
     std::vector<Tree*> m_trees;
     int window_width;

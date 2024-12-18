@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <cstring>
+#include <cmath>
 
 #define RADIUS 10
 #define NB_RAY 5
@@ -39,8 +40,12 @@ public:
     sf::Color color;
     int fleeing = 0;
     Vision vision;
+    float max_ray_angle;
+    int index;
+    bool is_pred;
+    bool is_prey;
 
-    Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_);
+    Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, int index_);
 
     sf::Vector2f considerate_bounds(sf::Vector2f theoretical_position, int window_width, int window_height);
 
