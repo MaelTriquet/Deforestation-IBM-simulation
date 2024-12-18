@@ -12,7 +12,7 @@ void Renderer::render(const Simulation& simulation) const {
         } else {
             shape.setFillColor(a->color);
         }
-        shape.setPosition(a->position);
+        shape.setPosition(a->position - sf::Vector2f(RADIUS, RADIUS));
         m_target.draw(shape);
     }
     for (const Tree* t : simulation.m_trees) {

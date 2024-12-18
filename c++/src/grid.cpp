@@ -22,7 +22,7 @@ void Grid::update_animals(std::vector<Animal>& pop) const {
     for (Animal& a : pop) {
         j = std::floor(a.position.x) / radius;
         i = std::floor(a.position.y) / radius;
-        cells[i * width + j].animals.push_back(a);
+        cells[i * width + j].animals.push_back(&a);
     }
 }
 
@@ -31,23 +31,23 @@ void Grid::init_trees(std::vector<Tree>& trees) const {
     for (Tree& t : trees) {
         j = std::floor(t.position.x) / radius;
         i = std::floor(t.position.y) / radius;
-        cells[i * width + j].trees.push_back(t);
+        cells[i * width + j].trees.push_back(&t);
     }
 }
 
-std::unique_ptr<std::vector<Cell&>> Grid::get_neighbours(int index) {
-    std::unique_ptr<std::vector<Cell&>> res = std::make_unique<std::vector<Cell&>>();
-    res->push_back(cells[index]);
+std::unique_ptr<std::vector<Cell*>> Grid::get_neighbours(int index) {
+    std::unique_ptr<std::vector<Cell*>> res = std::make_unique<std::vector<Cell*>>();
+    res->push_back(cells + index);
     int i = index / width;
     int j = index % width;
-    res->push_back(cells[((height + i - 1) % height) * width + (width + j - 1) % width]);
-    res->push_back(cells[((height + i - 1) % height) * width + j]);
-    res->push_back(cells[((height + i - 1) % height) * width + (j + 1) % width]);
-    res->push_back(cells[(i) * width + (width + j - 1) % width]);
-    res->push_back(cells[(i) * width + (j + 1) % width]);
-    res->push_back(cells[((i + 1) % height) * width + (width + j - 1) % width]);
-    res->push_back(cells[((i + 1) % height) * width + j]);
-    res->push_back(cells[((i + 1) % height) * width + (j + 1) % width]);
+    res->push_back(cells + ((height + i - 1) % height) * width + (width + j - 1) % width);
+    res->push_back(cells + ((height + i - 1) % height) * width + j);
+    res->push_back(cells + ((height + i - 1) % height) * width + (j + 1) % width);
+    res->push_back(cells + (i) * width + (width + j - 1) % width);
+    res->push_back(cells + (i) * width + (j + 1) % width);
+    res->push_back(cells + ((i + 1) % height) * width + (width + j - 1) % width);
+    res->push_back(cells + ((i + 1) % height) * width + j);
+    res->push_back(cells + ((i + 1) % height) * width + (j + 1) % width);
 
     return res;
 }

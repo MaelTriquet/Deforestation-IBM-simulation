@@ -7,8 +7,8 @@
 
 struct Cell
 {
-    std::vector<Animal&> animals;
-    std::vector<Tree&> trees;
+    std::vector<Animal*> animals;
+    std::vector<Tree*> trees;
     int index;
 
     Cell(int index_)
@@ -32,5 +32,5 @@ public:
     void update_animals(std::vector<Animal>& pop) const;
     void init_trees(std::vector<Tree>& trees) const;
 
-    std::unique_ptr<std::vector<Cell&>> get_neighbours(int index);
+    std::unique_ptr<std::vector<Cell*>> get_neighbours(int index);
 };
