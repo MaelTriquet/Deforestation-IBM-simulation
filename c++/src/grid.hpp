@@ -2,11 +2,13 @@
 #include "animal.hpp"
 #include "tree.hpp"
 #include <memory>
+#include <array>
+#include <cmath>
 
 struct Cell
 {
-    std::vector<Animal> animals;
-    std::vector<Tree> trees;
+    std::vector<Animal&> animals;
+    std::vector<Tree&> trees;
     int index;
 
     Cell(int index_)
@@ -18,6 +20,7 @@ struct Cell
 
 
 class Grid {
+public:
     Cell* cells;
     int radius;
     int width;
@@ -26,7 +29,8 @@ class Grid {
     Grid(int win_width, int win_height, int radius_);
     ~Grid();
 
-    void update_content(std::vector<Animal>& pop, std::vector<Tree>& trees) const;
+    void update_animals(std::vector<Animal>& pop) const;
+    void init_trees(std::vector<Tree>& trees) const;
 
-    std::unique_ptr<std::vector<Cell>> get_neighbours(int index);
+    std::unique_ptr<std::vector<Cell&>> get_neighbours(int index);
 };
