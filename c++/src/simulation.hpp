@@ -14,4 +14,7 @@ public:
     ~Simulation();
 
     void update();
+    void handle_interaction();
+    void fill_ray_visions();
+    void detect_collisions();
 };
