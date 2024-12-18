@@ -6,6 +6,9 @@ Renderer::Renderer(sf::RenderTarget& target):
 
 void Renderer::render(const Simulation& simulation) const {
     for (const Animal* a : simulation.m_pop) {
+        if (a->index == 1) {
+            //sf::Lines(a->position, a->position + a->velocity);
+        }
         sf::CircleShape shape(a->radius);
         shape.setFillColor(a->color);
         shape.setPosition(a->position - sf::Vector2f(RADIUS, RADIUS));

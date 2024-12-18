@@ -15,14 +15,14 @@ Grid::~Grid() {
     delete[] cells;
 }
 
-void Grid::update_animals(std::vector<Animal>& pop) const {
+void Grid::update_animals(std::vector<Animal*>& pop) const {
     for (int i = 0; i < width * height; i++)
         cells[i].animals.clear();
     int i, j;
-    for (Animal& a : pop) {
-        j = std::floor(a.position.x) / radius;
-        i = std::floor(a.position.y) / radius;
-        cells[i * width + j].animals.push_back(&a);
+    for (Animal* a : pop) {
+        j = std::floor(a->position.x) / radius;
+        i = std::floor(a->position.y) / radius;
+        cells[i * width + j].animals.push_back(a);
     }
 }
 

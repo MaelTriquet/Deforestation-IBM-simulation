@@ -32,6 +32,7 @@ Simulation::~Simulation() {
 void Simulation::update() {
     for (Animal* a : m_pop)
         a->move(window_width, window_height);
+    fill_ray_visions();
 }
 
 void Simulation::fill_ray_visions() {
@@ -43,12 +44,14 @@ void Simulation::fill_ray_visions() {
             for (int i = 0; i < NB_RAY; i++) {
                 float theta = -a->max_ray_angle + i * a->max_ray_angle / (float)NB_RAY;
                 float alpha;
-                if (a->position.x == 0)
-                    alpha = a->position.y < 0 ? M_PI_2 : -M_PI_2;
-                else if (a->position.x > 0)
-                    alpha = std::atan(-a->position.y / a->position.x);
+                if (a->velocity.x * a->velocity.y == 0)
+                    alpha = 0;
+                else if (a->velocity.x == 0)
+                    alpha = a->velocity.y < 0 ? M_PI_2 : -M_PI_2;
+                else if (a->velocity.x > 0)
+                    alpha = std::atan(-a->velocity.y / a->velocity.x);
                 else
-                    alpha = M_PI - std::atan(-a->position.y / a->position.x);
+                    alpha = M_PI - std::atan(-a->velocity.y / a->velocity.x);
                 ray = sf::Vector2f(std::cos(alpha + theta), -std::sin(alpha = theta));
                 ray *= (float)RAY_LENGTH;
                 for (Cell* neigh : *neighbours) {
