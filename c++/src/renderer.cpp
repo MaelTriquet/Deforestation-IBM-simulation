@@ -10,7 +10,7 @@ void Renderer::render(const Simulation& simulation) const {
             //sf::Lines(a->position, a->position + a->velocity);
         }
         sf::CircleShape shape(a->radius);
-        if (a->is_collisioning) {
+        if (a->is_colliding) {
             shape.setFillColor(sf::Color{150, 150, 0});
         } else {
             shape.setFillColor(a->color);
