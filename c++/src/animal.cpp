@@ -12,13 +12,13 @@ sf::Vector2f Animal::considerate_bounds(sf::Vector2f position, int window_width,
     if (position.x < 0) {
         position.x += window_width;
     }
-    if (position.x > window_width) {
+    if (position.x >= window_width) {
         position.x -= window_width;
     }
     if (position.y < 0) {
         position.y += window_height;
     }
-    if (position.y > window_height) {
+    if (position.y >= window_height) {
         position.y -= window_height;
     }
     return(position);

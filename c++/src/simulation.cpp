@@ -10,7 +10,7 @@ Simulation::Simulation(int window_width_, int window_height_) :
     grid{window_width, window_height, RADIUS}
 {
     for (int i = 0; i < 100; i++) {
-        Prey* prey = new Prey(1, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{1, 1}, id++);
+        Prey* prey = new Prey(1, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{-1, -1}, id++);
         m_pop.push_back(prey);
     }
     for (int i = 0; i < 100; i++) {
@@ -33,6 +33,7 @@ Simulation::~Simulation() {
 void Simulation::update() {
     for (Animal* a : m_pop)
         a->move(window_width, window_height);
+    grid.update_animals(m_pop);
     fill_ray_visions();
 }
 
@@ -65,25 +66,39 @@ void Simulation::fill_ray_visions() {
         for (Animal* a : grid.cells[i].animals) {
             sf::Vector2f ray;
             for (int i = 0; i < NB_RAY; i++) {
-                float theta = -a->max_ray_angle + i * a->max_ray_angle / (float)NB_RAY;
+                float theta = -a->max_ray_angle/2 + i * a->max_ray_angle / (float)(NB_RAY-1);
                 float alpha;
-                if (a->velocity.x * a->velocity.y == 0)
+                if (a->velocity.x * a->velocity.y == 0 && a->velocity.x + a->velocity.y == 0)
                     alpha = 0;
                 else if (a->velocity.x == 0)
                     alpha = a->velocity.y < 0 ? M_PI_2 : -M_PI_2;
                 else if (a->velocity.x > 0)
                     alpha = std::atan(-a->velocity.y / a->velocity.x);
                 else
-                    alpha = M_PI - std::atan(-a->velocity.y / a->velocity.x);
-                ray = sf::Vector2f(std::cos(alpha + theta), -std::sin(alpha = theta));
+                    alpha = M_PI + std::atan(-a->velocity.y / a->velocity.x);
+                ray = sf::Vector2f(std::cos(alpha + theta), -std::sin(alpha + theta));
                 ray *= (float)RAY_LENGTH;
                 for (Cell* neigh : *neighbours) {
+                    sf::Vector2f offset{0, 0}; // handles detection through tore's bounds
+                    if (i % grid.width == 0 && neigh->index % grid.width == grid.width - 1)
+                        offset.x = -window_width;
+                    if (neigh->index % grid.width == 0 && i % grid.width == grid.width - 1)
+                        offset.x = window_width;
+                    
+                    if (i / grid.width == 0 && neigh->index / grid.width == grid.width - 1)
+                        offset.y = -window_width;
+                    if (neigh->index / grid.width == 0 && i / grid.width == grid.width - 1)
+                        offset.y = window_width;
+                    
                     for (Animal* a2 : neigh->animals) {
                         if (a-> index == a2->index) continue;
+                        a2->position += offset;
                         float dist = std::sqrt((a->position.x - a2->position.x) * (a->position.x - a2->position.x) + (a->position.y - a2->position.y) * (a->position.y - a2->position.y));
+                        a2->position -= offset;
                         if (dist > RAY_LENGTH + RADIUS) continue;
-                        float res = segmentIntersectsCircle(a->position, ray, a2->position, RADIUS);
+                        float res = segmentIntersectsCircle(a->position, ray, a2->position + offset, RADIUS);
                         if (res < 0) continue;
+
                         if (a2->is_pred)
                             a->vision.rays[i] = res;
                         else 
@@ -91,9 +106,11 @@ void Simulation::fill_ray_visions() {
                     }
 
                     for (Tree* t : neigh->trees) {
+                        t->position += offset;
                         float dist = std::sqrt((a->position.x - t->position.x) * (a->position.x - t->position.x) + (a->position.y - t->position.y) * (a->position.y - t->position.y));
+                        t->position -= offset;
                         if (dist > RAY_LENGTH + RADIUS) continue;
-                        float res = segmentIntersectsCircle(a->position, ray, t->position, RADIUS);
+                        float res = segmentIntersectsCircle(a->position, ray, t->position + offset, RADIUS);
                         if (res < 0) continue; 
                         a->vision.rays[i + 2*NB_RAY] = res;
                     }

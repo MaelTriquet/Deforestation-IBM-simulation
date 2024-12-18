@@ -3,8 +3,8 @@
 Grid::Grid(int win_width, int win_height, int radius_)
     : radius{radius_}
 {
-    width = (win_width - 1) / radius;
-    height = (win_height - 1) / radius;
+    width = (win_width - 1) / radius + 1;
+    height = (win_height - 1) / radius + 1;
     cells = new Cell[width * height];
     for (int i = 0; i < height; i++)
         for (int j = 0; j < width; j++)
