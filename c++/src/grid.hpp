@@ -1,6 +1,6 @@
 #include <vector>
 #include "animal.hpp"
-#include "tree.cpp"
+#include "tree.hpp"
 #include <memory>
 
 struct Cell
