@@ -18,7 +18,9 @@ public:
 
     Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_);
 
-    void move();
+    sf::Vector2f considerate_bounds(sf::Vector2f theoretical_position, int window_width, int window_height);
+
+    void move(int window_width, int window_height);
     void eat();
     void reproduce();
     void die();

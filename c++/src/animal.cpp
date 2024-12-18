@@ -7,8 +7,25 @@ Animal::Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_) :
     is_dead(false)
 {};
 
-void Animal::move() {
+sf::Vector2f Animal::considerate_bounds(sf::Vector2f theoretical_position, int window_width, int window_height) {
+    if (theoretical_position.x < 0) {
+        theoretical_position.x += window_width;
+    }
+    if (theoretical_position.x > window_width) {
+        theoretical_position.x -= window_width;
+    }
+    if (theoretical_position.y < 0) {
+        theoretical_position.y += window_height;
+    }
+    if (theoretical_position.y > window_height) {
+        theoretical_position.y -= window_height;
+    }
+    return(theoretical_position);
+}
+
+void Animal::move(int window_width, int window_height) {
     position += velocity;
+    position = considerate_bounds(position, window_width, window_height);
 };
 
 void Animal::eat() {

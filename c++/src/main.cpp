@@ -14,7 +14,7 @@ int main() {
     const uint32_t frame_rate = 60;
     window.setFramerateLimit(frame_rate);
 
-    Simulation simulation;
+    Simulation simulation{window_width, window_height};
     Renderer renderer{window};
 
 
