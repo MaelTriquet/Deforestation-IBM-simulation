@@ -14,6 +14,8 @@ public:
     bool is_dead;
     sf::Color color;
     int fleeing = 0;
+    bool is_collisioning = false;
+
     Vision vision;
 
     Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_);

@@ -44,6 +44,6 @@ void Animal::look() {
     vision.energy = energy;
     vision.fleeing = fleeing;
     vision.velocity = velocity;
-
+   
     // ray vision handled in Simulation::handle_animal_interaction
 }
