@@ -44,6 +44,7 @@ public:
     int index;
     bool is_pred;
     bool is_prey;
+    bool is_colliding = false;
 
     Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, int index_);
 

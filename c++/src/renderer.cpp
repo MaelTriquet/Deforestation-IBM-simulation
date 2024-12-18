@@ -10,7 +10,11 @@ void Renderer::render(const Simulation& simulation) const {
             //sf::Lines(a->position, a->position + a->velocity);
         }
         sf::CircleShape shape(a->radius);
-        shape.setFillColor(a->color);
+        if (a->is_collisioning) {
+            shape.setFillColor(sf::Color{150, 150, 0});
+        } else {
+            shape.setFillColor(a->color);
+        }
         shape.setPosition(a->position - sf::Vector2f(RADIUS, RADIUS));
         m_target.draw(shape);
     }
