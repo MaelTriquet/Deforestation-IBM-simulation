@@ -5,10 +5,10 @@ Renderer::Renderer(sf::RenderTarget& target):
 {}
 
 void Renderer::render(const Simulation& simulation) const {
-    for (const Animal& a : simulation.m_pop) {
-        sf::CircleShape shape(a.radius);
-        shape.setFillColor(sf::Color(255, 0, 0));
-        shape.setPosition(a.position);
+    for (const Animal* a : simulation.m_pop) {
+        sf::CircleShape shape(a->radius);
+        shape.setFillColor(a->color);
+        shape.setPosition(a->position);
         m_target.draw(shape);
     }
 }

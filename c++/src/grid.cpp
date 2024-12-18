@@ -3,7 +3,7 @@
 #include "grid.hpp"
 #include <array>
 
-Grid::Grid(int win_width, int win_height, float radius_)
+Grid::Grid(int win_width, int win_height, int radius_)
     : radius{radius_}
 {
     width = (win_width - 1) / radius;
@@ -18,14 +18,13 @@ Grid::~Grid() {
     delete[] cells;
 }
 
-void Grid::update_content(vector<Animal>& pop, vector<Tree>& trees) const {
-    for (Cell c : cells) {
-        c.animals.clear();
-        c.trees.clear();
+void Grid::update_content(std::vector<Animal>& pop, std::vector<Tree>& trees) const {
+    for (int i = 0; i < width * height; i++) {
+        cells[i].animals.clear();
+        cells[i].trees.clear();
     }
 
     for (Animal& a : pop) {
-        int i = 
     }
 }
 */
