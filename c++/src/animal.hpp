@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <cstring>
 #include <cmath>
+#include "tree.hpp"
 
 #define RADIUS 10
 #define NB_RAY 5
@@ -48,6 +49,7 @@ public:
     bool is_prey;
     bool is_colliding = false;
     bool is_in_tree = false;
+    const Tree* in_tree = nullptr; 
     int rotting = ROT_TIME;
     int invisible = 0;
 

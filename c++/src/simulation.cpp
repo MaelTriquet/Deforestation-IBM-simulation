@@ -11,11 +11,11 @@ Simulation::Simulation(int window_width_, int window_height_) :
     ray_grid(window_width, window_height, RADIUS + RAY_LENGTH)
 {
     for (int i = 0; i < 100; i++) {
-        Prey* prey = new Prey(1, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{0.75, 0.75}, id++);
+        Prey* prey = new Prey(1, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{2 * Random::rand() - 1, 2 * Random::rand() - 1}, id++);
         m_pop.push_back(prey);
     }
     for (int i = 0; i < 100; i++) {
-        Predator* pred = new Predator(1, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{-0.75, 0.75}, id++);
+        Predator* pred = new Predator(1, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{2 * Random::rand() - 1, 2 * Random::rand() - 1}, id++);
         m_pop.push_back(pred);
     }
     for (int i = 0; i < 150; i++) {
@@ -69,7 +69,7 @@ void Simulation::detect_collisions() {
 
     // iterating on the cells of the grid
     for (int i = 0; i < grid.width * grid.height; i++) {
-        Cell actual_cell = grid.cells[i];
+        Cell current_cell = grid.cells[i];
         std::unique_ptr<std::vector<Cell*>> neighbours = grid.get_neighbours(i);
 
         // iterating on the neighbours of the cell
@@ -88,14 +88,14 @@ void Simulation::detect_collisions() {
                 offset.y = window_width;
 
             // iterating on the animals of the cell
-            for (Animal* animal_actual_cell : actual_cell.animals) {
+            for (Animal* animal_current_cell : current_cell.animals) {
 
                 // iterating on the animals of the neighour cell
                 for (Animal* animal_neighbour_cell : neighbour_cell->animals) {
-                    if (animal_actual_cell == animal_neighbour_cell) continue;
+                    if (animal_current_cell == animal_neighbour_cell) continue;
                     animal_neighbour_cell->position += offset;
-                    if (collision_with_animal(animal_actual_cell, animal_neighbour_cell)) {
-                        animal_actual_cell->is_colliding = true;
+                    if (collision_with_animal(animal_current_cell, animal_neighbour_cell)) {
+                        animal_current_cell->is_colliding = true;
                         animal_neighbour_cell->is_colliding = true;
                     }
                     animal_neighbour_cell->position -= offset;
@@ -103,8 +103,9 @@ void Simulation::detect_collisions() {
 
                 // iterating on the trees of the neighbour cell
                 for (Tree* tree : neighbour_cell->trees) {
-                    if (collision_with_tree(animal_actual_cell, tree)) {
-                        animal_actual_cell->is_colliding = true;
+                    if (collision_with_tree(animal_current_cell, tree)) {
+                        // animal_current_cell->is_colliding = true;
+                        collide(*tree, animal_current_cell);
                     }
                 }
             }
@@ -215,6 +216,8 @@ float Simulation::segmentIntersectsCircle(const sf::Vector2f& A, const sf::Vecto
 
 void Simulation::collide(const Tree& t, Animal* a) {
     a->is_in_tree = true;
+    if (a->in_tree == &t) return;
+    a->in_tree = &t;
     if (Random::rand() < t.hiding_prob)
         a->invisible = INVISIBILITY_TIME;
 }

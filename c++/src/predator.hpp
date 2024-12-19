@@ -2,8 +2,8 @@
 #include <SFML/Graphics.hpp>
 #include "animal.hpp"
 
-#define MAX_VELOCITY_PREDATOR 6;
-#define MAX_RAY_ANGLE_PREDATOR M_PI;
+#define MAX_VELOCITY_PREDATOR 6
+#define MAX_RAY_ANGLE_PREDATOR M_PI
 class Predator : public Animal {
 public:
     float max_velocity = MAX_VELOCITY_PREDATOR;
