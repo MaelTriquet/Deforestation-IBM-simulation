@@ -3,6 +3,7 @@
 #include "neuron.hpp"
 
 class Brain {
+public:
     std::vector<Neuron> neurons;
 
     int inputs, outputs;
