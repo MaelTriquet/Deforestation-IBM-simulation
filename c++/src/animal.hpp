@@ -3,6 +3,7 @@
 #include <cstring>
 #include <cmath>
 #include "tree.hpp"
+#include "brain.hpp"
 
 #define RADIUS 10
 #define NB_RAY 5
@@ -57,6 +58,7 @@ public:
     int invisible = 0;
     float max_velocity;
     float max_vel_percent = .6;
+    Brain brain;
 
     Animal(sf::Vector2f position_, sf::Vector2f velocity_, int index_);
 

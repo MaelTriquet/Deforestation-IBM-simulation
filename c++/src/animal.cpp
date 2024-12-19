@@ -4,7 +4,8 @@ Animal::Animal(sf::Vector2f position_, sf::Vector2f velocity_, int index_) :
     position(position_),
     velocity(velocity_),
     is_dead(false),
-    index{index_}
+    index{index_},
+    brain{19, 3, 3, 10}
 {};
 
 void Animal::considerate_bounds(int window_width, int window_height) {
