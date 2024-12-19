@@ -26,7 +26,7 @@ void Animal::move(int window_width, int window_height) {
     if (vel_mag > 0)
         velocity *= max_vel_percent * max_velocity / vel_mag;
     position += velocity;
-    energy -= max_vel_percent * max_vel_percent;
+    energy -= max_vel_percent * max_vel_percent - .05;
     considerate_bounds(window_width, window_height);
 };
 
