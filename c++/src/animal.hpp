@@ -14,20 +14,20 @@
 
 
 struct Vision {
-    int energy;
-    int fleeing;
+    float energy;
+    float fleeing;
     sf::Vector2f velocity;
     float rays[NB_RAY * 3];
 
     Vision():
-        energy{0},
-        fleeing{0},
+        energy{0.f},
+        fleeing{0.f},
         velocity{0,0}
     {
-        std::memset(rays, 0, NB_RAY * 3 * sizeof(float));
+        std::memset(rays, 0.f, NB_RAY * 3 * sizeof(float));
     }
 
-    Vision(const Vision& to_copy): 
+    Vision(const Vision& to_copy):
         energy{to_copy.energy}, 
         fleeing{to_copy.fleeing}, 
         velocity{to_copy.velocity}
