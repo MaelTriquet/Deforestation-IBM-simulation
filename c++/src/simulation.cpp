@@ -35,10 +35,10 @@ void Simulation::update() {
     for (int i = m_pop.size() - 1; i > -1; i--) {
         if (!m_pop[i]->is_dead) {
             m_pop[i]->move(window_width, window_height);
-            m_pop[i]->is_colliding = false;
+            m_pop[i]->update();
             continue;
         }
-        if (m_pop[i]->rotting-- > 0) continue;
+        if (m_pop[i]->rotting > 0) continue;
 
         delete m_pop[i];
         m_pop.erase(m_pop.begin() + i);
@@ -63,7 +63,7 @@ void Simulation::detect_collisions() {
     auto collision_with_tree = [](Animal* animal, Tree* tree) {
         sf::Vector2f temp_vect = (animal->position - tree->position);
         float squared_distance = temp_vect.x*temp_vect.x + temp_vect.y*temp_vect.y;
-        float squared_radius = (animal->radius + tree->radius)*(animal->radius + tree->radius);
+        float squared_radius = (tree->radius)*(tree->radius);
         return (squared_distance < squared_radius);
     };
 
@@ -211,4 +211,10 @@ float Simulation::segmentIntersectsCircle(const sf::Vector2f& A, const sf::Vecto
 
     // No intersection within the segment
     return -1.0f;
+}
+
+void Simulation::collide(const Tree& t, Animal* a) {
+    a->is_in_tree = true;
+    if (Random::rand() < t.hiding_prob)
+        a->invisible = INVISIBILITY_TIME;
 }

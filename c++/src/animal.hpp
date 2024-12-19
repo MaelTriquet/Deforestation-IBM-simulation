@@ -7,6 +7,7 @@
 #define NB_RAY 5
 #define RAY_LENGTH 50
 #define ROT_TIME 30
+#define INVISIBILITY_TIME 30
 
 struct Vision {
     int energy;
@@ -46,7 +47,9 @@ public:
     bool is_pred;
     bool is_prey;
     bool is_colliding = false;
+    bool is_in_tree = false;
     int rotting = ROT_TIME;
+    int invisible = 0;
 
     Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, int index_);
 
@@ -57,4 +60,5 @@ public:
     void reproduce();
     void die();
     void look();
+    void update();
 };

@@ -45,3 +45,15 @@ void Animal::look() {
    
     // ray vision handled in Simulation::handle_animal_interaction
 }
+
+void Animal::update() {
+    die();
+    is_colliding = false;
+    if (!is_in_tree)
+        invisible = 0;
+    else    
+        invisible--;
+    if (is_dead)
+        rotting--;
+    is_in_tree = false;
+}
