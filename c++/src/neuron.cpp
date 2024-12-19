@@ -14,6 +14,8 @@ void Neuron::add_weight(float weight) {
 }
 
 void Neuron::feedForward() {
+    if (bias) 
+        value = 1;
     for (int i = 0; i < weights.size(); i++) 
         next_layer[i]->value += value * weights[i];
 }
