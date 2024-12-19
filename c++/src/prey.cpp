@@ -9,3 +9,7 @@ Prey::Prey(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, int inde
     is_prey = true;
     max_velocity = MAX_VELOCITY_PREY;
 };
+
+void Prey::eat(Tree* tree) {
+
+}

@@ -49,6 +49,28 @@ void Simulation::update() {
     fill_ray_visions();
 }
 
+void Simulation::collide(Animal* animal_1, Animal* animal_2) {
+
+    // animal_1 = prey, animal_2 = predator
+    if (animal_1->is_prey && animal_2->is_pred) {
+        std::swap(animal_1, animal_2);
+    }
+
+    // animal_1 = predator and animal_2 = prey
+    if (animal_1->is_pred && animal_2->is_prey) {
+        if (animal_2->is_dead) {
+            ((Predator*)animal_1)->eat(animal_2);
+        } else {
+            ((Predator*)animal_1)->fight(animal_2);
+        }
+    }
+
+    // animal_1 = animal_2 = predator or animal_1 = animal_2 = prey
+    else {
+        animal_1->reproduce(animal_2);
+    }
+}
+
 void Simulation::detect_collisions() {
 
     // anonymous function to detect if two given animals are colliding
@@ -97,6 +119,7 @@ void Simulation::detect_collisions() {
                     if (collision_with_animal(animal_current_cell, animal_neighbour_cell)) {
                         animal_current_cell->is_colliding = true;
                         animal_neighbour_cell->is_colliding = true;
+                        collide(animal_current_cell, animal_neighbour_cell);
                     }
                     animal_neighbour_cell->position -= offset;
                 }
