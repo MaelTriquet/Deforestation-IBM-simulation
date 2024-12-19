@@ -7,6 +7,9 @@
 #define NB_RAY 5
 #define RAY_LENGTH 50
 #define ROT_TIME 30
+#define PRED_EATING_ENERGY 10
+#define PREY_LOST_ENERGY_FIGHT 2
+
 
 struct Vision {
     int energy;
@@ -53,8 +56,7 @@ public:
     void considerate_bounds(int window_width, int window_height);
 
     void move(int window_width, int window_height);
-    void eat();
-    void reproduce();
+    void reproduce(Animal* animal);
     void die();
     void look();
 };

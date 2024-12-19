@@ -8,3 +8,14 @@ Predator::Predator(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, 
     is_pred = true;
     is_prey = false;
 };
+
+void Predator::eat(Animal* prey) {
+    energy += PRED_EATING_ENERGY;
+}
+
+void Predator::fight(Animal* prey) {
+    prey->energy -= PREY_LOST_ENERGY_FIGHT;
+    if (prey->energy <= 0) {
+        prey->is_dead = true;
+    }
+}

@@ -36,6 +36,11 @@ void Renderer::render(const Simulation& simulation) const {
         } else {
             shape.setFillColor(a->color);
         }
+        if (a->is_dead) {
+            shape.setFillColor(sf::Color{255, 140, 50});
+        } else {
+            shape.setFillColor(a->color);
+        }
         shape.setPosition(a->position - sf::Vector2f(a->radius, a->radius));
         m_target.draw(shape);
     }

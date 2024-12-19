@@ -8,3 +8,7 @@ Prey::Prey(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, int inde
     is_pred = false;
     is_prey = true;
 };
+
+void Prey::eat(Tree* tree) {
+
+}

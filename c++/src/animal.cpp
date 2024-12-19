@@ -17,7 +17,6 @@ void Animal::considerate_bounds(int window_width, int window_height) {
         position.y += window_height;
     if (position.y >= window_height)
         position.y -= window_height;
-    
 }
 
 void Animal::move(int window_width, int window_height) {
@@ -26,12 +25,8 @@ void Animal::move(int window_width, int window_height) {
     considerate_bounds(window_width, window_height);
 };
 
-void Animal::eat() {
-
-};
-
-void Animal::reproduce() {
-
+void Animal::reproduce(Animal* animal) {
+    
 };
 
 void Animal::die() {

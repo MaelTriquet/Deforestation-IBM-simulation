@@ -24,4 +24,6 @@ public:
     void fill_ray_visions();
     void detect_collisions();
     float segmentIntersectsCircle(const sf::Vector2f& A, const sf::Vector2f& AB, const sf::Vector2f& C, int radius);
+
+    void collide(Animal* animal_1, Animal* animal_2);
 };
