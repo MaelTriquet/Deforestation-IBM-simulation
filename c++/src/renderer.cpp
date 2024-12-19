@@ -39,7 +39,7 @@ void Renderer::render(const Simulation& simulation) const {
         if (a->is_dead) {
             shape.setFillColor(sf::Color{255, 140, 50});
         } else {
-            shape.setFillColor(a->color);
+            shape.setFillColor(sf::Color{a->color.r, a->color.g, a->color.b, (sf::Uint8)((a->energy / 100.f * 255) > 255 ? 255 : a->energy / 100.f * 255)});
         }
         shape.setPosition(a->position - sf::Vector2f(a->radius, a->radius));
         m_target.draw(shape);

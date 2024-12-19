@@ -11,11 +11,11 @@ Simulation::Simulation(int window_width_, int window_height_) :
     ray_grid(window_width, window_height, RADIUS + RAY_LENGTH)
 {
     for (int i = 0; i < 100; i++) {
-        Prey* prey = new Prey(1, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{0.75, 0.75}, id++);
+        Prey* prey = new Prey(100, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{0.75, 0.75}, id++);
         m_pop.push_back(prey);
     }
     for (int i = 0; i < 100; i++) {
-        Predator* pred = new Predator(1, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{-0.75, 0.75}, id++);
+        Predator* pred = new Predator(100, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{-0.75, 0.75}, id++);
         m_pop.push_back(pred);
     }
     for (int i = 0; i < 150; i++) {
