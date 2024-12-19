@@ -7,14 +7,14 @@ int Simulation::id = 0;
 Simulation::Simulation(int window_width_, int window_height_) :
     window_width(window_width_),
     window_height(window_height_),
-    grid{window_width, window_height, RADIUS}
+    grid{window_width, window_height, 2*RADIUS}
 {
     for (int i = 0; i < 100; i++) {
-        Prey* prey = new Prey(1, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{-1, -1}, id++);
+        Prey* prey = new Prey(1, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{0.75, 0.75}, id++);
         m_pop.push_back(prey);
     }
     for (int i = 0; i < 100; i++) {
-        Predator* pred = new Predator(1, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{-1, 1}, id++);
+        Predator* pred = new Predator(1, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{-0.75, 0.75}, id++);
         m_pop.push_back(pred);
     }
     for (int i = 0; i < 150; i++) {
@@ -49,54 +49,60 @@ void Simulation::update() {
 
 void Simulation::detect_collisions() {
 
-    /*
-    objectifs :
-    - prendre en compte le tore
-    */
-
-    // anonymous function to detect if two given animals / trees are colliding
-    auto is_colliding_with_animal = [](Animal* animal_1, Animal* animal_2) {
+    // anonymous function to detect if two given animals are colliding
+    auto collision_with_animal = [](Animal* animal_1, Animal* animal_2) {
         sf::Vector2f temp_vect = (animal_1->position - animal_2->position);
         float squared_distance = temp_vect.x*temp_vect.x + temp_vect.y*temp_vect.y;
         float squared_radius = (animal_1->radius + animal_2->radius)*(animal_1->radius + animal_2->radius);
         return (squared_distance < squared_radius);
     };
 
-    // anonymous function to detect if two given animals / trees are colliding
-    auto is_colliding_with_tree = [](Animal* animal, Tree* tree) {
+    // anonymous function to detect if an animal is colliding with a tree
+    auto collision_with_tree = [](Animal* animal, Tree* tree) {
         sf::Vector2f temp_vect = (animal->position - tree->position);
         float squared_distance = temp_vect.x*temp_vect.x + temp_vect.y*temp_vect.y;
         float squared_radius = (animal->radius + tree->radius)*(animal->radius + tree->radius);
         return (squared_distance < squared_radius);
     };
 
-    // iterating on the cells
+    // iterating on the cells of the grid
     for (int i = 0; i < grid.width * grid.height; i++) {
         Cell actual_cell = grid.cells[i];
         std::unique_ptr<std::vector<Cell*>> neighbours = grid.get_neighbours(i);
 
         // iterating on the neighbours of the cell
-        for (int j = 0; j < 9; j++) {
+        for (int j = 0; j < neighbours->size(); j++) {
             Cell* neighbour_cell = (*neighbours)[j];
 
+            // take the tore into account (an animal at the top can collide with another one at the bottom)
+            sf::Vector2f offset{0, 0};
+            if (i % grid.width == 0 && neighbour_cell->index % grid.width == grid.width - 1)
+                offset.x = -window_width;
+            if (neighbour_cell->index % grid.width == 0 && i % grid.width == grid.width - 1)
+                offset.x = window_width;
+            if (i / grid.width == 0 && neighbour_cell->index / grid.width == grid.width - 1)
+                offset.y = -window_width;
+            if (neighbour_cell->index / grid.width == 0 && i / grid.width == grid.width - 1)
+                offset.y = window_width;
+
             // iterating on the animals of the cell
-            for (int k = 0; k < actual_cell.animals.size(); k++) {
+            for (Animal* animal_actual_cell : actual_cell.animals) {
 
                 // iterating on the animals of the neighour cell
-                for (int l = 0; l < neighbour_cell->animals.size(); l++) {
-                    if (actual_cell.animals[k] == neighbour_cell->animals[l]) {
-                        continue;
+                for (Animal* animal_neighbour_cell : neighbour_cell->animals) {
+                    if (animal_actual_cell == animal_neighbour_cell) continue;
+                    animal_neighbour_cell->position += offset;
+                    if (collision_with_animal(animal_actual_cell, animal_neighbour_cell)) {
+                        animal_actual_cell->is_colliding = true;
+                        animal_neighbour_cell->is_colliding = true;
                     }
-                    if (is_colliding_with_animal(actual_cell.animals[k], neighbour_cell->animals[l])) {
-                        actual_cell.animals[k]->is_colliding = true;
-                        neighbour_cell->animals[l]->is_colliding = true;
-                    }
+                    animal_neighbour_cell->position -= offset;
                 }
 
                 // iterating on the trees of the neighbour cell
-                for (int l = 0; l < neighbour_cell->trees.size(); l++) {
-                    if (is_colliding_with_tree(actual_cell.animals[k], neighbour_cell->trees[l])) {
-                        actual_cell.animals[k]->is_colliding = true;
+                for (Tree* tree : neighbour_cell->trees) {
+                    if (collision_with_tree(animal_actual_cell, tree)) {
+                        animal_actual_cell->is_colliding = true;
                     }
                 }
             }

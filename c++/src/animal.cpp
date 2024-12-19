@@ -9,18 +9,14 @@ Animal::Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, int 
 {};
 
 sf::Vector2f Animal::considerate_bounds(sf::Vector2f position, int window_width, int window_height) {
-    if (position.x < 0) {
+    if (position.x < 0)
         position.x += window_width;
-    }
-    if (position.x >= window_width) {
+    if (position.x >= window_width)
         position.x -= window_width;
-    }
-    if (position.y < 0) {
+    if (position.y < 0)
         position.y += window_height;
-    }
-    if (position.y >= window_height) {
+    if (position.y >= window_height)
         position.y -= window_height;
-    }
     return(position);
 }
 
