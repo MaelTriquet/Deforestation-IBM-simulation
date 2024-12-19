@@ -56,7 +56,7 @@ public:
     int rotting = ROT_TIME;
     int invisible = 0;
     float max_velocity;
-    float max_vel_percent = 1;
+    float max_vel_percent = .6;
 
     Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, int index_);
 
