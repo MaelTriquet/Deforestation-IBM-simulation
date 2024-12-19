@@ -22,7 +22,11 @@ void Animal::considerate_bounds(int window_width, int window_height) {
 
 void Animal::move(int window_width, int window_height) {
     look();
+    float vel_mag = std::sqrt(velocity.x * velocity.x + velocity.y*velocity.y);
+    if (vel_mag > 0)
+        velocity *= max_vel_percent * max_velocity / vel_mag;
     position += velocity;
+    energy -= max_vel_percent * max_vel_percent;
     considerate_bounds(window_width, window_height);
 };
 

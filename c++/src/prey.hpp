@@ -7,7 +7,6 @@
 
 class Prey : public Animal {
 public:
-    float max_velocity = MAX_VELOCITY_PREY;
 
     Prey(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, int index_);
 

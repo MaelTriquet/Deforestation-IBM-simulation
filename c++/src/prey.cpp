@@ -7,4 +7,5 @@ Prey::Prey(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, int inde
     max_ray_angle = MAX_RAY_ANGLE_PREY;
     is_pred = false;
     is_prey = true;
+    max_velocity = MAX_VELOCITY_PREY;
 };
