@@ -7,7 +7,8 @@ int Simulation::id = 0;
 Simulation::Simulation(int window_width_, int window_height_) :
     window_width(window_width_),
     window_height(window_height_),
-    grid{window_width, window_height, RADIUS}
+    grid(window_width, window_height, 2*RADIUS),
+    ray_grid(window_width, window_height, RADIUS + RAY_LENGTH)
 {
     for (int i = 0; i < 100; i++) {
         Prey* prey = new Prey(1, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{-1, -1}, id++);
@@ -22,6 +23,7 @@ Simulation::Simulation(int window_width_, int window_height_) :
     }
 
     grid.init_trees(m_trees);
+    ray_grid.init_trees(m_trees);
 }
 
 Simulation::~Simulation() {
@@ -106,9 +108,9 @@ void Simulation::detect_collisions() {
 
 void Simulation::fill_ray_visions() {
     std::unique_ptr<std::vector<Cell*>> neighbours;
-    for (int i = 0; i < grid.width * grid.height; i++) {
-        neighbours = grid.get_neighbours(i);
-        for (Animal* a : grid.cells[i].animals) {
+    for (int i = 0; i < ray_grid.width * ray_grid.height; i++) {
+        neighbours = ray_grid.get_neighbours(i);
+        for (Animal* a : ray_grid.cells[i].animals) {
             sf::Vector2f ray;
             for (int i = 0; i < NB_RAY; i++) {
                 float theta = -a->max_ray_angle/2 + i * a->max_ray_angle / (float)(NB_RAY-1);
@@ -125,14 +127,14 @@ void Simulation::fill_ray_visions() {
                 ray *= (float)RAY_LENGTH;
                 for (Cell* neigh : *neighbours) {
                     sf::Vector2f offset{0, 0}; // handles detection through tore's bounds
-                    if (i % grid.width == 0 && neigh->index % grid.width == grid.width - 1)
+                    if (i % ray_grid.width == 0 && neigh->index % ray_grid.width == ray_grid.width - 1)
                         offset.x = -window_width;
-                    if (neigh->index % grid.width == 0 && i % grid.width == grid.width - 1)
+                    if (neigh->index % ray_grid.width == 0 && i % ray_grid.width == ray_grid.width - 1)
                         offset.x = window_width;
                     
-                    if (i / grid.width == 0 && neigh->index / grid.width == grid.width - 1)
+                    if (i / ray_grid.width == 0 && neigh->index / ray_grid.width == ray_grid.width - 1)
                         offset.y = -window_width;
-                    if (neigh->index / grid.width == 0 && i / grid.width == grid.width - 1)
+                    if (neigh->index / ray_grid.width == 0 && i / ray_grid.width == ray_grid.width - 1)
                         offset.y = window_width;
                     
                     for (Animal* a2 : neigh->animals) {
@@ -170,6 +172,8 @@ float Simulation::segmentIntersectsCircle(const sf::Vector2f& A, const sf::Vecto
     auto distance = [](const sf::Vector2f& p1, const sf::Vector2f& p2) {
         return std::sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
     };
+
+    if (distance(A, C) < radius) return 1.0f;
 
     // Coefficients for the quadratic equation
     float a = AB.x * AB.x + AB.y * AB.y;

@@ -8,7 +8,7 @@ Animal::Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, int 
     index{index_}
 {};
 
-sf::Vector2f Animal::considerate_bounds(sf::Vector2f position, int window_width, int window_height) {
+void Animal::considerate_bounds(int window_width, int window_height) {
     if (position.x < 0) {
         position.x += window_width;
     }
@@ -21,12 +21,12 @@ sf::Vector2f Animal::considerate_bounds(sf::Vector2f position, int window_width,
     if (position.y >= window_height) {
         position.y -= window_height;
     }
-    return(position);
 }
 
 void Animal::move(int window_width, int window_height) {
+    look();
     position += velocity;
-    position = considerate_bounds(position, window_width, window_height);
+    considerate_bounds(window_width, window_height);
 };
 
 void Animal::eat() {

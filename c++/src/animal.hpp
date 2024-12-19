@@ -50,7 +50,7 @@ public:
 
     Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, int index_);
 
-    sf::Vector2f considerate_bounds(sf::Vector2f theoretical_position, int window_width, int window_height);
+    void considerate_bounds(int window_width, int window_height);
 
     void move(int window_width, int window_height);
     void eat();
