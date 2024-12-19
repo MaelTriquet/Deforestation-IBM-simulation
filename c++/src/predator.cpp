@@ -12,6 +12,7 @@ Predator::Predator(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, 
 
 void Predator::eat(Animal* prey) {
     energy += PRED_EATING_ENERGY;
+    prey->rotting = 0;
 }
 
 void Predator::fight(Animal* prey) {

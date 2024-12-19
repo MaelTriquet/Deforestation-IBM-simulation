@@ -11,11 +11,11 @@ Simulation::Simulation(int window_width_, int window_height_) :
     ray_grid(window_width, window_height, RADIUS + RAY_LENGTH)
 {
     for (int i = 0; i < 100; i++) {
-        Prey* prey = new Prey(1, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{2 * Random::rand() - 1, 2 * Random::rand() - 1}, id++);
+        Prey* prey = new Prey(100, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{2 * Random::rand() - 1, 2 * Random::rand() - 1}, id++);
         m_pop.push_back(prey);
     }
     for (int i = 0; i < 100; i++) {
-        Predator* pred = new Predator(1, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{2 * Random::rand() - 1, 2 * Random::rand() - 1}, id++);
+        Predator* pred = new Predator(100, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{2 * Random::rand() - 1, 2 * Random::rand() - 1}, id++);
         m_pop.push_back(pred);
     }
     for (int i = 0; i < 150; i++) {
@@ -33,9 +33,9 @@ Simulation::~Simulation() {
 
 void Simulation::update() {
     for (int i = m_pop.size() - 1; i > -1; i--) {
+        m_pop[i]->update();
         if (!m_pop[i]->is_dead) {
             m_pop[i]->move(window_width, window_height);
-            m_pop[i]->update();
             continue;
         }
         if (m_pop[i]->rotting > 0) continue;
