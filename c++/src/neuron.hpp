@@ -7,7 +7,7 @@ public:
     int index;
     std::vector<Neuron*> next_layer;
     std::vector<float> weights;
-    float value;
+    float value = 0;
     bool bias;
 
     Neuron(int index, bool bias);

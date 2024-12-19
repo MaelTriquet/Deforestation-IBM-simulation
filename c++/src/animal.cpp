@@ -5,27 +5,34 @@ Animal::Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, int 
     position(position_),
     velocity(velocity_),
     is_dead(false),
-    index{index_}
-{};
+    index{index_},
+    brain{19, 3, 3, 10}
+{
+    brain.mutate();
+};
 
 void Animal::considerate_bounds(int window_width, int window_height) {
-    if (position.x < 0) 
+    while (position.x < 0) 
         position.x += window_width;
-    if (position.x >= window_width)
+    while (position.x >= window_width)
         position.x -= window_width;
-    if (position.y < 0)
+    while (position.y < 0)
         position.y += window_height;
-    if (position.y >= window_height)
+    while (position.y >= window_height)
         position.y -= window_height;
 }
 
 void Animal::move(int window_width, int window_height) {
     look();
+    brain.think(vision, decision);
+    std::cout << decision[0] << ", " << decision[1] << ", " << decision[2] << "\n";
+    velocity = sf::Vector2f(decision[0], decision[1]);
+    decision[2] = decision[2] > 1 ? 1 : decision[2];
     float vel_mag = std::sqrt(velocity.x * velocity.x + velocity.y*velocity.y);
     if (vel_mag > 0)
-        velocity *= max_vel_percent * max_velocity / vel_mag;
+        velocity *= decision[2] * max_velocity / vel_mag;
     position += velocity;
-    energy -= max_vel_percent * max_vel_percent - .05;
+    energy -= decision[2] * decision[2];
     considerate_bounds(window_width, window_height);
 };
 

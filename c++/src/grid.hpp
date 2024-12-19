@@ -7,7 +7,7 @@
 
 struct Cell
 {
-    std::vector<Animal*> animals;
+    std::vector<Animal*> animals{20};
     std::vector<Tree*> trees;
     int index;
 

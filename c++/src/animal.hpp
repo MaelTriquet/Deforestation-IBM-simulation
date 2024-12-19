@@ -2,39 +2,17 @@
 #include <SFML/Graphics.hpp>
 #include <cstring>
 #include <cmath>
+#include "brain.hpp"
 #include "tree.hpp"
+#include "vision.hpp"
+#include <iostream>
 
 #define RADIUS 10
-#define NB_RAY 5
 #define RAY_LENGTH 50
 #define ROT_TIME 30
 #define INVISIBILITY_TIME 30
 #define PRED_EATING_ENERGY 10
 #define PREY_LOST_ENERGY_FIGHT 2
-
-
-struct Vision {
-    float energy;
-    float fleeing;
-    sf::Vector2f velocity;
-    float rays[NB_RAY * 3];
-
-    Vision():
-        energy{0.f},
-        fleeing{0.f},
-        velocity{0,0}
-    {
-        std::memset(rays, 0.f, NB_RAY * 3 * sizeof(float));
-    }
-
-    Vision(const Vision& to_copy):
-        energy{to_copy.energy}, 
-        fleeing{to_copy.fleeing}, 
-        velocity{to_copy.velocity}
-    {
-        std::memcpy(rays, to_copy.rays, NB_RAY * 3 * sizeof(float));
-    }
-};
 
 class Animal {
 public:
@@ -57,6 +35,9 @@ public:
     int invisible = 0;
     float max_velocity;
     float max_vel_percent = .6;
+    Brain brain;
+    float decision[3] = {0};
+
 
     Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, int index_);
 

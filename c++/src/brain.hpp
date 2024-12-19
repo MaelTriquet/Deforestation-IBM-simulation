@@ -1,8 +1,13 @@
+#pragma once
 #include <vector>
-#include "animal.hpp"
+#include "vision.hpp"
 #include "neuron.hpp"
+#include "random.hpp"
 
+#define MUT_RATE .03
+struct Vision;
 class Brain {
+public:
     std::vector<Neuron> neurons;
 
     int inputs, outputs;
@@ -10,4 +15,6 @@ class Brain {
     Brain(int inputs_, int outputs_, int nb_hidden_layer, int nb_neuron_per_layer);
 
     void think(const Vision& vision, float* decision);
+
+    void mutate();
 };
