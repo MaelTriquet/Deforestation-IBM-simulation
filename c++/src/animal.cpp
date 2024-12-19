@@ -1,7 +1,6 @@
 #include "animal.hpp"
 
-Animal::Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, int index_) : 
-    energy(energy_),
+Animal::Animal(sf::Vector2f position_, sf::Vector2f velocity_, int index_) : 
     position(position_),
     velocity(velocity_),
     is_dead(false),

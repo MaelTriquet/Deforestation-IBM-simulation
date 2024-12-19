@@ -58,7 +58,7 @@ public:
     float max_velocity;
     float max_vel_percent = .6;
 
-    Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, int index_);
+    Animal(sf::Vector2f position_, sf::Vector2f velocity_, int index_);
 
     void considerate_bounds(int window_width, int window_height);
 
