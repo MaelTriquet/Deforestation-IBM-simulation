@@ -132,9 +132,9 @@ void Simulation::fill_ray_visions() {
                     if (neigh->index % ray_grid.width == 0 && i % ray_grid.width == ray_grid.width - 1)
                         offset.x = window_width;
                     
-                    if (i / ray_grid.width == 0 && neigh->index / ray_grid.width == ray_grid.width - 1)
+                    if (i / ray_grid.width == 0 && neigh->index / ray_grid.width == ray_grid.height - 1)
                         offset.y = -window_width;
-                    if (neigh->index / ray_grid.width == 0 && i / ray_grid.width == ray_grid.width - 1)
+                    if (neigh->index / ray_grid.width == 0 && i / ray_grid.width == ray_grid.height - 1)
                         offset.y = window_width;
                     
                     for (Animal* a2 : neigh->animals) {
