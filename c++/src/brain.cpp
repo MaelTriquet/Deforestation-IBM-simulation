@@ -46,7 +46,7 @@ void Brain::think(const Vision& vision, float* decision) {
         neurons[i].value = vision.rays[i-5];
 
     for (int i = 0; i < neurons.size(); i++)
-        neurons[i].feedForward();
+        neurons[i].feedForward(i < inputs);
 
     for (int i = 0; i < outputs; i++)
         decision[i] = neurons[neurons.size() - outputs + i].value;
