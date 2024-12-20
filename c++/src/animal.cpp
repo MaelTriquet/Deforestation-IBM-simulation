@@ -1,8 +1,7 @@
 #include "animal.hpp"
 
-Animal::Animal(sf::Vector2f position_, sf::Vector2f velocity_, int index_) : 
+Animal::Animal(sf::Vector2f position_, int index_) : 
     position(position_),
-    velocity(velocity_),
     is_dead(false),
     index{index_},
     brain{19, 3, 3, 10}
@@ -24,9 +23,7 @@ void Animal::considerate_bounds(int window_width, int window_height) {
 void Animal::move(int window_width, int window_height) {
     look();
     brain.think(vision, decision);
-    std::cout << decision[0] << ", " << decision[1] << ", " << decision[2] << "\n";
     velocity = sf::Vector2f(decision[0], decision[1]);
-    decision[2] = decision[2] > 1 ? 1 : decision[2];
     float vel_mag = std::sqrt(velocity.x * velocity.x + velocity.y*velocity.y);
     if (vel_mag > 0)
         velocity *= decision[2] * max_velocity / vel_mag;

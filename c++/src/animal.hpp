@@ -24,7 +24,7 @@ public:
     int radius = RADIUS;// size of the animal
     int energy = INITIAL_ENERGY; // health
     sf::Vector2f position;
-    sf::Vector2f velocity;
+    sf::Vector2f velocity{0, 0};
     bool is_dead;
     sf::Color color;
     int fleeing = 0; // fright-meter, set high when spotting an ennemy
@@ -44,7 +44,7 @@ public:
     float decision[3] = {0}; // holds the decision after the thinking process
     int reproduction_timeout = 0;
 
-    Animal(sf::Vector2f position_, sf::Vector2f velocity_, int index_);
+    Animal(sf::Vector2f position_, int index_);
 
     void considerate_bounds(int window_width, int window_height);
 

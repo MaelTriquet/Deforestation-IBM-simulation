@@ -60,30 +60,24 @@ void Simulation::update() {
 void Simulation::collide(Animal* animal_1, Animal* animal_2) {
 
     // animal_1 = prey and animal_2 = predator
-    if (animal_1->is_prey && animal_2->is_pred) {
-        collide(animal_2, animal_1);
-    }
+    if (animal_1->is_prey && animal_2->is_pred)
+        return collide(animal_2, animal_1);
 
     // animal_1 = predator and animal_2 = prey
     if (animal_1->is_pred && animal_2->is_prey) {
-        if (animal_2->is_dead) {
-            ((Predator*)animal_1)->eat(animal_2);
-        } else {
-            ((Predator*)animal_1)->fight(animal_2);
-        }
+        if (animal_2->is_dead)
+            return ((Predator*)animal_1)->eat(animal_2);
+        return ((Predator*)animal_1)->fight(animal_2);
     }
 
     // animal_1 = animal_2 = predator or animal_1 = animal_2 = prey
-    else {
-        if (animal_1->reproduction_timeout <= 0 && animal_2->reproduction_timeout <= 0) {
-            if (animal_1->is_pred) {
-                Predator* child = ((Predator*)animal_1)->reproduce((Predator*)animal_2);
-                m_pop.push_back(child);
-            } else {
-                Prey* child = ((Prey*)animal_1)->reproduce((Prey*)animal_2);
-                m_pop.push_back(child);
-            }
+    if (animal_1->reproduction_timeout <= 0 && animal_2->reproduction_timeout <= 0) {
+        if (animal_1->is_pred) {
+            Predator* child = ((Predator*)animal_1)->reproduce((Predator*)animal_2, id++);
+            return m_pop.push_back(child);
         }
+        Prey* child = ((Prey*)animal_1)->reproduce((Prey*)animal_2, id++);
+        m_pop.push_back(child);
     }
 }
 

@@ -10,8 +10,8 @@ Predator::Predator(sf::Vector2f position_, sf::Vector2f velocity_, int index_) :
     max_velocity = MAX_VELOCITY_PREDATOR;
 };
 
-Predator::Predator(Predator* parent_1_, Predator* parent_2_) : 
-    Animal(parent_1_->position, sf::Vector2f{2 * Random::rand() - 1, 2 * Random::rand() - 1}, Random::randint(10000))
+Predator::Predator(Predator* parent_1_, Predator* parent_2_, int id_) : 
+    Animal(parent_1_->position, sf::Vector2f{2 * Random::rand() - 1, 2 * Random::rand() - 1}, id_)
 {
     color = sf::Color(255, 0, 0);
     max_ray_angle = MAX_RAY_ANGLE_PREDATOR;
@@ -38,18 +38,12 @@ void Predator::eat(Animal* prey) {
 
 void Predator::fight(Animal* prey) {
     prey->energy -= PREY_LOST_ENERGY_FIGHT;
-    
-    
-    // probably not usefull
-    if (prey->energy <= 0) {
-        prey->is_dead = true;
-    }
 }
 
-Predator* Predator::reproduce(Predator* parent) {
+Predator* Predator::reproduce(Predator* parent, int id) {
     parent->energy -= LOST_ENERGY_PER_REPRODUCTION;
     energy -= LOST_ENERGY_PER_REPRODUCTION;
-    Predator* child = new Predator(this, parent);
+    Predator* child = new Predator(this, parent, id);
     reproduction_timeout = REPRODUCTION_TIMEOUT;
     parent->reproduction_timeout = REPRODUCTION_TIMEOUT;
     child->reproduction_timeout = REPRODUCTION_TIMEOUT;

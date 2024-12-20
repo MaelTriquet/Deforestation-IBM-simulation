@@ -7,18 +7,18 @@ Brain::Brain(int inputs_, int outputs_, int nb_hidden_layer, int nb_neuron_per_l
     outputs(outputs_)
 {
     // create necessary neurons
-    int i = 0;
-    for (; i < inputs;)
-        neurons.emplace_back(i++, false);
-    neurons.emplace_back(i++, true);
+    
+    for (int i = 0; i < inputs; i++)
+        neurons.emplace_back(false);
+    neurons.emplace_back(true);
     for (int j = 0; j < nb_hidden_layer; j++) {
         for (int k = 0; k < nb_neuron_per_layer; k++)
-            neurons.emplace_back(i++, false);
-        neurons.emplace_back(i++, true);
+            neurons.emplace_back(false);
+        neurons.emplace_back(true);
     }
 
     for (int j = 0; j < outputs; j++)
-        neurons.emplace_back(i++, false);
+        neurons.emplace_back(false);
 
     // and then connect them all
     
@@ -27,8 +27,7 @@ Brain::Brain(int inputs_, int outputs_, int nb_hidden_layer, int nb_neuron_per_l
     for (int i = 0; i < neurons.size() - outputs; i++) {
         for (int j = layer_start; j < neurons.size(); j++) {
             if (neurons[j].bias) break;
-            neurons[i].add_neuron(&neurons[j]);
-            neurons[i].add_weight(Random::rand() * 2 - 1);
+            neurons[i].add_neuron(&neurons[j], Random::rand() * 2 - 1);
         }
 
         if (neurons[i].bias)

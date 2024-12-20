@@ -1,19 +1,15 @@
 #include "neuron.hpp"
 
-Neuron::Neuron(int index_, bool bias_) :
-    index(index_), 
+Neuron::Neuron(bool bias_) :
     bias(bias_)
 {};
 
 // connects to a neuron
-void Neuron::add_neuron(Neuron* neuron) {
+void Neuron::add_neuron(Neuron* neuron, float weight) {
     next_layer.push_back(neuron);
-}
-
-
-void Neuron::add_weight(float weight) {
     weights.push_back(weight);
 }
+
 
 // spread its value to the next layer according to the weights
 void Neuron::feedForward(bool input) {

@@ -9,9 +9,9 @@ class Predator : public Animal {
 public:
 
     Predator(sf::Vector2f position_, sf::Vector2f velocity_, int index_);
-    Predator(Predator* parent_1_, Predator* parent_2_);
+    Predator(Predator* parent_1_, Predator* parent_2_, int id_);
 
     void eat(Animal* prey);
     void fight(Animal* prey);
-    Predator* reproduce(Predator* parent);
+    Predator* reproduce(Predator* parent, int id);
 };

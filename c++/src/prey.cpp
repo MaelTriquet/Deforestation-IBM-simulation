@@ -10,8 +10,8 @@ Prey::Prey(sf::Vector2f position_, sf::Vector2f velocity_, int index_) :
     max_velocity = MAX_VELOCITY_PREY;
 };
 
-Prey::Prey(Prey* parent_1_, Prey* parent_2_) : 
-    Animal(parent_1_->position, sf::Vector2f{2 * Random::rand() - 1, 2 * Random::rand() - 1}, Random::randint(10000))
+Prey::Prey(Prey* parent_1_, Prey* parent_2_, int id_) : 
+    Animal(parent_1_->position, sf::Vector2f{2 * Random::rand() - 1, 2 * Random::rand() - 1}, id_)
 {
     color = sf::Color(0, 0, 255);
     max_ray_angle = MAX_RAY_ANGLE_PREY;
@@ -35,12 +35,12 @@ void Prey::eat(Tree* tree) {
 
 }
 
-Prey* Prey::reproduce(Prey* parent) {
+Prey* Prey::reproduce(Prey* parent, int id) {
     parent->energy -= LOST_ENERGY_PER_REPRODUCTION;
     energy -= LOST_ENERGY_PER_REPRODUCTION;
     parent->reproduction_timeout = REPRODUCTION_TIMEOUT;
     reproduction_timeout = REPRODUCTION_TIMEOUT;
-    Prey* child = new Prey(this, parent);
+    Prey* child = new Prey(this, parent, id);
     child->reproduction_timeout = REPRODUCTION_TIMEOUT;
     return child;
 };
