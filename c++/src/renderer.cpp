@@ -41,7 +41,7 @@ void Renderer::render(const Simulation& simulation) const {
             shape.setFillColor(a->color);
         }
         if (a->is_dead) {
-            shape.setFillColor(sf::Color{255, 140, 50});
+            shape.setFillColor(sf::Color{255, 0, 255});
         } else {
             shape.setFillColor(sf::Color{a->color.r, a->color.g, a->color.b, (sf::Uint8)((a->energy / 100.f * 255) > 255 ? 255 : a->energy / 100.f * 255)});
         }

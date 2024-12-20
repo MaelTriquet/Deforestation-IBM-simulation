@@ -18,6 +18,7 @@ public:
     Grid grid;
     //ray detection grid (different size)
     Grid ray_grid;
+    bool is_prey_dominating = true;
 
     Simulation(int window_width_, int window_height_);
     ~Simulation();
