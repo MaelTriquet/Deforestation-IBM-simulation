@@ -4,7 +4,7 @@ Animal::Animal(sf::Vector2f position_, int index_) :
     position(position_),
     is_dead(false),
     index{index_},
-    brain{19, 3, 3, 10}
+    brain{4 + NB_RAY * 3, 3, 3, 10}
 {};
 
 //keeps all animals within the window, using a tore-like world modelisation
@@ -28,7 +28,11 @@ void Animal::move(int window_width, int window_height) {
     if (vel_mag > 0)
         velocity *= decision[2] * max_velocity / vel_mag;
     position += velocity;
-    energy -= decision[2] * decision[2];
+    energy -= decision[2] * decision[2] * max_velocity /(float)PREY_MAX_VELOCITY;
+    if (is_prey)
+        energy += .03;
+    else
+        energy -= 4;
     considerate_bounds(window_width, window_height);
 };
 
@@ -46,6 +50,8 @@ void Animal::look() {
 
 // updates all naturally decrementing attributes and check death
 void Animal::update() {
+    if (energy > 2*INITIAL_ENERGY)
+        energy = 2*INITIAL_ENERGY;
     die();
     is_colliding = false;
     if (!is_in_tree)

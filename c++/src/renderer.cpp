@@ -9,7 +9,7 @@ Renderer::Renderer(sf::RenderTarget& target):
 // draws everything from the simulation
 void Renderer::render(const Simulation& simulation) const {
     for (const Animal* a : simulation.m_pop) {
-        if (a->index == 1) {
+        if (a == simulation.m_pop[0]) {
             sf::Vector2f ray;
             for (int i = 0; i < NB_RAY; i++) {
                 float theta = -a->max_ray_angle/2 + i * a->max_ray_angle / (float)(NB_RAY-1);

@@ -18,6 +18,10 @@ Predator::Predator(Predator* parent_1_, Predator* parent_2_, int id_) :
     is_pred = true;
     is_prey = false;
     max_velocity = PRED_MAX_VELOCITY;
+    energy = parent_1_->energy + parent_2_->energy;
+    energy /= 2;
+    if (energy > INITIAL_ENERGY)
+        energy = INITIAL_ENERGY;
 
     for (int i = 0; i < brain.neurons.size(); i++) {
         for (int j = 0; j < brain.neurons[i].weights.size(); j++) {
@@ -39,7 +43,8 @@ void Predator::eat(Animal* prey) {
 }
 
 void Predator::fight(Animal* prey) {
-    prey->energy -= PREY_LOST_ENERGY_FIGHT;
+    float a = (float)prey->energy * PRED_PERCENT_DAMAGE; 
+    prey->energy -= PREY_LOST_ENERGY_FIGHT > a ? PREY_LOST_ENERGY_FIGHT : a;
 }
 
 Predator* Predator::reproduce(Predator* parent, int id) {
