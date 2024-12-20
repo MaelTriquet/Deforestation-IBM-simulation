@@ -1,23 +1,23 @@
 #include "prey.hpp"
 
-Prey::Prey(sf::Vector2f position_, sf::Vector2f velocity_, int index_) : 
-    Animal(position_, velocity_, index_)
+Prey::Prey(sf::Vector2f position_, int index_) : 
+    Animal(position_, index_)
 {
     color = sf::Color(0, 0, 255);
-    max_ray_angle = MAX_RAY_ANGLE_PREY;
+    max_ray_angle = PREY_MAX_RAY_ANGLE;
     is_pred = false;
     is_prey = true;
-    max_velocity = MAX_VELOCITY_PREY;
+    max_velocity = PREY_MAX_VELOCITY;
 };
 
 Prey::Prey(Prey* parent_1_, Prey* parent_2_) : 
-    Animal(parent_1_->position, sf::Vector2f{2 * Random::rand() - 1, 2 * Random::rand() - 1}, Random::randint(10000))
+    Animal(parent_1_->position, Random::randint(10000))
 {
     color = sf::Color(0, 0, 255);
-    max_ray_angle = MAX_RAY_ANGLE_PREY;
+    max_ray_angle = PREY_MAX_RAY_ANGLE;
     is_pred = false;
     is_prey = true;
-    max_velocity = MAX_VELOCITY_PREY;
+    max_velocity = PREY_MAX_VELOCITY;
 
     for (int i = 0; i < brain.neurons.size(); i++) {
         for (int j = 0; j < brain.neurons[i].weights.size(); j++) {
@@ -36,8 +36,8 @@ void Prey::eat(Tree* tree) {
 }
 
 Prey* Prey::reproduce(Prey* parent) {
-    parent->energy -= LOST_ENERGY_PER_REPRODUCTION;
-    energy -= LOST_ENERGY_PER_REPRODUCTION;
+    parent->energy -= LOST_ENERGY_REPRODUCTION;
+    energy -= LOST_ENERGY_REPRODUCTION;
     parent->reproduction_timeout = REPRODUCTION_TIMEOUT;
     reproduction_timeout = REPRODUCTION_TIMEOUT;
     Prey* child = new Prey(this, parent);

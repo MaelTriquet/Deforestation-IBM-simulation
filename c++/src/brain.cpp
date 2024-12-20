@@ -62,10 +62,10 @@ void Brain::think(const Vision& vision, float* decision) {
         decision[i] = neurons[neurons.size() - outputs + i].value;
 }
 
-// set each weight to a random one with the prob MUT_RATE
+// set each weight to a random one with the prob MUTATION_RATE
 void Brain::mutate() {
     for (Neuron& n : neurons)
         for (int i = 0; i < n.weights.size(); i++)
-            if (Random::rand() < MUT_RATE)
+            if (Random::rand() < MUTATION_RATE)
                 n.weights[i] = Random::rand() * 2 - 1;
 }

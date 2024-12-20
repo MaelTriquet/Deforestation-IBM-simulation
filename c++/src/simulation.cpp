@@ -6,16 +6,16 @@ int Simulation::id = 0;
 Simulation::Simulation(int window_width_, int window_height_) :
     window_width(window_width_),
     window_height(window_height_),
-    grid(window_width, window_height, 2*RADIUS),
-    ray_grid(window_width, window_height, RADIUS + RAY_LENGTH)
+    grid(window_width, window_height, 2*ANIMALS_RADIUS),
+    ray_grid(window_width, window_height, ANIMALS_RADIUS + RAY_LENGTH)
 {
 
     for (int i = 0; i < 100; i++) {
-        Prey* prey = new Prey(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{2 * Random::rand() - 1, 2 * Random::rand() - 1}, id++);
+        Prey* prey = new Prey(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, id++);
         m_pop.push_back(prey);
     }
     for (int i = 0; i < 100; i++) {
-        Predator* pred = new Predator(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{2 * Random::rand() - 1, 2 * Random::rand() - 1}, id++);
+        Predator* pred = new Predator(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, id++);
         m_pop.push_back(pred);
     }
     for (int i = 0; i < 150; i++) {
@@ -192,8 +192,8 @@ void Simulation::fill_ray_visions() {
                         a2->position += offset;
                         float dist = std::sqrt((a->position.x - a2->position.x) * (a->position.x - a2->position.x) + (a->position.y - a2->position.y) * (a->position.y - a2->position.y));
                         a2->position -= offset;
-                        if (dist > RAY_LENGTH + RADIUS) continue;
-                        float res = segmentIntersectsCircle(a->position, ray, a2->position + offset, RADIUS);
+                        if (dist > RAY_LENGTH + ANIMALS_RADIUS) continue;
+                        float res = segmentIntersectsCircle(a->position, ray, a2->position + offset, ANIMALS_RADIUS);
                         if (res < 0) continue;
 
                         if (a2->is_pred)
@@ -206,8 +206,8 @@ void Simulation::fill_ray_visions() {
                         t->position += offset;
                         float dist = std::sqrt((a->position.x - t->position.x) * (a->position.x - t->position.x) + (a->position.y - t->position.y) * (a->position.y - t->position.y));
                         t->position -= offset;
-                        if (dist > RAY_LENGTH + RADIUS) continue;
-                        float res = segmentIntersectsCircle(a->position, ray, t->position + offset, RADIUS);
+                        if (dist > RAY_LENGTH + TREES_RADIUS) continue;
+                        float res = segmentIntersectsCircle(a->position, ray, t->position + offset, TREES_RADIUS);
                         if (res < 0) continue; 
                         a->vision.rays[i + 2*NB_RAY] = res;
                     }

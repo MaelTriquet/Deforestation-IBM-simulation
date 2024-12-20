@@ -1,23 +1,23 @@
 #include "predator.hpp"
 
-Predator::Predator(sf::Vector2f position_, sf::Vector2f velocity_, int index_) :
-    Animal(position_, velocity_, index_)
+Predator::Predator(sf::Vector2f position_, int index_) :
+    Animal(position_, index_)
 {
     color = sf::Color(255, 0, 0);
-    max_ray_angle = MAX_RAY_ANGLE_PREDATOR;
+    max_ray_angle = PRED_MAX_RAY_ANGLE;
     is_pred = true;
     is_prey = false;
-    max_velocity = MAX_VELOCITY_PREDATOR;
+    max_velocity = PRED_MAX_VELOCITY;
 };
 
 Predator::Predator(Predator* parent_1_, Predator* parent_2_) : 
-    Animal(parent_1_->position, sf::Vector2f{2 * Random::rand() - 1, 2 * Random::rand() - 1}, Random::randint(10000))
+    Animal(parent_1_->position, Random::randint(10000))
 {
     color = sf::Color(255, 0, 0);
-    max_ray_angle = MAX_RAY_ANGLE_PREDATOR;
+    max_ray_angle = PRED_MAX_RAY_ANGLE;
     is_pred = true;
     is_prey = false;
-    max_velocity = MAX_VELOCITY_PREDATOR;
+    max_velocity = PRED_MAX_VELOCITY;
 
     for (int i = 0; i < brain.neurons.size(); i++) {
         for (int j = 0; j < brain.neurons[i].weights.size(); j++) {
@@ -31,7 +31,7 @@ Predator::Predator(Predator* parent_1_, Predator* parent_2_) :
 };
 
 void Predator::eat(Animal* prey) {
-    energy += PRED_EATING_ENERGY;
+    energy += PRED_GAIN_ENERGY_EATING;
     // sets the prey rotting to 0 to remove it from m_pop next check
     prey->rotting = 0;
 }
@@ -47,8 +47,8 @@ void Predator::fight(Animal* prey) {
 }
 
 Predator* Predator::reproduce(Predator* parent) {
-    parent->energy -= LOST_ENERGY_PER_REPRODUCTION;
-    energy -= LOST_ENERGY_PER_REPRODUCTION;
+    parent->energy -= LOST_ENERGY_REPRODUCTION;
+    energy -= LOST_ENERGY_REPRODUCTION;
     Predator* child = new Predator(this, parent);
     reproduction_timeout = REPRODUCTION_TIMEOUT;
     parent->reproduction_timeout = REPRODUCTION_TIMEOUT;

@@ -1,0 +1,26 @@
+#pragma once
+
+// trees
+#define TREES_RADIUS 10
+
+// animals
+#define ANIMALS_RADIUS 10
+#define INITIAL_ENERGY 100
+#define MUTATION_RATE .03
+#define NB_RAY 5
+#define RAY_LENGTH 50
+#define ROT_TIME 30
+#define LOST_ENERGY_REPRODUCTION 1
+#define REPRODUCTION_TIMEOUT 15
+
+// predators
+#define PRED_GAIN_ENERGY_EATING 10
+#define PRED_LOST_ENERGY_FIGHT 2
+#define PRED_MAX_VELOCITY 6
+#define PRED_MAX_RAY_ANGLE M_PI
+
+// preys
+#define INVISIBILITY_TIME 30
+#define PREY_LOST_ENERGY_FIGHT 2
+#define PREY_MAX_VELOCITY 4
+#define PREY_MAX_RAY_ANGLE M_PI

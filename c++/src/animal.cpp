@@ -1,8 +1,7 @@
 #include "animal.hpp"
 
-Animal::Animal(sf::Vector2f position_, sf::Vector2f velocity_, int index_) : 
+Animal::Animal(sf::Vector2f position_, int index_) : 
     position(position_),
-    velocity(velocity_),
     is_dead(false),
     index{index_},
     brain{19, 3, 3, 10}

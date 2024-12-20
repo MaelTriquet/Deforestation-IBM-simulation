@@ -7,21 +7,11 @@
 #include "vision.hpp"
 #include "brain.hpp"
 #include "random.hpp"
-
-#define RADIUS 10
-#define RAY_LENGTH 50
-#define ROT_TIME 30
-#define INVISIBILITY_TIME 30
-#define PRED_EATING_ENERGY 10
-#define PREY_LOST_ENERGY_FIGHT 2
-#define PRED_LOST_ENERGY_FIGHT 2
-#define INITIAL_ENERGY 100
-#define LOST_ENERGY_PER_REPRODUCTION 1
-#define REPRODUCTION_TIMEOUT 200
+#include "const.hpp"
 
 class Animal {
 public:
-    int radius = RADIUS;// size of the animal
+    int radius = ANIMALS_RADIUS;// size of the animal
     int energy = INITIAL_ENERGY; // health
     sf::Vector2f position;
     sf::Vector2f velocity;
@@ -44,7 +34,7 @@ public:
     float decision[3] = {0}; // holds the decision after the thinking process
     int reproduction_timeout = 0;
 
-    Animal(sf::Vector2f position_, sf::Vector2f velocity_, int index_);
+    Animal(sf::Vector2f position_, int index_);
 
     void considerate_bounds(int window_width, int window_height);
 
