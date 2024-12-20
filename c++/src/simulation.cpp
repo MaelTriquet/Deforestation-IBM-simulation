@@ -26,10 +26,12 @@ Simulation::Simulation(int window_width_, int window_height_) :
     ray_grid.init_trees(m_trees);
 }
 
+// animals created on heap, must take care of them
 Simulation::~Simulation() {
     for (int i = 0; i < m_pop.size(); i++)
         delete m_pop[i];
 }
+
 
 void Simulation::update() {
     for (int i = m_pop.size() - 1; i > -1; i--) {
@@ -40,21 +42,25 @@ void Simulation::update() {
         }
         if (m_pop[i]->rotting > 0) continue;
 
-        delete m_pop[i];
+        delete m_pop[i]; // free
         m_pop.erase(m_pop.begin() + i);
     }
 
+    // update grid cells content
     grid.update_animals(m_pop);
     ray_grid.update_animals(m_pop);
+
+    // check for events
     detect_collisions();
     fill_ray_visions();
 }
 
+// handles Animal/Animal collision (fight, eat or reproduce)
 void Simulation::collide(Animal* animal_1, Animal* animal_2) {
 
     // animal_1 = prey, animal_2 = predator
     if (animal_1->is_prey && animal_2->is_pred) {
-        std::swap(animal_1, animal_2);
+        collide(animal_2, animal_1);
     }
 
     // animal_1 = predator and animal_2 = prey
@@ -137,6 +143,7 @@ void Simulation::detect_collisions() {
     }
 }
 
+
 void Simulation::fill_ray_visions() {
     std::unique_ptr<std::vector<Cell*>> neighbours;
     for (int i = 0; i < ray_grid.width * ray_grid.height; i++) {
@@ -144,6 +151,7 @@ void Simulation::fill_ray_visions() {
         for (Animal* a : ray_grid.cells[i].animals) {
             sf::Vector2f ray;
             for (int i = 0; i < NB_RAY; i++) {
+                // create the ray
                 float theta = -a->max_ray_angle/2 + i * a->max_ray_angle / (float)(NB_RAY-1);
                 float alpha;
                 if (a->velocity.x * a->velocity.y == 0 && a->velocity.x + a->velocity.y == 0)
@@ -156,6 +164,8 @@ void Simulation::fill_ray_visions() {
                     alpha = M_PI + std::atan(-a->velocity.y / a->velocity.x);
                 ray = sf::Vector2f(std::cos(alpha + theta), -std::sin(alpha + theta));
                 ray *= (float)RAY_LENGTH;
+
+                // check if anything intersects the ray
                 for (Cell* neigh : *neighbours) {
                     sf::Vector2f offset{0, 0}; // handles detection through tore's bounds
                     if (i % ray_grid.width == 0 && neigh->index % ray_grid.width == ray_grid.width - 1)
@@ -238,6 +248,7 @@ float Simulation::segmentIntersectsCircle(const sf::Vector2f& A, const sf::Vecto
     return -1.0f;
 }
 
+// check invisibility
 void Simulation::collide(const Tree& t, Animal* a) {
     a->is_in_tree = true;
     if (a->in_tree == &t) return;

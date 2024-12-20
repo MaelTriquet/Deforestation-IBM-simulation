@@ -14,11 +14,13 @@ int main() {
     const uint32_t frame_rate = 60;
     window.setFramerateLimit(frame_rate);
 
+
     Simulation simulation{window_width, window_height};
     Renderer renderer{window};
 
 
     while (window.isOpen()) {
+        // check for user closing the window
         sf::Event event{};
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
@@ -26,6 +28,7 @@ int main() {
             }
         }
 
+        // update and show each frame
         simulation.update();
         window.clear(sf::Color::Black);
         renderer.render(simulation);

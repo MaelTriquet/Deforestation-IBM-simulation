@@ -5,15 +5,19 @@ Neuron::Neuron(int index_, bool bias_) :
     bias(bias_)
 {};
 
+// connects to a neuron
 void Neuron::add_neuron(Neuron* neuron) {
     next_layer.push_back(neuron);
 }
+
 
 void Neuron::add_weight(float weight) {
     weights.push_back(weight);
 }
 
+// spread its value to the next layer according to the weights
 void Neuron::feedForward(bool input) {
+    // only normalise current value if hidden or output
     if (!input) 
         value = sigmoid(value);
     if (bias) 
@@ -22,6 +26,7 @@ void Neuron::feedForward(bool input) {
         next_layer[i]->value += value * weights[i];
 }
 
+// Not really sigmoid, scaled it between [-1; 1] instead of [0;1]
 float Neuron::sigmoid(float x) {
     return 1 / (std::exp(-x) + 1) * 2 - 1;
 }

@@ -6,9 +6,9 @@ class Neuron {
 public:
 
     int index;
-    std::vector<Neuron*> next_layer;
-    std::vector<float> weights;
-    float value = 0;
+    std::vector<Neuron*> next_layer; // neurons this is connected to
+    std::vector<float> weights; // weights associated
+    float value = 0; // value holder for feedForward
     bool bias;
 
     Neuron(int index, bool bias);

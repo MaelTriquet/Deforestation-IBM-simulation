@@ -5,6 +5,8 @@ Renderer::Renderer(sf::RenderTarget& target):
     m_target{target}
 {}
 
+
+// draws everything from the simulation
 void Renderer::render(const Simulation& simulation) const {
     for (const Animal* a : simulation.m_pop) {
         if (a->index == 1) {
