@@ -1,20 +1,15 @@
 #include "animal.hpp"
 
-// creates a random animal
-Animal::Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, int index_) : 
-    energy(energy_),
+Animal::Animal(sf::Vector2f position_, sf::Vector2f velocity_, int index_) : 
     position(position_),
     velocity(velocity_),
     is_dead(false),
     index{index_},
-    brain{19, 3, 3, 10} // creates a random brain with the right dimensions
-{
-    brain.mutate();
-};
+    brain{19, 3, 3, 10}
+{};
 
 //keeps all animals within the window, using a tore-like world modelisation
 void Animal::considerate_bounds(int window_width, int window_height) {
-    
     while (position.x < 0) 
         position.x += window_width;
     while (position.x >= window_width)
@@ -40,11 +35,6 @@ void Animal::move(int window_width, int window_height) {
     considerate_bounds(window_width, window_height);
 };
 
-void Animal::reproduce(Animal* animal) {
-    
-};
-
-// check if animal is dead each frame
 void Animal::die() {
     is_dead = (energy <= 0);
 };
@@ -68,4 +58,5 @@ void Animal::update() {
     if (is_dead)
         rotting--;
     is_in_tree = false;
+    reproduction_timeout--;
 }

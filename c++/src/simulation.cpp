@@ -1,5 +1,4 @@
 #include "simulation.hpp"
-#include "random.hpp"
 #include <iostream>
 
 int Simulation::id = 0;
@@ -10,12 +9,13 @@ Simulation::Simulation(int window_width_, int window_height_) :
     grid(window_width, window_height, 2*RADIUS),
     ray_grid(window_width, window_height, RADIUS + RAY_LENGTH)
 {
+
     for (int i = 0; i < 100; i++) {
-        Prey* prey = new Prey(1000, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{2 * Random::rand() - 1, 2 * Random::rand() - 1}, id++);
+        Prey* prey = new Prey(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{2 * Random::rand() - 1, 2 * Random::rand() - 1}, id++);
         m_pop.push_back(prey);
     }
     for (int i = 0; i < 100; i++) {
-        Predator* pred = new Predator(1000, sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{2 * Random::rand() - 1, 2 * Random::rand() - 1}, id++);
+        Predator* pred = new Predator(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, sf::Vector2f{2 * Random::rand() - 1, 2 * Random::rand() - 1}, id++);
         m_pop.push_back(pred);
     }
     for (int i = 0; i < 150; i++) {
@@ -34,6 +34,7 @@ Simulation::~Simulation() {
 
 
 void Simulation::update() {
+    std::cout << m_pop.size() << std::endl;
     for (int i = m_pop.size() - 1; i > -1; i--) {
         m_pop[i]->update();
         if (!m_pop[i]->is_dead) {
@@ -58,7 +59,7 @@ void Simulation::update() {
 // handles Animal/Animal collision (fight, eat or reproduce)
 void Simulation::collide(Animal* animal_1, Animal* animal_2) {
 
-    // animal_1 = prey, animal_2 = predator
+    // animal_1 = prey and animal_2 = predator
     if (animal_1->is_prey && animal_2->is_pred) {
         collide(animal_2, animal_1);
     }
@@ -74,7 +75,15 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
 
     // animal_1 = animal_2 = predator or animal_1 = animal_2 = prey
     else {
-        animal_1->reproduce(animal_2);
+        if (animal_1->reproduction_timeout <= 0 && animal_2->reproduction_timeout <= 0) {
+            if (animal_1->is_pred) {
+                Predator* child = ((Predator*)animal_1)->reproduce((Predator*)animal_2);
+                m_pop.push_back(child);
+            } else {
+                Prey* child = ((Prey*)animal_1)->reproduce((Prey*)animal_2);
+                m_pop.push_back(child);
+            }
+        }
     }
 }
 

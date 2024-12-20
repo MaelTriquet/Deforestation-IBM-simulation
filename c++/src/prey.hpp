@@ -9,8 +9,10 @@
 class Prey : public Animal {
 public:
 
-    Prey(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, int index_);
+    Prey(sf::Vector2f position_, sf::Vector2f velocity_, int index_);
+    Prey(Prey* parent_1_, Prey* parent_2_);
 
     void eat(Tree* tree);
+    Prey* reproduce(Prey* parent);
 
 };

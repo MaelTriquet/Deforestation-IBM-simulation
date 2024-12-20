@@ -2,10 +2,11 @@
 #include <SFML/Graphics.hpp>
 #include <cstring>
 #include <cmath>
-#include "brain.hpp"
+#include <iostream>
 #include "tree.hpp"
 #include "vision.hpp"
-#include <iostream>
+#include "brain.hpp"
+#include "random.hpp"
 
 #define RADIUS 10
 #define RAY_LENGTH 50
@@ -13,11 +14,15 @@
 #define INVISIBILITY_TIME 30
 #define PRED_EATING_ENERGY 10
 #define PREY_LOST_ENERGY_FIGHT 2
+#define PRED_LOST_ENERGY_FIGHT 2
+#define INITIAL_ENERGY 100
+#define LOST_ENERGY_PER_REPRODUCTION 1
+#define REPRODUCTION_TIMEOUT 200
 
 class Animal {
 public:
-    int radius = RADIUS; // size of the animal
-    int energy; // health
+    int radius = RADIUS;// size of the animal
+    int energy = INITIAL_ENERGY; // health
     sf::Vector2f position;
     sf::Vector2f velocity;
     bool is_dead;
@@ -37,14 +42,13 @@ public:
     float max_vel_percent = .6; // will dissapear
     Brain brain; // decision maker
     float decision[3] = {0}; // holds the decision after the thinking process
+    int reproduction_timeout = 0;
 
-
-    Animal(int energy_, sf::Vector2f position_, sf::Vector2f velocity_, int index_);
+    Animal(sf::Vector2f position_, sf::Vector2f velocity_, int index_);
 
     void considerate_bounds(int window_width, int window_height);
 
     void move(int window_width, int window_height);
-    void reproduce(Animal* animal);
     void die();
     void look();
     void update();
