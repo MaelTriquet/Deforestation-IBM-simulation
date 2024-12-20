@@ -28,6 +28,8 @@ Predator::Predator(Predator* parent_1_, Predator* parent_2_, int id_) :
             }
         }
     }
+
+    brain.mutate();
 };
 
 void Predator::eat(Animal* prey) {

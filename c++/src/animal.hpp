@@ -25,7 +25,7 @@ public:
     bool is_prey;
     bool is_colliding = false;
     bool is_in_tree = false;
-    const Tree* in_tree = nullptr; // if is_in_tree = true, this is the pointer to that tree
+    Tree* in_tree = nullptr; // if is_in_tree = true, this is the pointer to that tree
     int rotting = ROT_TIME; // how long a corpse stays around after death
     int invisible = 0; // camouflage counter when hiding in a tree successfully
     float max_velocity;

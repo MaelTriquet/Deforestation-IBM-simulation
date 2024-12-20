@@ -10,15 +10,15 @@ Simulation::Simulation(int window_width_, int window_height_) :
     ray_grid(window_width, window_height, ANIMALS_RADIUS + RAY_LENGTH)
 {
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < PREY_START; i++) {
         Prey* prey = new Prey(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, id++);
         m_pop.push_back(prey);
     }
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < PRED_START; i++) {
         Predator* pred = new Predator(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, id++);
         m_pop.push_back(pred);
     }
-    for (int i = 0; i < 150; i++) {
+    for (int i = 0; i < TREE_START; i++) {
         m_trees.emplace_back(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, 0.25);
     }
 
@@ -34,6 +34,8 @@ Simulation::~Simulation() {
 
 
 void Simulation::update() {
+    for (Tree& t : m_trees)
+        t.update();
     std::cout << m_pop.size() << std::endl;
     for (int i = m_pop.size() - 1; i > -1; i--) {
         m_pop[i]->update();
@@ -71,7 +73,7 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
     }
 
     // animal_1 = animal_2 = predator or animal_1 = animal_2 = prey
-    if (animal_1->reproduction_timeout <= 0 && animal_2->reproduction_timeout <= 0) {
+    if (animal_1->reproduction_timeout <= 0 && animal_2->reproduction_timeout <= 0 && m_pop.size() < MAX_POP) {
         if (animal_1->is_pred) {
             Predator* child = ((Predator*)animal_1)->reproduce((Predator*)animal_2, id++);
             return m_pop.push_back(child);
@@ -252,8 +254,13 @@ float Simulation::segmentIntersectsCircle(const sf::Vector2f& A, const sf::Vecto
 }
 
 // check invisibility
-void Simulation::collide(const Tree& t, Animal* a) {
+void Simulation::collide(Tree& t, Animal* a) {
     a->is_in_tree = true;
+    if (a->is_prey) {
+        if (a->in_tree == &t) return ((Prey*)a)->eat();
+        a->in_tree = &t;
+        ((Prey*)a)->eat();
+    }
     if (a->in_tree == &t) return;
     a->in_tree = &t;
     if (Random::rand() < t.hiding_prob)

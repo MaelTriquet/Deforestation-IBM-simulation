@@ -31,7 +31,10 @@ Prey::Prey(Prey* parent_1_, Prey* parent_2_, int id_) :
 };
 
 
-void Prey::eat(Tree* tree) {
+void Prey::eat() {
+    if (in_tree->nb_fruit <= 0) return;
+    in_tree->nb_fruit--;
+    energy += FRUIT_ENERGY;
 
 }
 

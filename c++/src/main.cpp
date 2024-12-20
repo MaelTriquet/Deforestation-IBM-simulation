@@ -5,8 +5,8 @@
 int main() {
 
     // Create window
-    constexpr int32_t window_width  = 800;
-    constexpr int32_t window_height = 800;
+    constexpr int32_t window_width  = 1500;
+    constexpr int32_t window_height = 1000;
 
     sf::ContextSettings settings;
     settings.antialiasingLevel = 1;
