@@ -9,13 +9,13 @@ Animal::Animal(sf::Vector2f position_, sf::Vector2f velocity_, int index_) :
 {};
 
 void Animal::considerate_bounds(int window_width, int window_height) {
-    if (position.x < 0) 
+    while (position.x < 0) 
         position.x += window_width;
-    if (position.x >= window_width)
+    while (position.x >= window_width)
         position.x -= window_width;
-    if (position.y < 0)
+    while (position.y < 0)
         position.y += window_height;
-    if (position.y >= window_height)
+    while (position.y >= window_height)
         position.y -= window_height;
 }
 
@@ -27,10 +27,6 @@ void Animal::move(int window_width, int window_height) {
     position += velocity;
     energy -= max_vel_percent * max_vel_percent - .05;
     considerate_bounds(window_width, window_height);
-};
-
-void Animal::reproduce(Animal* animal) {
-    
 };
 
 void Animal::die() {
@@ -55,4 +51,5 @@ void Animal::update() {
     if (is_dead)
         rotting--;
     is_in_tree = false;
+    reproduction_timeout--;
 }

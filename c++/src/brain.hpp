@@ -1,6 +1,7 @@
+#pragma once
 #include <vector>
-#include "animal.hpp"
 #include "neuron.hpp"
+#include "vision.hpp"
 
 class Brain {
 public:
