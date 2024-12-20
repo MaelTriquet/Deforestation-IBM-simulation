@@ -3,8 +3,8 @@
 #include "vision.hpp"
 #include "neuron.hpp"
 #include "random.hpp"
+#include "const.hpp"
 
-#define MUT_RATE .03
 struct Vision;
 class Brain {
 public:

@@ -1,9 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "animal.hpp"
-
-#define MAX_VELOCITY_PREDATOR 6
-#define MAX_RAY_ANGLE_PREDATOR M_PI
+#include "const.hpp"
 
 class Predator : public Animal {
 public:

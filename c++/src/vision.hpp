@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <cstring>
-#define NB_RAY 5
+#include "const.hpp"
 
 struct Vision {
     float energy;
