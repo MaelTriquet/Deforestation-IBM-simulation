@@ -3,7 +3,7 @@ env_pfe
 
 # specific files
 __pycache__
-c++/build/
+build
 
 # unused files
 .vscode
