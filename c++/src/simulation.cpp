@@ -96,7 +96,7 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
     // animal_1 = animal_2 = predator or animal_1 = animal_2 = prey
     if (animal_1->reproduction_timeout <= 0 && animal_2->reproduction_timeout <= 0 && !animal_1->is_dead && !animal_2->is_dead) {
         if (animal_1->is_pred && (m_pop.size() < MAX_POP || (is_prey_dominating && m_pop.size() < MAX_POP * 1.5))) {
-            int nb_child = Random::randint(1, 3);
+            int nb_child = Random::randint(1, 4);
             for (int i = 0; i < nb_child; i++) {
                 Predator* child = ((Predator*)animal_1)->reproduce((Predator*)animal_2, id++);
                 m_pop.push_back(child);

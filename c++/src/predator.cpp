@@ -44,6 +44,7 @@ Predator::Predator(Predator* parent_1_, Predator* parent_2_, int id_) :
 
 void Predator::eat(Animal* prey) {
     energy += PRED_GAIN_ENERGY_EATING;
+    reproduction_timeout = 0;
     // sets the prey rotting to 0 to remove it from m_pop next check
     prey->rotting = 0;
 }

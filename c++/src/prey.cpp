@@ -35,7 +35,8 @@ Prey::Prey(Prey* parent_1_, Prey* parent_2_, int id_) :
 void Prey::eat() {
     if (in_tree->nb_fruit <= 0) return;
     in_tree->nb_fruit--;
-    energy += FRUIT_ENERGY;    
+    energy += FRUIT_ENERGY;   
+    reproduction_timeout = 0;
 }
 
 Prey* Prey::reproduce(Prey* parent, int id) {
