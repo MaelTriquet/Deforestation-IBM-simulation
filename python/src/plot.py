@@ -41,8 +41,8 @@ def plot_pop_sum(preys_list, predators_list, save_path="../../data/graphics/temp
     ax.plot(frames_list, total_pop, "k-", linewidth=2, label="Population totale")
 
     # fill the areas (proportionally)
-    ax.fill_between(frames_list, 0, preys_list, color="red", alpha=0.6, label="Proies")
-    ax.fill_between(frames_list, preys_list, total_pop, color="blue", alpha=0.6, label="Prédateurs")
+    ax.fill_between(frames_list, 0, preys_list, color="blue", alpha=0.6, label="Proies")
+    ax.fill_between(frames_list, preys_list, total_pop, color="red", alpha=0.6, label="Prédateurs")
 
     # displaying settings
     ax.set_xlabel("Frame")
@@ -91,3 +91,7 @@ if __name__ == "__main__" :
     # plot the curves
     plot_pop(preys_list, predators_list, save_path=save_path_1)
     plot_pop_sum(preys_list, predators_list, save_path=save_path_2)
+
+    # to do : 
+    # - supprimer les zeros
+    # - agrandir les titres / légendes etc
