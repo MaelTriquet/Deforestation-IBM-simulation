@@ -9,3 +9,5 @@ build
 
 # configuration files
 .vscode
+
+c++/libtorch
