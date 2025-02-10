@@ -17,7 +17,7 @@
 #define INITIAL_ENERGY 1000
 #define MAX_ENERGY 2000
 #define MUTATION_RATE .08
-#define NB_RAY 10
+#define NB_RAY 7
 #define RAY_LENGTH 120
 #define ROT_TIME 40
 #define LOST_ENERGY_REPRODUCTION 0
