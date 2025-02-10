@@ -2,8 +2,8 @@
 #include <cmath>
 
 // simulation
-#define MAX_POP 200
-#define PRED_START MAX_POP * .05f
+#define MAX_POP 400
+#define PRED_START MAX_POP * .2f
 #define PREY_START MAX_POP - PRED_START
 #define TREE_START 200
 
@@ -23,11 +23,11 @@
 #define REPRODUCTION_TIMEOUT 100
 
 // predators
-#define PRED_GAIN_ENERGY_EATING 1000
+#define PRED_GAIN_ENERGY_EATING 2000
 #define PRED_LOST_ENERGY_FIGHT 0
 #define PRED_MAX_VELOCITY 8
 #define PRED_MAX_RAY_ANGLE M_PI_2
-#define PRED_PERCENT_DAMAGE 1.f
+#define PRED_PERCENT_DAMAGE .1f
 
 // preys
 #define INVISIBILITY_TIME 30

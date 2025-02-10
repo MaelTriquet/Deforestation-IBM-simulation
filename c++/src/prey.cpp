@@ -18,20 +18,17 @@ Prey::Prey(Prey* parent_1_, Prey* parent_2_, int id_) :
     is_pred = false;
     is_prey = true;
     max_velocity = PREY_MAX_VELOCITY;
-    energy = parent_1_->energy + parent_2_->energy;
-    energy /= 2;
-    if (energy > INITIAL_ENERGY)
-        energy = INITIAL_ENERGY;
+    // energy = parent_1_->energy + parent_2_->energy;
+    // energy /= 2;
+    // if (energy > INITIAL_ENERGY)
+    //     energy = INITIAL_ENERGY;
+    brain.delete_content();
+    if (Random::rand() < .5)
+        brain = Brain(parent_1_->brain);
+    else
+        brain = Brain(parent_2_->brain);
+    brain.mutate();
 
-    for (int i = 0; i < brain.neurons.size(); i++) {
-        for (int j = 0; j < brain.neurons[i].weights.size(); j++) {
-            if (Random::rand() < 0.5) {
-                brain.neurons[i].weights[j] = parent_1_->brain.neurons[i].weights[j];
-            } else {
-                brain.neurons[i].weights[j] = parent_2_->brain.neurons[i].weights[j];
-            }
-        }
-    }
 };
 
 

@@ -4,8 +4,11 @@ Animal::Animal(sf::Vector2f position_, int index_) :
     position(position_),
     is_dead(false),
     index{index_},
-    brain{4 + NB_RAY * 3, 3, 2, 10}
-{};
+    brain{4 + NB_RAY * 3, 3}
+{
+    for (int i = 0; i < 5; i++)
+        brain.mutate();
+};
 
 //keeps all animals within the window, using a tore-like world modelisation
 void Animal::considerate_bounds(int window_width, int window_height) {
@@ -32,7 +35,7 @@ void Animal::move(int window_width, int window_height) {
     if (is_prey)
         energy -= decision[2] * decision[2];
     else
-        energy -= decision[2] * decision[2] * max_velocity * max_velocity * max_velocity/4-.03;
+        energy -= decision[2] * decision[2] * max_velocity + 6;
     considerate_bounds(window_width, window_height);
 };
 
