@@ -38,7 +38,8 @@ Predator::Predator(Predator* parent_1_, Predator* parent_2_, int id_) :
     else
         brain = Brain(parent_2_->brain);
 
-    brain.mutate();
+    for (int i = 0; i < 5; i++)
+        brain.mutate();
 };
 
 void Predator::eat(Animal* prey) {

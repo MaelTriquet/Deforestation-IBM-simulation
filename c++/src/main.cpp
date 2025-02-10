@@ -29,8 +29,8 @@ int main() {
         }
 
         // update and show each frame
-        for (int i = 0; i < 4; i++)
-        simulation.update();
+        for (int i = 0; i < 1; i++)
+            simulation.update();
         window.clear(sf::Color::Black);
         renderer.render(simulation);
 		window.display();

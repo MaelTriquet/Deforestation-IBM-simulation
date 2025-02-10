@@ -6,8 +6,7 @@ Animal::Animal(sf::Vector2f position_, int index_) :
     index{index_},
     brain{4 + NB_RAY * 3, 2}
 {
-    for (int i = 0; i < 5; i++)
-        brain.mutate();
+    brain.addConn();
 };
 
 //keeps all animals within the window, using a tore-like world modelisation
@@ -27,15 +26,13 @@ void Animal::move(int window_width, int window_height) {
     look();
     brain.think(vision, decision);
     velocity = sf::Vector2f(cos(decision[0]*M_PI_2), sin(decision[0]*M_PI_2));
-    float vel_mag = std::sqrt(velocity.x * velocity.x + velocity.y*velocity.y);
-    if (vel_mag > 0)
-        velocity *= decision[1] * max_velocity / vel_mag;
+    velocity *= decision[1] * max_velocity;
     position += velocity;
     // energy -= decision[2] * decision[2] * max_velocity /(float)PREY_MAX_VELOCITY;
     if (is_prey)
-        energy -= decision[2] * decision[2];
+        energy -= decision[1] * decision[1];
     else
-        energy -= decision[2] * decision[2] * max_velocity + 6;
+        energy -= decision[1] * decision[1] * max_velocity + 8;
     considerate_bounds(window_width, window_height);
 };
 
@@ -46,9 +43,9 @@ void Animal::die() {
 // fills the vision parts that don't depend on other animals
 // ray vision handled in Simulation::fill_ray_visions
 void Animal::look() {
-    vision.energy = energy;
+    vision.energy = (float)energy / (float)MAX_ENERGY;
     vision.fleeing = fleeing;
-    vision.velocity = velocity;
+    vision.velocity = velocity / max_velocity;
 }
 
 // updates all naturally decrementing attributes and check death
@@ -63,6 +60,8 @@ void Animal::update() {
         invisible--;
     if (is_dead)
         rotting--;
+    if (is_dead && is_pred)
+        rotting = -1000;
     is_in_tree = false;
     reproduction_timeout--;
 }
