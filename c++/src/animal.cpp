@@ -4,7 +4,7 @@ Animal::Animal(sf::Vector2f position_, int index_) :
     position(position_),
     is_dead(false),
     index{index_},
-    brain{4 + NB_RAY * 3, 3}
+    brain{4 + NB_RAY * 3, 2}
 {
     for (int i = 0; i < 5; i++)
         brain.mutate();
@@ -26,10 +26,10 @@ void Animal::considerate_bounds(int window_width, int window_height) {
 void Animal::move(int window_width, int window_height) {
     look();
     brain.think(vision, decision);
-    velocity = sf::Vector2f(decision[0], decision[1]);
+    velocity = sf::Vector2f(cos(decision[0]*M_PI_2), sin(decision[0]*M_PI_2));
     float vel_mag = std::sqrt(velocity.x * velocity.x + velocity.y*velocity.y);
     if (vel_mag > 0)
-        velocity *= decision[2] * max_velocity / vel_mag;
+        velocity *= decision[1] * max_velocity / vel_mag;
     position += velocity;
     // energy -= decision[2] * decision[2] * max_velocity /(float)PREY_MAX_VELOCITY;
     if (is_prey)
