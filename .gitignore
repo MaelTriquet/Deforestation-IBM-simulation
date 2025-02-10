@@ -6,7 +6,6 @@ __pycache__
 
 # compilation
 build
-CMakeLists.txt
 
 # configuration files
 .vscode
