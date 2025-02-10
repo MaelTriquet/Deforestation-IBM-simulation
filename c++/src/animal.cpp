@@ -31,11 +31,10 @@ void Animal::move(int window_width, int window_height) {
     if (vel_mag > 0)
         velocity *= decision[1] * max_velocity / vel_mag;
     position += velocity;
-    // energy -= decision[2] * decision[2] * max_velocity /(float)PREY_MAX_VELOCITY;
     if (is_prey)
-        energy -= decision[2] * decision[2];
+        energy -= decision[1] * decision[1];
     else
-        energy -= decision[2] * decision[2] * max_velocity + 6;
+        energy -= decision[1] * decision[1] * max_velocity + 6;
     considerate_bounds(window_width, window_height);
 };
 
@@ -63,6 +62,8 @@ void Animal::update() {
         invisible--;
     if (is_dead)
         rotting--;
+    if (is_dead && is_pred)
+        rotting = -1000;
     is_in_tree = false;
     reproduction_timeout--;
 }

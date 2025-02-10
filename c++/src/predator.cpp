@@ -48,7 +48,7 @@ void Predator::eat(Animal* prey) {
 }
 
 void Predator::fight(Animal* prey) {
-    float a = (float)prey->energy * PRED_PERCENT_DAMAGE; 
+    float a = (float)prey->energy * PRED_PERCENT_DAMAGE;
     prey->energy -= PREY_LOST_ENERGY_FIGHT > a ? PREY_LOST_ENERGY_FIGHT : a;
 }
 
