@@ -1,3 +1,0 @@
-/home/mael/Documents/PFE/PFE/Deforestation-IBM-simulation/c++/build/CMakeFiles/MySFMLProject.dir
-/home/mael/Documents/PFE/PFE/Deforestation-IBM-simulation/c++/build/CMakeFiles/edit_cache.dir
-/home/mael/Documents/PFE/PFE/Deforestation-IBM-simulation/c++/build/CMakeFiles/rebuild_cache.dir
