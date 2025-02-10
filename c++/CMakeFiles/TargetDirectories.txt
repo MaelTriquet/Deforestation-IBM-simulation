@@ -1,3 +1,0 @@
-/home/hugo/cours/ing3/pfe/c++/CMakeFiles/MySFMLProject.dir
-/home/hugo/cours/ing3/pfe/c++/CMakeFiles/edit_cache.dir
-/home/hugo/cours/ing3/pfe/c++/CMakeFiles/rebuild_cache.dir
