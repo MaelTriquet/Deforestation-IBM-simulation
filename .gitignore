@@ -1,9 +1,12 @@
 # virtual environments
 env_pfe
 
-# specific files
+# cache
 __pycache__
-build
 
-# unused files
+# compilation
+build
+CMakeLists.txt
+
+# configuration files
 .vscode

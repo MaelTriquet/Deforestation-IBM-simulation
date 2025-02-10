@@ -1,18 +1,21 @@
 #pragma once
 #include <vector>
 #include <cmath>
+#include "gene.hpp"
 
+struct Gene;
 class Neuron {
 public:
-
-    std::vector<Neuron*> next_layer; // neurons this is connected to
-    std::vector<float> weights; // weights associated
+    std::vector<Gene*> outgoing_conns; // neurons this is connected to
     float value = 0; // value holder for feedForward
     bool bias;
+    int layer;
+    int idx;
 
-    Neuron(bool bias);
+    Neuron(bool bias, int layer_, int idx);
 
     void feedForward(bool input);
-    void add_neuron(Neuron* neuron, float weight);
     float sigmoid(float x);
+
+    bool connected(Neuron* to);
 };

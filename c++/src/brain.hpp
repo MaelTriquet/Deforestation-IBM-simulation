@@ -8,13 +8,27 @@
 struct Vision;
 class Brain {
 public:
-    std::vector<Neuron> neurons;
+    std::vector<Neuron*> neurons;
+    std::vector<Neuron*> organised_neurons;
+    
+    std::vector<Gene*> genes;
 
-    int inputs, outputs;
+    void delete_content();
 
-    Brain(int inputs_, int outputs_, int nb_hidden_layer, int nb_neuron_per_layer);
+    int inputs, outputs, layers, last_neuron_idx;
+
+    Brain(int inputs_, int outputs_);
+    Brain(const Brain& to_copy);
 
     void think(const Vision& vision, float* decision);
 
     void mutate();
+
+    void addConn();
+
+    void addNeuron();
+
+    void organiseNeurons();
+
+    void show() const;
 };

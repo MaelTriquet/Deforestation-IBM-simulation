@@ -49,10 +49,24 @@ void Simulation::update() {
             continue;
         }
         if (m_pop[i]->rotting > 0) continue;
-
-        delete m_pop[i]; // free
+        m_pop[i]->brain.delete_content();
+        delete m_pop[i];
         m_pop.erase(m_pop.begin() + i);
     }
+
+    is_prey_dominating = nb_pred < nb_prey;
+
+    // if (nb_prey == 0)
+    // for (int i = 0; i < 10; i++) {
+    //     Prey* prey = new Prey(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, id++);
+    //     m_pop.push_back(prey);
+    // }
+    // if (nb_pred == 0)
+    // for (int i = 0; i < 10; i++) {
+    //     Predator* pred = new Predator(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, id++);
+    //     m_pop.push_back(pred);
+    // }
+
     std::cout << "Prédateurs : " << nb_pred / m_pop.size() * 100 << "%, ";
     std::cout << "Proies : " << nb_prey / m_pop.size() * 100 << "%, " << "Population : " << m_pop.size() << std::endl;
 
@@ -80,14 +94,14 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
     }
 
     // animal_1 = animal_2 = predator or animal_1 = animal_2 = prey
-    if (animal_1->reproduction_timeout <= 0 && animal_2->reproduction_timeout <= 0 && m_pop.size() < MAX_POP && !animal_1->is_dead && !animal_2->is_dead) {
-        if (animal_1->is_pred) {
-            int nb_child = Random::randint(1, 3);
+    if (animal_1->reproduction_timeout <= 0 && animal_2->reproduction_timeout <= 0 && !animal_1->is_dead && !animal_2->is_dead) {
+        if (animal_1->is_pred && (m_pop.size() < MAX_POP || (is_prey_dominating && m_pop.size() < MAX_POP * 1.5))) {
+            int nb_child = Random::randint(1, 4);
             for (int i = 0; i < nb_child; i++) {
                 Predator* child = ((Predator*)animal_1)->reproduce((Predator*)animal_2, id++);
                 m_pop.push_back(child);
             }
-        } else if (animal_2->is_prey) {
+        } else if (animal_2->is_prey && (m_pop.size() < MAX_POP || (!is_prey_dominating && m_pop.size() < MAX_POP * 1.5))) {
             int nb_child = Random::randint(2, 7);
             for (int i = 0; i < nb_child; i++) {
                 Prey* child = ((Prey*)animal_1)->reproduce((Prey*)animal_2, id++);

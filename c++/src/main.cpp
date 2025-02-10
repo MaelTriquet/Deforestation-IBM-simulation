@@ -29,10 +29,14 @@ int main() {
         }
 
         // update and show each frame
-        simulation.update();
+        for (int i = 0; i < 1; i++)
+            simulation.update();
         window.clear(sf::Color::Black);
         renderer.render(simulation);
 		window.display();
     }
 
+    for (int i = 0; i < simulation.m_pop.size(); i++) {
+        simulation.m_pop[i]->brain.delete_content();
+    }
 }

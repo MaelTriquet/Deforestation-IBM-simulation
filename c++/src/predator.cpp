@@ -18,32 +18,39 @@ Predator::Predator(Predator* parent_1_, Predator* parent_2_, int id_) :
     is_pred = true;
     is_prey = false;
     max_velocity = PRED_MAX_VELOCITY;
-    energy = parent_1_->energy + parent_2_->energy;
-    energy /= 2;
-    if (energy > INITIAL_ENERGY)
-        energy = INITIAL_ENERGY;
+    // energy = parent_1_->energy + parent_2_->energy;
+    // energy /= 2;
+    // if (energy > INITIAL_ENERGY)
+    //     energy = INITIAL_ENERGY;
 
-    for (int i = 0; i < brain.neurons.size(); i++) {
-        for (int j = 0; j < brain.neurons[i].weights.size(); j++) {
-            if (Random::rand() < 0.5) {
-                brain.neurons[i].weights[j] = parent_1_->brain.neurons[i].weights[j];
-            } else {
-                brain.neurons[i].weights[j] = parent_2_->brain.neurons[i].weights[j];
-            }
-        }
-    }
+    // for (int i = 0; i < brain.neurons.size(); i++) {
+    //     for (int j = 0; j < brain.neurons[i].weights.size(); j++) {
+    //         if (Random::rand() < 0.5) {
+    //             brain.neurons[i].weights[j] = parent_1_->brain.neurons[i].weights[j];
+    //         } else {
+    //             brain.neurons[i].weights[j] = parent_2_->brain.neurons[i].weights[j];
+    //         }
+    //     }
+    // }
+    brain.delete_content();
+    if (Random::rand() < .5)
+        brain = Brain(parent_1_->brain);
+    else
+        brain = Brain(parent_2_->brain);
 
-    brain.mutate();
+    for (int i = 0; i < 5; i++)
+        brain.mutate();
 };
 
 void Predator::eat(Animal* prey) {
     energy += PRED_GAIN_ENERGY_EATING;
+    reproduction_timeout = 0;
     // sets the prey rotting to 0 to remove it from m_pop next check
     prey->rotting = 0;
 }
 
 void Predator::fight(Animal* prey) {
-    float a = (float)prey->energy * PRED_PERCENT_DAMAGE; 
+    float a = (float)prey->energy * PRED_PERCENT_DAMAGE;
     prey->energy -= PREY_LOST_ENERGY_FIGHT > a ? PREY_LOST_ENERGY_FIGHT : a;
 }
 

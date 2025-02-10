@@ -31,8 +31,8 @@ public:
     float max_velocity;
     float max_vel_percent = .6; // will dissapear
     Brain brain; // decision maker
-    float decision[3] = {0}; // holds the decision after the thinking process
-    int reproduction_timeout = 0;
+    float decision[2] = {0}; // holds the decision after the thinking process
+    int reproduction_timeout = 1000000;
 
     Animal(sf::Vector2f position_, int index_);
 
