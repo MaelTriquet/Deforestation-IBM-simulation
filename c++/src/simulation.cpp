@@ -74,7 +74,7 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
 
     // animal_1 = predator and animal_2 = prey
     if (animal_1->is_pred && animal_2->is_prey) {
-        if (!animal_1->is_dead && animal_2->is_dead)
+        if (!animal_1->is_dead && animal_2->is_dead && animal_1->energy <= MAX_ENERGY)
             return ((Predator*)animal_1)->eat(animal_2);
         return ((Predator*)animal_1)->fight(animal_2);
     }
@@ -271,9 +271,9 @@ float Simulation::segmentIntersectsCircle(const sf::Vector2f& A, const sf::Vecto
 void Simulation::collide(Tree& t, Animal* a) {
     a->is_in_tree = true;
     if (a->is_prey) {
-        if (a->in_tree == &t) return ((Prey*)a)->eat();
+        if (a->in_tree == &t && a->energy <= MAX_ENERGY) return ((Prey*)a)->eat();
         a->in_tree = &t;
-        ((Prey*)a)->eat();
+        if (a->energy <= MAX_ENERGY) ((Prey*)a)->eat();
     }
     if (a->in_tree == &t) return;
     a->in_tree = &t;

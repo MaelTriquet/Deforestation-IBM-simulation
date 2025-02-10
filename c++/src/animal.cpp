@@ -23,7 +23,7 @@ void Animal::considerate_bounds(int window_width, int window_height) {
 void Animal::move(int window_width, int window_height) {
     look();
     brain.think(vision, decision);
-    velocity = sf::Vector2f(cos(decision[0]), sin(decision[0]));
+    velocity = sf::Vector2f(cos(decision[0]*M_PI_2), sin(decision[0]*M_PI_2));
     float vel_mag = std::sqrt(velocity.x * velocity.x + velocity.y*velocity.y);
     if (vel_mag > 0)
         velocity *= decision[1] * max_velocity / vel_mag;
