@@ -12,10 +12,12 @@ Grid::Grid(int win_width, int win_height, int radius_)
             cells[i * width + j] = Cell(i * width + j);
 }
 
+// cells present on heap, must take care of them to prevent memory leakage
 Grid::~Grid() {
     delete[] cells;
 }
 
+// Once animals moved, associate all with their new cell
 void Grid::update_animals(std::vector<Animal*>& pop) const {
     for (int i = 0; i < width * height; i++)
         cells[i].animals.clear();
@@ -27,6 +29,7 @@ void Grid::update_animals(std::vector<Animal*>& pop) const {
     }
 }
 
+// trees don't move, only associate once
 void Grid::init_trees(std::vector<Tree>& trees) const {
     int i, j;
     for (Tree& t : trees) {
@@ -36,6 +39,7 @@ void Grid::init_trees(std::vector<Tree>& trees) const {
     }
 }
 
+// retrieves the cell that potentially collide with cell of index index
 std::unique_ptr<std::vector<Cell*>> Grid::get_neighbours(int index) {
     std::unique_ptr<std::vector<Cell*>> res = std::make_unique<std::vector<Cell*>>();
     res->push_back(cells + index);

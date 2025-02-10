@@ -7,7 +7,7 @@
 
 struct Cell
 {
-    std::vector<Animal*> animals;
+    std::vector<Animal*> animals{20};
     std::vector<Tree*> trees;
     int index;
 
@@ -18,14 +18,16 @@ struct Cell
     Cell() = default;
 };
 
-
+// Used for optimisation purposes, makes collision detection from O(n²) to O(m²) where m is the number of neighbouring agents
 class Grid {
 public:
     Cell* cells;
-    int radius;
+    int radius; 
     int width;
     int height;
 
+    // creates a grid with the right dimensions
+    // radius must be set to the max distance between 2 objects for a collision to happen
     Grid(int win_width, int win_height, int radius_);
     ~Grid();
 

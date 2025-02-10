@@ -1,6 +1,8 @@
+#pragma once
 #include <random>
 #include <cmath>
 
+// static class to facilitate random gen
 class Random {
 private:
     static std::random_device rd;
