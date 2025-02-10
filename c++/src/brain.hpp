@@ -29,4 +29,6 @@ public:
     void addNeuron();
 
     void organiseNeurons();
+
+    void show() const;
 };

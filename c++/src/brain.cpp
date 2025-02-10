@@ -1,5 +1,5 @@
 #include "brain.hpp"
-
+#include <iostream>
 
 // creates a random brain
 Brain::Brain(int inputs_, int outputs_) :
@@ -14,8 +14,12 @@ Brain::Brain(int inputs_, int outputs_) :
         neurons.push_back(new Neuron(false, 0, last_neuron_idx++));
     neurons.push_back(new Neuron(true, 0, last_neuron_idx++));
 
-    for (int j = 0; j < outputs; j++)
+    for (int j = 0; j < outputs; j++) {
         neurons.push_back(new Neuron(false, 1, last_neuron_idx++));
+        Gene* bias_conn = new Gene(neurons[inputs], neurons[last_neuron_idx-1], Random::rand() * 2 - 1);
+        genes.push_back(bias_conn);
+        neurons[inputs]->outgoing_conns.push_back(bias_conn);
+    }
    organiseNeurons();
 }
 
@@ -53,7 +57,7 @@ void Brain::think(const Vision& vision, float* decision) {
 
     organiseNeurons();
     // feedForward
-    for (int i = 0; i < organised_neurons.size(); i++)
+    for (int i = 0; i < organised_neurons.size() - outputs; i++)
         organised_neurons[i]->feedForward(i < inputs);
 
     // retrieve output
@@ -63,7 +67,7 @@ void Brain::think(const Vision& vision, float* decision) {
 
 // set each weight to a random one with the prob MUTATION_RATE
 void Brain::mutate() {
-    if (Random::rand() < 1) {// prob mutate weight
+    if (Random::rand() < .8) {// prob mutate weight
         int idx = Random::randint(genes.size());
         if (idx < genes.size())
             genes[idx]->weight = Random::rand() * 2 - 1;
@@ -71,10 +75,10 @@ void Brain::mutate() {
             addConn();
     }
 
-    if (Random::rand() < .5) // prob add connection
+    if (Random::rand() < .35) // prob add connection
         addConn();
 
-    if (Random::rand() < .5) // prob add neuron
+    if (Random::rand() < .07) // prob add neuron
         addNeuron();
 }
 
@@ -168,5 +172,15 @@ void Brain::delete_content() {
     
     for (int i = neurons.size()-1; i > -1; i--) {
         delete neurons[i];
+    }
+}
+
+void Brain::show() const {
+    for (Neuron* n : organised_neurons) {
+        std::cout << "Layer : " << n->layer << ", idx : " << n->idx << ", connected to :\n";
+        for (Gene* g : n->outgoing_conns) {
+            std::cout << g->to->idx << " ";
+        }
+        std::cout << "\n\n";
     }
 }
