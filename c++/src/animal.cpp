@@ -32,7 +32,7 @@ void Animal::move(int window_width, int window_height) {
     if (is_prey)
         energy -= decision[1] * decision[1];
     else
-        energy -= decision[1] * decision[1] * max_velocity + 10;
+        energy -= decision[1] * decision[1] * max_velocity + 2;
     considerate_bounds(window_width, window_height);
 };
 
