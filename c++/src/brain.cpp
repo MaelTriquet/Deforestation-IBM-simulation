@@ -11,34 +11,120 @@ Brain::Brain(int inputs_, int outputs_) :
     // create necessary neurons
 
     for (int i = 0; i < inputs; i++)
-        neurons.push_back(new Neuron(false, 0, last_neuron_idx++));
-    neurons.push_back(new Neuron(true, 0, last_neuron_idx++));
+        neurons.push_back(new Neuron(false, 0, last_neuron_idx++, i));
+    neurons.push_back(new Neuron(true, 0, last_neuron_idx++, inputs));
 
     for (int j = 0; j < outputs; j++) {
-        neurons.push_back(new Neuron(false, 1, last_neuron_idx++));
-        Gene* bias_conn = new Gene(neurons[inputs], neurons[last_neuron_idx-1], Random::rand() * 2 - 1);
+        neurons.push_back(new Neuron(false, 1, last_neuron_idx++, inputs + 1 + j));
+        Gene* bias_conn = new Gene(neurons[inputs], neurons[last_neuron_idx-1], Random::rand() * 2 - 1, true, innovationHistory::getInnoGene(neurons[inputs]->innovation, neurons[last_neuron_idx-1]->innovation));
         genes.push_back(bias_conn);
         neurons[inputs]->outgoing_conns.push_back(bias_conn);
     }
    organiseNeurons();
 }
 
-Brain::Brain(const Brain& to_copy) :
-    layers{to_copy.layers},
-    last_neuron_idx{to_copy.last_neuron_idx},
-    inputs{to_copy.inputs},
-    outputs{to_copy.outputs}
+Brain::Brain(const Brain& parent1, const Brain& parent2) :
+    inputs{parent1.inputs},
+    outputs{parent1.outputs},
+    layers{0},
+    last_neuron_idx{0}
 {
-    for (int i = 0; i < to_copy.neurons.size(); i++)
-        neurons.push_back(new Neuron(to_copy.neurons[i]->bias, to_copy.neurons[i]->layer, to_copy.neurons[i]->idx));
+    for (int i = 0; i < parent1.neurons.size(); i++)
+        neurons.push_back(new Neuron(parent1.neurons[i]->bias, -1, neurons.size(), parent1.neurons[i]->innovation));
 
-    for (int i = 0; i < to_copy.genes.size(); i++) {
-        genes.push_back(new Gene(neurons[to_copy.genes[i]->from->idx], neurons[to_copy.genes[i]->to->idx], to_copy.genes[i]->weight));
-        genes[genes.size()-1]->from->outgoing_conns.push_back(genes[genes.size()-1]);
+    for (int i = 0; i < parent2.neurons.size(); i++) {
+        bool add = true;
+        for (int j = 0; j < parent1.neurons.size(); j++)
+            if (parent1.neurons[j]->innovation == parent2.neurons[i]->innovation)
+                add = false;
+        if (!add)
+            continue;
+        neurons.push_back(new Neuron(parent2.neurons[i]->bias, -1, neurons.size(), parent2.neurons[i]->innovation));
     }
+    last_neuron_idx = neurons.size()-1;
+
+    // all neurons added, now onto the connections
+
+    for (int i = 0; i < parent1.genes.size(); i++) {
+        bool setEnabled = true;
+        bool added = false;
+        Neuron* n1 = find_neuron_from_inno(parent1.genes[i]->from->innovation);
+        Neuron* n2 = find_neuron_from_inno(parent1.genes[i]->to->innovation);
+        for (int j = 0; j < parent2.genes.size() && !added; j++) {
+            if (parent1.genes[i]->innovation == parent2.genes[j]->innovation) { // if both have it
+                if ((!parent1.genes[i]->enabled || !parent2.genes[j]->enabled) && Random::rand() < .75)
+                    setEnabled = false;
+                if (Random::rand() > .5) {
+                    genes.push_back(new Gene(n1, n2, parent1.genes[i]->weight, setEnabled, parent1.genes[i]->innovation));
+                } else {
+                    genes.push_back(new Gene(n1, n2, parent2.genes[j]->weight, setEnabled, parent2.genes[j]->innovation));
+                }
+                n1->outgoing_conns.push_back(genes[genes.size()-1]);
+                added = true;
+            }
+        }
+        if (added) continue;
+
+        // disjoint or excess
+        genes.push_back(new Gene(n1, n2, parent1.genes[i]->weight, setEnabled, parent1.genes[i]->innovation));
+        n1->outgoing_conns.push_back(genes[genes.size()-1]);
+    }
+
+    for (int i = 0; i < parent2.genes.size(); i++) {
+        bool setEnabled = true;
+        bool added = false;
+        for (int j = 0; j < parent1.genes.size(); j++) {
+            if (parent2.genes[i]->innovation == parent1.genes[j]->innovation) { // if both have it
+                added = true;
+                break;
+            }
+        }
+        if (added) continue;
+        Neuron* n1 = find_neuron_from_inno(parent2.genes[i]->from->innovation);
+        Neuron* n2 = find_neuron_from_inno(parent2.genes[i]->to->innovation);
+        genes.push_back(new Gene(n1, n2, parent2.genes[i]->weight, setEnabled, parent2.genes[i]->innovation));
+        n1->outgoing_conns.push_back(genes[genes.size()-1]);
+    }
+
+    layers = organiseLayers();
     organiseNeurons();
+    show();
 }
 
+Neuron* Brain::find_neuron_from_inno(int inno) {
+    for (Neuron* n : neurons)
+        if (n->innovation == inno)  
+            return n;
+    return 0x0;
+}
+
+
+int Brain::organiseLayers() {
+    for (int i = 0; i < inputs+1; i++) {
+        neurons[i]->layer = 0;
+    }
+
+    bool again = true;
+    int l = -1;
+
+
+    while (again) {
+        l++;
+        again = false;
+        for (Neuron* n : neurons) {
+            if (n->layer == l)
+                for (Gene* g : n->outgoing_conns) {
+                    again = true;
+                    g->to->layer = l+1;
+                }
+        }
+    }
+
+    for (int i = inputs+1; i < inputs+1+outputs; i++)
+        neurons[i]->layer = l;
+
+    return l+1;
+}
 
 // fills decision with the outcome of the feedForward from the given inputs
 void Brain::think(const Vision& vision, float* decision) {
@@ -83,7 +169,7 @@ void Brain::mutate() {
 }
 
 void Brain::addConn() {
-    // if fully connected, add a neuron 
+    // if fully connected, add a neuron
     // count max conn | REQUIRES ORAGNISED_NEURONS UP TO DATE 
     organiseNeurons();
     int max_count = 0;
@@ -109,10 +195,9 @@ void Brain::addConn() {
         n2 = neurons[Random::randint(neurons.size())];
     } while (n1->layer >= n2->layer || n1->connected(n2));
 
-    Gene* new_conn = new Gene(n1, n2, Random::rand() * 2 - 1);
+    Gene* new_conn = new Gene(n1, n2, Random::rand() * 2 - 1, true, innovationHistory::getInnoGene(n1->innovation, n2->innovation));
     genes.push_back(new_conn);
     n1->outgoing_conns.push_back(new_conn);
-
 }
 
 void Brain::addNeuron() {
@@ -120,6 +205,8 @@ void Brain::addNeuron() {
         return addConn();
 
     int gene_idx = Random::randint(genes.size());
+    while (!genes[gene_idx]->enabled)
+        gene_idx = Random::randint(genes.size());
     Gene* to_break = genes[gene_idx];
 
     // update layers if needed
@@ -131,27 +218,17 @@ void Brain::addNeuron() {
     }
     
     //create new neuron
-    Neuron* new_neuron = new Neuron(false, to_break->from->layer+1, last_neuron_idx++);
+    Neuron* new_neuron = new Neuron(false, to_break->from->layer+1, last_neuron_idx++, innovationHistory::getInnoNode(to_break->innovation));
     neurons.push_back(new_neuron);
     //connect new neuron
-    Gene* new_conn1 = new Gene(to_break->from, new_neuron, to_break->weight);
+    Gene* new_conn1 = new Gene(to_break->from, new_neuron, to_break->weight, true, innovationHistory::getInnoGene(to_break->from->innovation, new_neuron->innovation));
     genes.push_back(new_conn1);
 
     to_break->from->outgoing_conns.push_back(new_conn1);
-    Gene* new_conn2 = new Gene(new_neuron, to_break->to, 1);
+    Gene* new_conn2 = new Gene(new_neuron, to_break->to, 1, true, innovationHistory::getInnoGene(new_neuron->innovation, to_break->to->innovation));
     genes.push_back(new_conn2);
     new_neuron->outgoing_conns.push_back(new_conn2);
-
-    // remove this conn from neuron
-    for (int i = 0; i < to_break->from->outgoing_conns.size(); i++)
-        if (to_break->from->outgoing_conns[i] == to_break) {
-            to_break->from->outgoing_conns.erase(to_break->from->outgoing_conns.begin() + i);
-            break;
-        }
-
-    // remove conn from brain
-    genes.erase(genes.begin() + gene_idx);
-    delete to_break;
+    to_break->enabled = false;
 }
 
 void Brain::organiseNeurons() {

@@ -11,7 +11,7 @@ Prey::Prey(sf::Vector2f position_, int index_) :
 };
 
 Prey::Prey(Prey* parent_1_, Prey* parent_2_, int id_) : 
-    Animal(parent_1_->position, id_)
+    Animal(parent_1_->position + sf::Vector2f(Random::rand()*2-1, Random::rand()*2-1), id_)
 {
     color = sf::Color(0, 0, 255);
     max_ray_angle = PREY_MAX_RAY_ANGLE;
@@ -23,10 +23,7 @@ Prey::Prey(Prey* parent_1_, Prey* parent_2_, int id_) :
     // if (energy > INITIAL_ENERGY)
     //     energy = INITIAL_ENERGY;
     brain.delete_content();
-    if (Random::rand() < .5)
-        brain = Brain(parent_1_->brain);
-    else
-        brain = Brain(parent_2_->brain);
+    brain = Brain(parent_1_->brain, parent_2_->brain);
     brain.mutate();
 
 };
@@ -35,8 +32,9 @@ Prey::Prey(Prey* parent_1_, Prey* parent_2_, int id_) :
 void Prey::eat() {
     if (in_tree->nb_fruit <= 0) return;
     in_tree->nb_fruit--;
-    energy += FRUIT_ENERGY;   
-    reproduction_timeout = 0;
+    energy += FRUIT_ENERGY;
+    if (reproduction_timeout > 1000)
+        reproduction_timeout = 25 - (REPRODUCTION_TIMEOUT - reproduction_timeout);
 }
 
 Prey* Prey::reproduce(Prey* parent, int id) {

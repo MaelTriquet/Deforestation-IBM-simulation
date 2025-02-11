@@ -11,7 +11,7 @@ Predator::Predator(sf::Vector2f position_, int index_) :
 };
 
 Predator::Predator(Predator* parent_1_, Predator* parent_2_, int id_) : 
-    Animal(parent_1_->position, id_)
+    Animal(parent_1_->position + sf::Vector2f(Random::rand()*2-1, Random::rand()*2-1), id_)
 {
     color = sf::Color(255, 0, 0);
     max_ray_angle = PRED_MAX_RAY_ANGLE;
@@ -33,18 +33,14 @@ Predator::Predator(Predator* parent_1_, Predator* parent_2_, int id_) :
     //     }
     // }
     brain.delete_content();
-    if (Random::rand() < .5)
-        brain = Brain(parent_1_->brain);
-    else
-        brain = Brain(parent_2_->brain);
-
-    for (int i = 0; i < 5; i++)
-        brain.mutate();
+    brain = Brain(parent_1_->brain, parent_2_->brain);
+    brain.mutate();
 };
 
 void Predator::eat(Animal* prey) {
     energy += PRED_GAIN_ENERGY_EATING;
-    reproduction_timeout = 0;
+    if (reproduction_timeout > 1000)
+        reproduction_timeout = 10 - (REPRODUCTION_TIMEOUT - reproduction_timeout);
     // sets the prey rotting to 0 to remove it from m_pop next check
     prey->rotting = 0;
 }
