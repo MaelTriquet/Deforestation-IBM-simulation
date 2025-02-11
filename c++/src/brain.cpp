@@ -26,22 +26,11 @@ Brain::Brain(int inputs_, int outputs_) :
 Brain::Brain(const Brain& parent1, const Brain& parent2) :
     inputs{parent1.inputs},
     outputs{parent1.outputs},
-    layers{0},
-    last_neuron_idx{0}
+    layers{parent1.layers},
+    last_neuron_idx{parent1.last_neuron_idx}
 {
     for (int i = 0; i < parent1.neurons.size(); i++)
-        neurons.push_back(new Neuron(parent1.neurons[i]->bias, -1, neurons.size(), parent1.neurons[i]->innovation));
-
-    for (int i = 0; i < parent2.neurons.size(); i++) {
-        bool add = true;
-        for (int j = 0; j < parent1.neurons.size(); j++)
-            if (parent1.neurons[j]->innovation == parent2.neurons[i]->innovation)
-                add = false;
-        if (!add)
-            continue;
-        neurons.push_back(new Neuron(parent2.neurons[i]->bias, -1, neurons.size(), parent2.neurons[i]->innovation));
-    }
-    last_neuron_idx = neurons.size()-1;
+        neurons.push_back(new Neuron(parent1.neurons[i]->bias, parent1.neurons[i]->layer, neurons.size(), parent1.neurons[i]->innovation));
 
     // all neurons added, now onto the connections
 
@@ -70,23 +59,6 @@ Brain::Brain(const Brain& parent1, const Brain& parent2) :
         n1->outgoing_conns.push_back(genes[genes.size()-1]);
     }
 
-    for (int i = 0; i < parent2.genes.size(); i++) {
-        bool setEnabled = true;
-        bool added = false;
-        for (int j = 0; j < parent1.genes.size(); j++) {
-            if (parent2.genes[i]->innovation == parent1.genes[j]->innovation) { // if both have it
-                added = true;
-                break;
-            }
-        }
-        if (added) continue;
-        Neuron* n1 = find_neuron_from_inno(parent2.genes[i]->from->innovation);
-        Neuron* n2 = find_neuron_from_inno(parent2.genes[i]->to->innovation);
-        genes.push_back(new Gene(n1, n2, parent2.genes[i]->weight, setEnabled, parent2.genes[i]->innovation));
-        n1->outgoing_conns.push_back(genes[genes.size()-1]);
-    }
-
-    layers = organiseLayers();
     organiseNeurons();
     show();
 }
@@ -96,34 +68,6 @@ Neuron* Brain::find_neuron_from_inno(int inno) {
         if (n->innovation == inno)  
             return n;
     return 0x0;
-}
-
-
-int Brain::organiseLayers() {
-    for (int i = 0; i < inputs+1; i++) {
-        neurons[i]->layer = 0;
-    }
-
-    bool again = true;
-    int l = -1;
-
-
-    while (again) {
-        l++;
-        again = false;
-        for (Neuron* n : neurons) {
-            if (n->layer == l)
-                for (Gene* g : n->outgoing_conns) {
-                    again = true;
-                    g->to->layer = l+1;
-                }
-        }
-    }
-
-    for (int i = inputs+1; i < inputs+1+outputs; i++)
-        neurons[i]->layer = l;
-
-    return l+1;
 }
 
 // fills decision with the outcome of the feedForward from the given inputs
@@ -164,7 +108,7 @@ void Brain::mutate() {
     if (Random::rand() < .35) // prob add connection
         addConn();
 
-    if (Random::rand() < .07) // prob add neuron
+    if (Random::rand() < .2) // prob add neuron
         addNeuron();
 }
 
@@ -218,7 +162,7 @@ void Brain::addNeuron() {
     }
     
     //create new neuron
-    Neuron* new_neuron = new Neuron(false, to_break->from->layer+1, last_neuron_idx++, innovationHistory::getInnoNode(to_break->innovation));
+    Neuron* new_neuron = new Neuron(false, to_break->from->layer+1, last_neuron_idx++, innovationHistory::getInnoNode(to_break->innovation) + inputs + 1 + outputs);
     neurons.push_back(new_neuron);
     //connect new neuron
     Gene* new_conn1 = new Gene(to_break->from, new_neuron, to_break->weight, true, innovationHistory::getInnoGene(to_break->from->innovation, new_neuron->innovation));
@@ -254,9 +198,9 @@ void Brain::delete_content() {
 
 void Brain::show() const {
     for (Neuron* n : organised_neurons) {
-        std::cout << "Layer : " << n->layer << ", idx : " << n->idx << ", connected to :\n";
+        std::cout << "Layer : " << n->layer << ", idx : " << n->innovation << ", connected to :\n";
         for (Gene* g : n->outgoing_conns) {
-            std::cout << g->to->idx << " ";
+            std::cout << g->to->innovation << " ";
         }
         std::cout << "\n\n";
     }

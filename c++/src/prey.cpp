@@ -23,7 +23,10 @@ Prey::Prey(Prey* parent_1_, Prey* parent_2_, int id_) :
     // if (energy > INITIAL_ENERGY)
     //     energy = INITIAL_ENERGY;
     brain.delete_content();
-    brain = Brain(parent_1_->brain, parent_2_->brain);
+    if (Random::rand() < .5)
+        brain = Brain(parent_1_->brain, parent_2_->brain);
+    else 
+        brain = Brain(parent_2_->brain, parent_1_->brain);
     brain.mutate();
 
 };

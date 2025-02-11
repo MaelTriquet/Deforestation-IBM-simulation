@@ -3,7 +3,7 @@
 
 // simulation
 #define MAX_POP 400
-#define PRED_START MAX_POP * .2f
+#define PRED_START MAX_POP * .02f
 #define PREY_START MAX_POP - PRED_START
 #define TREE_START 150
 

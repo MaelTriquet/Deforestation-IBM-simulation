@@ -30,9 +30,9 @@ int main() {
         }
 
         // update and show each frame
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 1; i++) {
             simulation.update();
-            appendCSV("../../res/plot_info.csv", simulation);
+            // appendCSV("../../res/plot_info.csv", simulation);
         }
         window.clear(sf::Color::Black);
         renderer.render(simulation);
