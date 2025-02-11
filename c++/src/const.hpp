@@ -3,18 +3,18 @@
 
 // simulation
 #define MAX_POP 400
-#define PRED_START 50
-#define PREY_START 300
-#define TREE_START 150
+#define PRED_START 100
+#define PREY_START 100
+#define TREE_START 0
 
 // trees
-#define TREES_RADIUS 20
+#define TREES_RADIUS 8
 #define FRUIT_ENERGY 100
 #define FRUIT_TIME 5
 
 // animals
-#define ANIMALS_RADIUS 20
-#define INITIAL_ENERGY 600
+#define ANIMALS_RADIUS 8
+#define INITIAL_ENERGY 600000
 #define MAX_ENERGY 800
 #define MUTATION_RATE .08
 #define NB_RAY 7
@@ -25,14 +25,14 @@
 // predators
 #define PRED_GAIN_ENERGY_EATING 7
 #define PRED_LOST_ENERGY_FIGHT 30
-#define PRED_MAX_VELOCITY 7
+#define PRED_MAX_VELOCITY 3
 #define PRED_MAX_RAY_ANGLE M_PI_2
 #define PRED_PERCENT_DAMAGE .02f
 
 // preys
 #define INVISIBILITY_TIME 1000
 #define PREY_LOST_ENERGY_FIGHT 50
-#define PREY_MAX_VELOCITY 5
+#define PREY_MAX_VELOCITY 3
 #define PREY_MAX_RAY_ANGLE M_PI*2*.8
 #define PREY_DEAD_RESERVE 256
 #define PREY_DEAD_LOST_RESERVE_PER_HIT 10

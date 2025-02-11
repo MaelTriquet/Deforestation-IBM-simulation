@@ -9,7 +9,6 @@ Simulation::Simulation(int window_width_, int window_height_) :
     grid(window_width, window_height, 2*ANIMALS_RADIUS),
     ray_grid(window_width, window_height, ANIMALS_RADIUS + RAY_LENGTH)
 {
-
     for (int i = 0; i < PREY_START; i++) {
         Prey* prey = new Prey(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, id++);
         m_pop.push_back(prey);
@@ -72,15 +71,28 @@ void Simulation::update() {
 
     // update grid cells content
     grid.update_animals(m_pop);
+    detect_collisions();
+    for (int i = 0; i < m_pop.size(); i++) {
+        m_pop[i]->considerate_bounds(window_width, window_height);
+    }
     ray_grid.update_animals(m_pop);
 
     // check for events
-    detect_collisions();
     fill_ray_visions();
 }
 
 // handles Animal/Animal collision (fight, eat or reproduce)
 void Simulation::collide(Animal* animal_1, Animal* animal_2) {
+
+    // collision : the animals bounce together
+    sf::Vector2f vect_between_centers = (animal_1->position - animal_2->position);
+    float norm_vect = std::sqrt(vect_between_centers.x*vect_between_centers.x + vect_between_centers.y*vect_between_centers.y);
+    float distance_bounce = (animal_1->radius + animal_2->radius - norm_vect);
+    if (distance_bounce > 0) {
+        sf::Vector2f vect_normalised = vect_between_centers * (1.f / norm_vect);
+        animal_1->bounce(window_width, window_height, vect_normalised*distance_bounce);
+        animal_2->bounce(window_width, window_height, -vect_normalised*distance_bounce);
+    }
 
     // animal_1 = prey and animal_2 = predator
     if (animal_1->is_prey && animal_2->is_pred)

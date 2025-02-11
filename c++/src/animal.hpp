@@ -38,6 +38,7 @@ public:
     void considerate_bounds(int window_width, int window_height);
 
     void move(int window_width, int window_height);
+    void bounce(int window_width, int window_height, sf::Vector2f direction);
     void die();
     void look();
     void update();

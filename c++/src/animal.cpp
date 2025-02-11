@@ -35,6 +35,11 @@ void Animal::move(int window_width, int window_height) {
     considerate_bounds(window_width, window_height);
 };
 
+// bounce (when the animals are colliding together)
+void Animal::bounce(int window_width, int window_height, sf::Vector2f direction) {
+    position += direction;
+}
+
 void Animal::die() {
     is_dead = (energy <= 0);
 
