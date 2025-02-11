@@ -11,8 +11,9 @@ public:
     bool bias;
     int layer;
     int idx;
+    int innovation;
 
-    Neuron(bool bias, int layer_, int idx);
+    Neuron(bool bias, int layer_, int idx_, int inno_);
 
     void feedForward(bool input);
     float sigmoid(float x);

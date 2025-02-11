@@ -33,13 +33,8 @@ Predator::Predator(Predator* parent_1_, Predator* parent_2_, int id_) :
     //     }
     // }
     brain.delete_content();
-    if (Random::rand() < .5)
-        brain = Brain(parent_1_->brain);
-    else
-        brain = Brain(parent_2_->brain);
-
-    for (int i = 0; i < 5; i++)
-        brain.mutate();
+    brain = Brain(parent_1_->brain, parent_2_->brain);
+    brain.mutate();
 };
 
 void Predator::eat(Animal* prey) {
