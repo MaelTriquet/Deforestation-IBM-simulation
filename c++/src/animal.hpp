@@ -17,6 +17,7 @@ public:
     sf::Vector2f velocity{0, 0};
     bool is_dead;
     sf::Color color;
+    int rotting;
     int fleeing = 0; // fright-meter, set high when spotting an ennemy
     Vision vision; // brain input
     float max_ray_angle; // side vision
