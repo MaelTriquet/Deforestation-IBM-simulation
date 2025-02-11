@@ -11,7 +11,7 @@ Predator::Predator(sf::Vector2f position_, int index_) :
 };
 
 Predator::Predator(Predator* parent_1_, Predator* parent_2_, int id_) : 
-    Animal(parent_1_->position, id_)
+    Animal(parent_1_->position + sf::Vector2f(Random::rand()*2-1, Random::rand()*2-1), id_)
 {
     color = sf::Color(255, 0, 0);
     max_ray_angle = PRED_MAX_RAY_ANGLE;
