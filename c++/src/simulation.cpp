@@ -9,6 +9,7 @@ Simulation::Simulation(int window_width_, int window_height_) :
     grid(window_width, window_height, 2*ANIMALS_RADIUS),
     ray_grid(window_width, window_height, ANIMALS_RADIUS + RAY_LENGTH)
 {
+
     for (int i = 0; i < PREY_START; i++) {
         Prey* prey = new Prey(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, id++);
         m_pop.push_back(prey);
@@ -47,7 +48,7 @@ void Simulation::update() {
                 nb_prey++;
             continue;
         }
-        if (((Prey*) m_pop[i])->dead_reserve >= 0) continue;
+        if (m_pop[i]->rotting > 0) continue;
         m_pop[i]->brain.delete_content();
         delete m_pop[i];
         m_pop.erase(m_pop.begin() + i);
@@ -69,15 +70,15 @@ void Simulation::update() {
     std::cout << "Prédateurs : " << nb_pred / m_pop.size() * 100 << "%, ";
     std::cout << "Proies : " << nb_prey / m_pop.size() * 100 << "%, " << "Population : " << m_pop.size() << std::endl;
 
+
+    for (Animal* a : m_pop)
+        a->considerate_bounds(window_width, window_height);
     // update grid cells content
     grid.update_animals(m_pop);
-    detect_collisions();
-    for (int i = 0; i < m_pop.size(); i++) {
-        m_pop[i]->considerate_bounds(window_width, window_height);
-    }
     ray_grid.update_animals(m_pop);
 
     // check for events
+    detect_collisions();
     fill_ray_visions();
 }
 
@@ -88,10 +89,10 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
     sf::Vector2f vect_between_centers = (animal_1->position - animal_2->position);
     float norm_vect = std::sqrt(vect_between_centers.x*vect_between_centers.x + vect_between_centers.y*vect_between_centers.y);
     float distance_bounce = (animal_1->radius + animal_2->radius - norm_vect);
-    if (distance_bounce > 0) {
+    if (distance_bounce > 0 && norm_vect != 0) {
         sf::Vector2f vect_normalised = vect_between_centers * (1.f / norm_vect);
-        animal_1->bounce(window_width, window_height, vect_normalised*distance_bounce);
-        animal_2->bounce(window_width, window_height, -vect_normalised*distance_bounce);
+        animal_1->position += vect_normalised*distance_bounce;
+        animal_2->position -= vect_normalised*distance_bounce;
     }
 
     // animal_1 = prey and animal_2 = predator
@@ -100,7 +101,7 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
 
     // animal_1 = predator and animal_2 = prey
     if (animal_1->is_pred && animal_2->is_prey) {
-        if (!animal_1->is_dead && animal_2->is_dead && animal_1->energy <= MAX_ENERGY)
+        if (animal_2->is_dead && animal_1->energy <= MAX_ENERGY)
             return ((Predator*)animal_1)->eat(animal_2);
         return ((Predator*)animal_1)->fight(animal_2);
     }

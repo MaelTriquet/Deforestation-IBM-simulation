@@ -28,6 +28,7 @@ void Animal::move(int window_width, int window_height) {
     velocity = sf::Vector2f(cos(decision[0]*M_PI_2), sin(decision[0]*M_PI_2));
     velocity *= decision[1] * max_velocity;
     position += velocity;
+    // energy -= decision[2] * decision[2] * max_velocity /(float)PREY_MAX_VELOCITY;
     if (is_prey)
         energy -= decision[1] * decision[1];
     else
@@ -35,14 +36,8 @@ void Animal::move(int window_width, int window_height) {
     considerate_bounds(window_width, window_height);
 };
 
-// bounce (when the animals are colliding together)
-void Animal::bounce(int window_width, int window_height, sf::Vector2f direction) {
-    position += direction;
-}
-
 void Animal::die() {
     is_dead = (energy <= 0);
-
 };
 
 // fills the vision parts that don't depend on other animals
@@ -63,6 +58,8 @@ void Animal::update() {
         invisible = 0;
     else    
         invisible--;
+    if (is_dead && is_pred)
+        rotting = -1000;
     is_in_tree = false;
     reproduction_timeout--;
 }

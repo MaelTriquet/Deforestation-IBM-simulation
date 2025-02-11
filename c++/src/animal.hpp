@@ -26,6 +26,7 @@ public:
     bool is_colliding = false;
     bool is_in_tree = false;
     Tree* in_tree = nullptr; // if is_in_tree = true, this is the pointer to that tree
+    int rotting = ROT_TIME; // how long a corpse stays around after death
     int invisible = 0; // camouflage counter when hiding in a tree successfully
     float max_velocity;
     float max_vel_percent = .6; // will dissapear
@@ -38,7 +39,6 @@ public:
     void considerate_bounds(int window_width, int window_height);
 
     void move(int window_width, int window_height);
-    void bounce(int window_width, int window_height, sf::Vector2f direction);
     void die();
     void look();
     void update();
