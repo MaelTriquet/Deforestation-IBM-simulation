@@ -3,7 +3,7 @@
 
 // simulation
 #define MAX_POP 400
-#define PRED_START MAX_POP * .02f
+#define PRED_START MAX_POP * .2f
 #define PREY_START MAX_POP - PRED_START
 #define TREE_START 150
 
@@ -19,12 +19,12 @@
 #define MUTATION_RATE .08
 #define NB_RAY 10
 #define RAY_LENGTH 120
-#define ROT_TIME 40
+#define ROT_TIME 256
 #define LOST_ENERGY_REPRODUCTION 0
 #define REPRODUCTION_TIMEOUT 1000000
 
 // predators
-#define PRED_GAIN_ENERGY_EATING 300
+#define PRED_GAIN_ENERGY_EATING 40
 #define PRED_LOST_ENERGY_FIGHT 30
 #define PRED_MAX_VELOCITY 7
 #define PRED_MAX_RAY_ANGLE M_PI_2

@@ -45,7 +45,7 @@ void Predator::eat(Animal* prey) {
     if (reproduction_timeout > 1000)
         reproduction_timeout = 10 - (REPRODUCTION_TIMEOUT - reproduction_timeout);
     // sets the prey rotting to 0 to remove it from m_pop next check
-    prey->rotting = 0;
+    prey->rotting -= 60;
 }
 
 void Predator::fight(Animal* prey) {

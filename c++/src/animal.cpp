@@ -58,8 +58,6 @@ void Animal::update() {
         invisible = 0;
     else    
         invisible--;
-    if (is_dead)
-        rotting--;
     if (is_dead && is_pred)
         rotting = -1000;
     is_in_tree = false;

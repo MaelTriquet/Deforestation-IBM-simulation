@@ -70,6 +70,9 @@ void Simulation::update() {
     std::cout << "Prédateurs : " << nb_pred / m_pop.size() * 100 << "%, ";
     std::cout << "Proies : " << nb_prey / m_pop.size() * 100 << "%, " << "Population : " << m_pop.size() << std::endl;
 
+
+    for (Animal* a : m_pop)
+        a->considerate_bounds(window_width, window_height);
     // update grid cells content
     grid.update_animals(m_pop);
     ray_grid.update_animals(m_pop);
@@ -82,13 +85,23 @@ void Simulation::update() {
 // handles Animal/Animal collision (fight, eat or reproduce)
 void Simulation::collide(Animal* animal_1, Animal* animal_2) {
 
+    // collision : the animals bounce together
+    sf::Vector2f vect_between_centers = (animal_1->position - animal_2->position);
+    float norm_vect = std::sqrt(vect_between_centers.x*vect_between_centers.x + vect_between_centers.y*vect_between_centers.y);
+    float distance_bounce = (animal_1->radius + animal_2->radius - norm_vect);
+    if (distance_bounce > 0 && norm_vect != 0) {
+        sf::Vector2f vect_normalised = vect_between_centers * (1.f / norm_vect);
+        animal_1->position += vect_normalised*distance_bounce;
+        animal_2->position -= vect_normalised*distance_bounce;
+    }
+
     // animal_1 = prey and animal_2 = predator
     if (animal_1->is_prey && animal_2->is_pred)
         return collide(animal_2, animal_1);
 
     // animal_1 = predator and animal_2 = prey
     if (animal_1->is_pred && animal_2->is_prey) {
-        if (!animal_1->is_dead && animal_2->is_dead && animal_1->energy <= MAX_ENERGY)
+        if (animal_2->is_dead && animal_1->energy <= MAX_ENERGY)
             return ((Predator*)animal_1)->eat(animal_2);
         return ((Predator*)animal_1)->fight(animal_2);
     }
