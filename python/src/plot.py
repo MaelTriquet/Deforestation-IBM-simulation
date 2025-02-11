@@ -5,16 +5,23 @@ import matplotlib.pyplot as plt #type: ignore
 import pandas as pd #type: ignore
 
 
+# remove the zeros at the end of a data file
+def remove_zeros(df) :
+    df = df.loc[(df != 0).any(axis=1)]
+    return df
+
+
 # plot the two curves of population over times (preys and predators) 
-def plot_pop(preys_list, predators_list, save_path="../../data/graphics/temp.png", figsize=(25, 12)) :
+def plot_pop(preys_list, predators_list, save_path="../../data/graphics/temp.png", figsize=(15, 6)) :
 
     # initialisation
     frames_list = np.arange(1, len(preys_list) + 1, 1)
+    plt.rcParams.update({"font.size": 12})
 
     # plot the graphic
     plt.figure(figsize=figsize)
-    plt.plot(frames_list, preys_list, label="Proies", color="blue", linestyle="-", linewidth=3)
-    plt.plot(frames_list, predators_list, label="Prédateurs", color="red", linestyle="-", linewidth=3)
+    plt.plot(frames_list, preys_list, label="Proies", color="blue")
+    plt.plot(frames_list, predators_list, label="Prédateurs", color="red")
 
     # add the labels and title
     plt.xlabel("Frame")
@@ -30,11 +37,12 @@ def plot_pop(preys_list, predators_list, save_path="../../data/graphics/temp.png
 
 
 # plot the graphic for the sum of preys and predators
-def plot_pop_sum(preys_list, predators_list, save_path="../../data/graphics/temp_bis.png", figsize=(25, 12)) :
+def plot_pop_sum(preys_list, predators_list, save_path="../../data/graphics/temp_bis.png", figsize=(15, 6)) :
 
     # initialisation
     frames_list = np.arange(1, len(preys_list) + 1, 1)
     total_pop = preys_list + predators_list
+    plt.rcParams.update({"font.size": 12})
 
     # plot the graphic
     _, ax = plt.subplots(figsize=figsize)
@@ -44,12 +52,14 @@ def plot_pop_sum(preys_list, predators_list, save_path="../../data/graphics/temp
     ax.fill_between(frames_list, 0, preys_list, color="blue", alpha=0.6, label="Proies")
     ax.fill_between(frames_list, preys_list, total_pop, color="red", alpha=0.6, label="Prédateurs")
 
-    # displaying settings
+    # display settings
     ax.set_xlabel("Frame")
     ax.set_ylabel("Population")
     ax.set_title("Évolution de la population totale au cours du temps")
     ax.legend()
-    plt.savefig(save_path)
+
+    # save the figure
+    plt.savefig(save_path, dpi=300, bbox_inches="tight")
 
     return None
 
@@ -82,6 +92,7 @@ if __name__ == "__main__" :
 
     # load the data
     data = pd.read_csv(file_path)
+    data = remove_zeros(data)
     data.columns = ["Predators", "Preys", "Corpses"]
 
     # prepare the data
@@ -91,7 +102,3 @@ if __name__ == "__main__" :
     # plot the curves
     plot_pop(preys_list, predators_list, save_path=save_path_1)
     plot_pop_sum(preys_list, predators_list, save_path=save_path_2)
-
-    # to do : 
-    # - supprimer les zeros
-    # - agrandir les titres / légendes etc
