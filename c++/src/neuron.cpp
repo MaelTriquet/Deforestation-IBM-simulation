@@ -12,7 +12,7 @@ void Neuron::feedForward(bool input) {
     // only normalise current value if hidden or output
     if (!input) 
         value = sigmoid(value);
-    if (bias) 
+    if (bias)
         value = 1;
     for (Gene* g : outgoing_conns) 
         if (g->enabled)

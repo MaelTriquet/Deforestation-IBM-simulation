@@ -11,7 +11,7 @@ Prey::Prey(sf::Vector2f position_, int index_) :
 };
 
 Prey::Prey(Prey* parent_1_, Prey* parent_2_, int id_) : 
-    Animal(parent_1_->position, id_)
+    Animal(parent_1_->position + sf::Vector2f(Random::rand()*2-1, Random::rand()*2-1), id_)
 {
     color = sf::Color(0, 0, 255);
     max_ray_angle = PREY_MAX_RAY_ANGLE;
