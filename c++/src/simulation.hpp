@@ -14,6 +14,8 @@ public:
     std::vector<Tree> m_trees; // tree pop
     int window_width;
     int window_height;
+    int nb_pred;
+    int nb_prey;
     // collision grid
     Grid grid;
     //ray detection grid (different size)

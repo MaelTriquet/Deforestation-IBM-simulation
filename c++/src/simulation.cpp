@@ -31,12 +31,11 @@ Simulation::~Simulation() {
         delete m_pop[i];
 }
 
-
 void Simulation::update() {
     for (Tree& t : m_trees)
         t.update();
-    float nb_prey = 0.f;
-    float nb_pred = 0.f;
+    nb_prey = 0;
+    nb_pred = 0;
     for (int i = m_pop.size() - 1; i > -1; i--) {
         m_pop[i]->update();
         if (!m_pop[i]->is_dead) {
@@ -66,15 +65,17 @@ void Simulation::update() {
     //     m_pop.push_back(pred);
     // }
 
-    std::cout << "Prédateurs : " << nb_pred / m_pop.size() * 100 << "%, ";
-    std::cout << "Proies : " << nb_prey / m_pop.size() * 100 << "%, " << "Population : " << m_pop.size() << std::endl;
+    std::cout << "Prédateurs : " << (float) nb_pred / m_pop.size() * 100 << "%, ";
+    std::cout << "Proies : " << (float) nb_prey / m_pop.size() * 100 << "%, ";
+    std::cout << "Morts : " << (m_pop.size() - (float) nb_pred - (float) nb_prey) / m_pop.size() * 100 << "%, ";
+    std::cout << "Population : " << m_pop.size() << std::endl;
 
     // update grid cells content
-    grid.update_animals(m_pop);
     detect_collisions();
     for (int i = 0; i < m_pop.size(); i++) {
         m_pop[i]->considerate_bounds(window_width, window_height);
     }
+    grid.update_animals(m_pop);
     ray_grid.update_animals(m_pop);
 
     // check for events
@@ -107,13 +108,13 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
 
     // animal_1 = animal_2 = predator or animal_1 = animal_2 = prey
     if (animal_1->reproduction_timeout <= 0 && animal_2->reproduction_timeout <= 0 && !animal_1->is_dead && !animal_2->is_dead) {
-        if (animal_1->is_pred && (m_pop.size() < MAX_POP || (is_prey_dominating && m_pop.size() < MAX_POP * 1.5))) {
+        if (animal_1->is_pred && nb_pred < MAX_POP_PRED) {
             int nb_child = Random::randint(1, 4);
             for (int i = 0; i < nb_child; i++) {
                 Predator* child = ((Predator*)animal_1)->reproduce((Predator*)animal_2, id++);
                 m_pop.push_back(child);
             }
-        } else if (animal_2->is_prey && (m_pop.size() < MAX_POP || (!is_prey_dominating && m_pop.size() < MAX_POP * 1.5))) {
+        } else if (animal_2->is_prey && nb_prey < MAX_POP_PREY) {
             int nb_child = Random::randint(2, 4);
             for (int i = 0; i < nb_child; i++) {
                 Prey* child = ((Prey*)animal_1)->reproduce((Prey*)animal_2, id++);

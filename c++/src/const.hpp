@@ -2,20 +2,21 @@
 #include <cmath>
 
 // simulation
-#define MAX_POP 400
-#define PRED_START 100
-#define PREY_START 100
+#define MAX_POP_PRED 300
+#define MAX_POP_PREY 300
+#define PRED_START 200
+#define PREY_START 200
 #define TREE_START 0
 
 // trees
-#define TREES_RADIUS 8
+#define TREES_RADIUS 10
 #define FRUIT_ENERGY 100
 #define FRUIT_TIME 5
 
 // animals
-#define ANIMALS_RADIUS 8
-#define INITIAL_ENERGY 600000
-#define MAX_ENERGY 800
+#define ANIMALS_RADIUS 10
+#define INITIAL_ENERGY 1000
+#define MAX_ENERGY 2000
 #define MUTATION_RATE .08
 #define NB_RAY 7
 #define RAY_LENGTH 120
