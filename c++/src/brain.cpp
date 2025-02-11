@@ -100,7 +100,7 @@ Neuron* Brain::find_neuron_from_inno(int inno) {
 
 
 int Brain::organiseLayers() {
-    for (int i = 0; i < inputs; i++) {
+    for (int i = 0; i < inputs+1; i++) {
         neurons[i]->layer = 0;
     }
 
@@ -119,6 +119,9 @@ int Brain::organiseLayers() {
                 }
         }
     }
+
+    for (int i = inputs+1; i < inputs+1+outputs; i++)
+        neurons[i]->layer = l;
 
     return l+1;
 }
