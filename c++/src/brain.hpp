@@ -4,7 +4,6 @@
 #include "neuron.hpp"
 #include "random.hpp"
 #include "const.hpp"
-#include "innovationHistory.hpp"
 
 struct Vision;
 class Brain {
@@ -14,13 +13,13 @@ public:
     
     std::vector<Gene*> genes;
 
+    void delete_content();
 
     int inputs, outputs, layers, last_neuron_idx;
 
     Brain(int inputs_, int outputs_);
-    Brain(const Brain& parent1, const Brain& parent2);
+    Brain(const Brain& to_copy);
 
-    void delete_content();
     void think(const Vision& vision, float* decision);
 
     void mutate();
@@ -32,6 +31,4 @@ public:
     void organiseNeurons();
 
     void show() const;
-
-    Neuron* find_neuron_from_inno(int inno);
 };

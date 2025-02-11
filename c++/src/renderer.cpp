@@ -10,7 +10,6 @@ Renderer::Renderer(sf::RenderTarget& target):
 void Renderer::render(const Simulation& simulation) const {
     for (const Animal* a : simulation.m_pop) {
         if (a == simulation.m_pop[0]) {
-            // a->brain.show();
             sf::Vector2f ray;
             for (int i = 0; i < NB_RAY; i++) {
                 float theta = -a->max_ray_angle/2 + i * a->max_ray_angle / (float)(NB_RAY-1);
@@ -43,7 +42,8 @@ void Renderer::render(const Simulation& simulation) const {
             shape.setFillColor(a->color);
         }
         if (a->is_dead) {
-            shape.setFillColor(sf::Color{255, 0, 255, (sf::Uint8)(a->rotting > 255 ? 255 : a->rotting)});
+            shape.setFillColor(sf::Color{255, 0, 255});
+            shape.setFillColor(sf::Color{255, 0, 255, (sf::Uint8)((((Prey*) a)->dead_reserve / 100.f * 255) > 255 ? 255 : ((Prey*) a)->dead_reserve / 100.f * 255)});
         } else {
             shape.setFillColor(sf::Color{a->color.r, a->color.g, a->color.b, (sf::Uint8)((a->energy / 100.f * 255) > 255 ? 255 : a->energy / 100.f * 255)});
         }
