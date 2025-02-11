@@ -48,7 +48,7 @@ void Simulation::update() {
                 nb_prey++;
             continue;
         }
-        if (m_pop[i]->rotting > 0) continue;
+        if (((Prey*) m_pop[i])->dead_reserve >= 0) continue;
         m_pop[i]->brain.delete_content();
         delete m_pop[i];
         m_pop.erase(m_pop.begin() + i);

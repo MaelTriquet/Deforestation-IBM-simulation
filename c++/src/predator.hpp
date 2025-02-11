@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "animal.hpp"
 #include "const.hpp"
+#include "prey.hpp"
 
 class Predator : public Animal {
 public:
