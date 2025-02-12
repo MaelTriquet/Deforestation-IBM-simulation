@@ -33,7 +33,10 @@ Predator::Predator(Predator* parent_1_, Predator* parent_2_, int id_) :
     //     }
     // }
     brain.delete_content();
-    brain = Brain(parent_1_->brain, parent_2_->brain);
+    if (Random::rand() < .5)
+        brain = Brain(parent_1_->brain, parent_2_->brain);
+    else 
+        brain = Brain(parent_2_->brain, parent_1_->brain);
     brain.mutate();
 };
 
@@ -42,7 +45,7 @@ void Predator::eat(Animal* prey) {
     if (reproduction_timeout > 1000)
         reproduction_timeout = 10 - (REPRODUCTION_TIMEOUT - reproduction_timeout);
     // sets the prey rotting to 0 to remove it from m_pop next check
-    prey->rotting = 0;
+    prey->rotting -= 60;
 }
 
 void Predator::fight(Animal* prey) {

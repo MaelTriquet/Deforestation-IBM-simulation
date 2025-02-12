@@ -70,6 +70,9 @@ void Simulation::update() {
     std::cout << "Prédateurs : " << nb_pred / m_pop.size() * 100 << "%, ";
     std::cout << "Proies : " << nb_prey / m_pop.size() * 100 << "%, " << "Population : " << m_pop.size() << std::endl;
 
+
+    for (Animal* a : m_pop)
+        a->considerate_bounds(window_width, window_height);
     // update grid cells content
     grid.update_animals(m_pop);
     ray_grid.update_animals(m_pop);
@@ -82,13 +85,23 @@ void Simulation::update() {
 // handles Animal/Animal collision (fight, eat or reproduce)
 void Simulation::collide(Animal* animal_1, Animal* animal_2) {
 
+    // collision : the animals bounce together
+    sf::Vector2f vect_between_centers = (animal_1->position - animal_2->position);
+    float norm_vect = std::sqrt(vect_between_centers.x*vect_between_centers.x + vect_between_centers.y*vect_between_centers.y);
+    float distance_bounce = (animal_1->radius + animal_2->radius - norm_vect);
+    if (distance_bounce > 0 && norm_vect != 0) {
+        sf::Vector2f vect_normalised = vect_between_centers * (1.f / norm_vect);
+        animal_1->position += vect_normalised*distance_bounce;
+        animal_2->position -= vect_normalised*distance_bounce;
+    }
+
     // animal_1 = prey and animal_2 = predator
     if (animal_1->is_prey && animal_2->is_pred)
         return collide(animal_2, animal_1);
 
     // animal_1 = predator and animal_2 = prey
     if (animal_1->is_pred && animal_2->is_prey) {
-        if (!animal_1->is_dead && animal_2->is_dead && animal_1->energy <= MAX_ENERGY)
+        if (animal_2->is_dead && animal_1->energy <= MAX_ENERGY)
             return ((Predator*)animal_1)->eat(animal_2);
         return ((Predator*)animal_1)->fight(animal_2);
     }
@@ -184,6 +197,8 @@ void Simulation::fill_ray_visions() {
         for (Animal* a : ray_grid.cells[i].animals) {
             sf::Vector2f ray;
             for (int i = 0; i < NB_RAY; i++) {
+                a->vision.rays[i] = 0;
+                a->vision.rays[i+NB_RAY] = 0;
                 // create the ray
                 float theta = -a->max_ray_angle/2 + i * a->max_ray_angle / (float)(NB_RAY-1);
                 float alpha;
@@ -220,10 +235,19 @@ void Simulation::fill_ray_visions() {
                         float res = segmentIntersectsCircle(a->position, ray, a2->position + offset, ANIMALS_RADIUS);
                         if (res < 0) continue;
 
-                        if (a2->is_pred)
+                        if (a->vision.rays[i] < res) {
                             a->vision.rays[i] = res;
-                        else 
-                            a->vision.rays[i + NB_RAY] = res;
+                            if (a->is_pred) {
+                                a->vision.rays[i+NB_RAY] = 1;
+                            } else {
+                                if (a2->is_prey && !a2->is_dead)
+                                    a->vision.rays[i+NB_RAY] = 1;
+                                else if (a2->is_pred)
+                                    a->vision.rays[i+NB_RAY] = -1;
+                                else
+                                    a->vision.rays[i+NB_RAY] = 0;
+                            }
+                        }
                     }
 
                     for (Tree* t : neigh->trees) {
@@ -233,7 +257,14 @@ void Simulation::fill_ray_visions() {
                         if (dist > RAY_LENGTH + TREES_RADIUS) continue;
                         float res = segmentIntersectsCircle(a->position, ray, t->position + offset, TREES_RADIUS);
                         if (res < 0) continue; 
-                        a->vision.rays[i + 2*NB_RAY] = res;
+                        if (a->vision.rays[i] < res) {
+                            a->vision.rays[i] = res;
+                            if (a->is_pred) {
+                                a->vision.rays[i+NB_RAY] = 0;
+                            } else {
+                                a->vision.rays[i+NB_RAY] = 1;
+                            }
+                        }
                     }
                 }
             }

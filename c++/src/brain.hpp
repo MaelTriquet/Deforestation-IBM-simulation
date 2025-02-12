@@ -33,7 +33,5 @@ public:
 
     void show() const;
 
-    int organiseLayers();
-
     Neuron* find_neuron_from_inno(int inno);
 };
