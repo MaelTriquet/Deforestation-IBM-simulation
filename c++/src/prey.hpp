@@ -12,5 +12,6 @@ public:
 
     void eat();
     Prey* reproduce(Prey* parent, int id);
+    void fight(Animal* predator);
 
 };

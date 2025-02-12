@@ -11,11 +11,11 @@ Simulation::Simulation(int window_width_, int window_height_) :
 {
 
     for (int i = 0; i < PREY_START; i++) {
-        Prey* prey = new Prey(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, id++);
+        Prey* prey = new Prey(sf::Vector2f{(float)Random::randint(0, window_width), (float)Random::randint(0, window_height)}, id++);
         m_pop.push_back(prey);
     }
     for (int i = 0; i < PRED_START; i++) {
-        Predator* pred = new Predator(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, id++);
+        Predator* pred = new Predator(sf::Vector2f{(float)Random::randint(0, window_width), (float)Random::randint(0, window_height)}, id++);
         m_pop.push_back(pred);
     }
     for (int i = 0; i < TREE_START; i++) {
@@ -65,14 +65,12 @@ void Simulation::update() {
     // for (int i = 0; i < 10; i++) {
     //     Predator* pred = new Predator(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, id++);
     //     m_pop.push_back(pred);
-    // }
+    // } 
 
-    /*
     std::cout << "Prédateurs : " << (float) nb_pred / m_pop.size() * 100 << "%, ";
     std::cout << "Proies : " << (float) nb_prey / m_pop.size() * 100 << "%, ";
     std::cout << "Morts : " << (m_pop.size() - (float) nb_pred - (float) nb_prey) / m_pop.size() * 100 << "%, ";
     std::cout << "Population : " << m_pop.size() << std::endl;
-    */
 
     for (Animal* a : m_pop)
         a->considerate_bounds(window_width, window_height);
@@ -103,10 +101,15 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
         return collide(animal_2, animal_1);
 
     // animal_1 = predator and animal_2 = prey
+    // the predator must see the prey to eat it
+    // if the prey can see the predator but the predator can't see the prey, the prey can attack the predator
     if (animal_1->is_pred && animal_2->is_prey && animal_1->has_in_rays(animal_2)) {
         if (animal_2->is_dead && animal_1->energy <= MAX_ENERGY)
             return ((Predator*)animal_1)->eat(animal_2);
-        return ((Predator*)animal_1)->fight(animal_2);
+        ((Predator*)animal_1)->fight(animal_2);
+    }
+    if (animal_1->is_pred && animal_2->is_prey && !(animal_1->has_in_rays(animal_2)) && animal_2->has_in_rays(animal_1)) {
+        ((Prey*)animal_2)->fight(animal_1);
     }
 
     // animal_1 = animal_2 = predator or animal_1 = animal_2 = prey
@@ -285,12 +288,12 @@ float Simulation::segmentIntersectsCircle(const sf::Vector2f& A, const sf::Vecto
     // Check if the roots are within the range [0, 1]
     if (t1 >= 0 && t1 <= 1) {
         sf::Vector2f intersectionPoint1 = A + t1 * AB;
-        return distance(A + AB, intersectionPoint1);
+        return 1-t1;
     }
 
     if (t2 >= 0 && t2 <= 1) {
         sf::Vector2f intersectionPoint2 = A + t2 * AB;
-        return distance(A + AB, intersectionPoint2);
+        return 1-t2;
     }
 
     // No intersection within the segment

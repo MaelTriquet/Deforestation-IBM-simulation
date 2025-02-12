@@ -29,10 +29,12 @@ void Animal::move(int window_width, int window_height) {
     velocity *= decision[1] * max_velocity;
     position += velocity;
     // energy -= decision[2] * decision[2] * max_velocity /(float)PREY_MAX_VELOCITY;
-    if (is_prey)
+    if (is_prey) {
         energy -= decision[1] * decision[1];
-    else
+    }
+    else {
         energy -= decision[1] * decision[1] * max_velocity + 2;
+    }
     considerate_bounds(window_width, window_height);
 };
 
@@ -52,10 +54,11 @@ void Animal::look() {
 bool Animal::has_in_rays(Animal* animal) {
     bool in_rays = false;
     for (int i = 0; i < NB_RAY; i++) {
-        if ((animal->is_pred && vision.rays[i] >= 0) || (animal->is_prey && vision.rays[i + NB_RAY] >= 0)) 
+        if ((animal->is_pred && vision.rays[i] > 0) || (animal->is_prey && vision.rays[i + NB_RAY] > 0)) {
             in_rays = true;
             break;
         }
+    }
     return in_rays;
 }
 
