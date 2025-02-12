@@ -67,10 +67,12 @@ void Simulation::update() {
     //     m_pop.push_back(pred);
     // }
 
+    /*
     std::cout << "Prédateurs : " << (float) nb_pred / m_pop.size() * 100 << "%, ";
     std::cout << "Proies : " << (float) nb_prey / m_pop.size() * 100 << "%, ";
     std::cout << "Morts : " << (m_pop.size() - (float) nb_pred - (float) nb_prey) / m_pop.size() * 100 << "%, ";
     std::cout << "Population : " << m_pop.size() << std::endl;
+    */
 
     for (Animal* a : m_pop)
         a->considerate_bounds(window_width, window_height);
@@ -101,7 +103,7 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
         return collide(animal_2, animal_1);
 
     // animal_1 = predator and animal_2 = prey
-    if (animal_1->is_pred && animal_2->is_prey) {
+    if (animal_1->is_pred && animal_2->is_prey && animal_1->has_in_rays(animal_2)) {
         if (animal_2->is_dead && animal_1->energy <= MAX_ENERGY)
             return ((Predator*)animal_1)->eat(animal_2);
         return ((Predator*)animal_1)->fight(animal_2);
@@ -110,13 +112,13 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
     // animal_1 = animal_2 = predator or animal_1 = animal_2 = prey
     if (animal_1->reproduction_timeout <= 0 && animal_2->reproduction_timeout <= 0 && !animal_1->is_dead && !animal_2->is_dead) {
         if (animal_1->is_pred && nb_pred < MAX_POP_PRED) {
-            int nb_child = Random::randint(1, 4);
+            int nb_child = Random::randint(PRED_N_MIN_CHILDREN, PRED_N_MAX_CHILDREN);
             for (int i = 0; i < nb_child; i++) {
                 Predator* child = ((Predator*)animal_1)->reproduce((Predator*)animal_2, id++);
                 m_pop.push_back(child);
             }
         } else if (animal_2->is_prey && nb_prey < MAX_POP_PREY) {
-            int nb_child = Random::randint(2, 4);
+            int nb_child = Random::randint(PREY_N_MIN_CHILDREN, PREY_N_MAX_CHILDREN);
             for (int i = 0; i < nb_child; i++) {
                 Prey* child = ((Prey*)animal_1)->reproduce((Prey*)animal_2, id++);
                 m_pop.push_back(child);

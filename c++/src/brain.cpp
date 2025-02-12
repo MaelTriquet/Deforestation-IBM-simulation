@@ -60,7 +60,7 @@ Brain::Brain(const Brain& parent1, const Brain& parent2) :
     }
 
     organiseNeurons();
-    show();
+    // show();
 }
 
 Neuron* Brain::find_neuron_from_inno(int inno) {

@@ -48,6 +48,17 @@ void Animal::look() {
     vision.velocity = velocity / max_velocity;
 }
 
+// check is the animal sees another animal
+bool Animal::has_in_rays(Animal* animal) {
+    bool in_rays = false;
+    for (int i = 0; i < NB_RAY; i++) {
+        if ((animal->is_pred && vision.rays[i] >= 0) || (animal->is_prey && vision.rays[i + NB_RAY] >= 0)) 
+            in_rays = true;
+            break;
+        }
+    return in_rays;
+}
+
 // updates all naturally decrementing attributes and check death
 void Animal::update() {
     if (energy > 2*INITIAL_ENERGY)

@@ -37,7 +37,6 @@ void Renderer::render(const Simulation& simulation) const {
         if (a->is_colliding) {
             shape.setFillColor(sf::Color{255, 0, 255});
         } else if (a->invisible > 0) {
-            
             shape.setFillColor(sf::Color::White);
         } else {
             shape.setFillColor(a->color);
