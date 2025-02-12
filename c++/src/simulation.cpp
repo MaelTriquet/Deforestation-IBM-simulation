@@ -300,12 +300,12 @@ float Simulation::segmentIntersectsCircle(const sf::Vector2f& A, const sf::Vecto
     // Check if the roots are within the range [0, 1]
     if (t1 >= 0 && t1 <= 1) {
         sf::Vector2f intersectionPoint1 = A + t1 * AB;
-        return distance(A + AB, intersectionPoint1);
+        return 1-t1;
     }
 
     if (t2 >= 0 && t2 <= 1) {
         sf::Vector2f intersectionPoint2 = A + t2 * AB;
-        return distance(A + AB, intersectionPoint2);
+        return 1-t2;
     }
 
     // No intersection within the segment
