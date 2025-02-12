@@ -28,10 +28,13 @@ void Animal::move(int window_width, int window_height) {
     velocity = sf::Vector2f(cos(decision[0]*M_PI_2), sin(decision[0]*M_PI_2));
     velocity *= decision[1] * max_velocity;
     position += velocity;
-    if (is_prey)
+    // energy -= decision[2] * decision[2] * max_velocity /(float)PREY_MAX_VELOCITY;
+    if (is_prey) {
         energy -= decision[1] * decision[1];
-    else
+    }
+    else {
         energy -= decision[1] * decision[1] * max_velocity + 2;
+    }
     considerate_bounds(window_width, window_height);
 };
 
@@ -45,6 +48,18 @@ void Animal::look() {
     vision.energy = (float)energy / (float)MAX_ENERGY;
     vision.fleeing = fleeing;
     vision.velocity = velocity / max_velocity;
+}
+
+// check is the animal sees another animal
+bool Animal::has_in_rays(Animal* animal) {
+    bool in_rays = false;
+    for (int i = 0; i < NB_RAY; i++) {
+        if ((animal->is_pred && vision.rays[i] > 0) || (animal->is_prey && vision.rays[i + NB_RAY] > 0)) {
+            in_rays = true;
+            break;
+        }
+    }
+    return in_rays;
 }
 
 // updates all naturally decrementing attributes and check death

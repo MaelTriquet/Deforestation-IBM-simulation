@@ -9,7 +9,7 @@ Renderer::Renderer(sf::RenderTarget& target):
 // draws everything from the simulation
 void Renderer::render(const Simulation& simulation) const {
     for (const Animal* a : simulation.m_pop) {
-        if (a == simulation.m_pop[0]) {
+        if (a == simulation.m_pop[0] or a == simulation.m_pop[1]) {
             // a->brain.show();
             sf::Vector2f ray;
             for (int i = 0; i < NB_RAY; i++) {
@@ -37,7 +37,6 @@ void Renderer::render(const Simulation& simulation) const {
         if (a->is_colliding) {
             shape.setFillColor(sf::Color{255, 0, 255});
         } else if (a->invisible > 0) {
-            
             shape.setFillColor(sf::Color::White);
         } else {
             shape.setFillColor(a->color);
