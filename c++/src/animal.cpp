@@ -4,7 +4,7 @@ Animal::Animal(sf::Vector2f position_, int index_) :
     position(position_),
     is_dead(false),
     index{index_},
-    brain{4 + NB_RAY * 3, 2}
+    brain{4 + NB_RAY * 2, 2}
 {
     brain.addConn();
 };
