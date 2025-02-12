@@ -92,8 +92,8 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
     float distance_bounce = (animal_1->radius + animal_2->radius - norm_vect);
     if (distance_bounce > 0 && norm_vect != 0) {
         sf::Vector2f vect_normalised = vect_between_centers * (1.f / norm_vect);
-        animal_1->position += vect_normalised*distance_bounce;
-        animal_2->position -= vect_normalised*distance_bounce;
+        animal_1->position += (distance_bounce + animal_1->radius / 2)*vect_normalised;
+        animal_2->position -= (distance_bounce + animal_1->radius / 2)*vect_normalised;
     }
 
     // animal_1 = prey and animal_2 = predator
