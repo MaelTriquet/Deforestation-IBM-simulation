@@ -45,5 +45,5 @@ Prey* Prey::reproduce(Prey* parent, int id) {
 };
 
 void Prey::fight(Animal* predator) {
-    predator->energy -= PRED_LOST_ENERGY_FIGHT_BY_PREY;
+    predator->health -= PRED_LOST_ENERGY_FIGHT_BY_PREY;
 }

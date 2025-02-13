@@ -67,9 +67,9 @@ void Simulation::update() {
     //     m_pop.push_back(pred);
     // } 
 
-    std::cout << "Prédateurs : " << (float) nb_pred / m_pop.size() * 100 << "%, ";
-    std::cout << "Proies : " << (float) nb_prey / m_pop.size() * 100 << "%, ";
-    std::cout << "Morts : " << (m_pop.size() - (float) nb_pred - (float) nb_prey) / m_pop.size() * 100 << "%, ";
+    std::cout << "Prédateurs : " << nb_pred << ", ";
+    std::cout << "Proies : " << nb_prey << ", ";
+    std::cout << "Morts : " << m_pop.size() - nb_pred - nb_prey << ", ";
     std::cout << "Population : " << m_pop.size() << std::endl;
    
     for (Animal* a : m_pop)
