@@ -50,6 +50,6 @@ Prey* Prey::reproduce(Prey* parent, int id) {
 void Prey::fight(Animal* predator) {
     predator->health -= PRED_LOST_ENERGY_FIGHT_BY_PREY;
 }
-/* `PREY_LOST_ENERGY_FIGHT` is a constant representing the amount of energy a
+/* `PREY_LOST_ENERGY_FIGHT_BY_PRED` is a constant representing the amount of energy a
 Predator loses when fighting a prey. This value is subtracted from the prey's
 health during a fight between a Predator and a prey. */

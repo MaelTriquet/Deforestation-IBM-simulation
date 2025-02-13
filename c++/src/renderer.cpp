@@ -9,7 +9,8 @@ Renderer::Renderer(sf::RenderTarget& target):
 // draws everything from the simulation
 void Renderer::render(const Simulation& simulation) const {
     for (const Animal* a : simulation.m_pop) {
-        if (a == simulation.m_pop[0] or a == simulation.m_pop[1]) {
+        // if (a == simulation.m_pop[0] or a == simulation.m_pop[1]) {
+        if (false) {
             // a->brain.show();
             sf::Vector2f ray;
             for (int i = 0; i < NB_RAY; i++) {
@@ -39,7 +40,7 @@ void Renderer::render(const Simulation& simulation) const {
         } else if (a->is_dead) {
             shape.setFillColor(sf::Color{255, 0, 255, (sf::Uint8)((float) a->rotting / ROT_TIME * 255)});
         } else {
-            shape.setFillColor(a->color);
+            shape.setFillColor(sf::Color{a->color.r, a->color.g, a->color.b, (sf::Uint8)((float) a->energy / MAX_ENERGY * 255)});
         }
         shape.setPosition(a->position - sf::Vector2f(a->radius, a->radius));
         m_target.draw(shape);

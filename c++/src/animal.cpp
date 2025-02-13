@@ -34,14 +34,14 @@ void Animal::move(int window_width, int window_height) {
             energy -= decision[1] * decision[1];
         }
         else {
-            energy -= decision[1] * decision[1] * max_velocity + 2;
+            energy -= decision[1] * decision[1] * max_velocity + PRED_PASSIVE_ENERGY_LOSS;
         }
     } else {
         if (is_prey) {
             health -= decision[1] * decision[1];
         }
         else {
-            health -= decision[1] * decision[1] * max_velocity + 2;
+            health -= decision[1] * decision[1] * max_velocity + PRED_PASSIVE_ENERGY_LOSS;
         }
     }
     considerate_bounds(window_width, window_height);

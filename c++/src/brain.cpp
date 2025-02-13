@@ -98,7 +98,7 @@ void Brain::think(const Vision& vision, float* decision) {
 
 // set each weight to a random one with the prob MUTATION_RATE
 void Brain::mutate() {
-    if (Random::rand() < .8) {// prob mutate weight
+    if (Random::rand() < MUTATION_RATE) {// prob mutate weight
         int idx = Random::randint(genes.size());
         if (idx < genes.size())
             genes[idx]->weight = Random::rand() * 2 - 1;
