@@ -1,13 +1,18 @@
 #include "animal.hpp"
+#include "const.hpp"
 
-Animal::Animal(sf::Vector2f position_, int index_) : 
+
+// Constructeur de l'Animal
+Animal::Animal(sf::Vector2f position_, int index_) :
     position(position_),
+    index(index_),
     is_dead(false),
-    index{index_},
-    brain{4 + NB_RAY * 3, 2}
+    agent(new MADDPGAgent(4 + NB_RAY * 3, 2, 0.001, 0.001))  // Initialisation correcte de l'agent MADDPG
 {
-    brain.addConn();
-};
+    velocity = sf::Vector2f(0, 0);
+    energy = INITIAL_ENERGY;
+    max_velocity = is_prey ? PREY_MAX_VELOCITY : PRED_MAX_VELOCITY;
+}
 
 //keeps all animals within the window, using a tore-like world modelisation
 void Animal::considerate_bounds(int window_width, int window_height) {
@@ -24,9 +29,11 @@ void Animal::considerate_bounds(int window_width, int window_height) {
 // look, think and act
 void Animal::move(int window_width, int window_height) {
     look();
-    brain.think(vision, decision);
-    velocity = sf::Vector2f(cos(decision[0]*M_PI_2), sin(decision[0]*M_PI_2));
-    velocity *= decision[1] * max_velocity;
+    torch::Tensor action = agent->select_action(get_state());
+    float direction = action[0].item<float>() * M_PI_2;
+    float speed = action[1].item<float>() * max_velocity;
+
+    velocity = sf::Vector2f(cos(direction), sin(direction)) * speed;
     position += velocity;
     if (is_prey)
         energy -= decision[1] * decision[1];
@@ -63,4 +70,20 @@ void Animal::update() {
         rotting = -1000;
     is_in_tree = false;
     reproduction_timeout--;
+}
+//Gets all the data needed for the maddpg brain
+torch::Tensor Animal::get_state() const {
+    std::vector<float> state_vector;
+    state_vector.push_back(static_cast<float>(energy) / MAX_ENERGY);
+    state_vector.push_back(velocity.x / max_velocity);
+    state_vector.push_back(velocity.y / max_velocity);
+    state_vector.push_back(static_cast<float>(fleeing));
+    state_vector.push_back(static_cast<float>(invisible) / INVISIBILITY_TIME);
+    state_vector.push_back(static_cast<float>(reproduction_timeout) / REPRODUCTION_TIMEOUT);
+    
+    for (int i = 0; i < NB_RAY * 3; i++) {
+        state_vector.push_back(vision.rays[i]);
+    }
+    
+    return torch::tensor(state_vector, torch::dtype(torch::kFloat32));
 }

@@ -1,13 +1,15 @@
 #pragma once
+#include "maddpgAgent.hpp"
 #include <SFML/Graphics.hpp>
 #include <cstring>
 #include <cmath>
 #include <iostream>
 #include "tree.hpp"
 #include "vision.hpp"
-#include "brain.hpp"
+// #include "brain.hpp"
 #include "random.hpp"
 #include "const.hpp"
+#include <torch/torch.h>
 
 class Animal {
 public:
@@ -30,11 +32,13 @@ public:
     int invisible = 0; // camouflage counter when hiding in a tree successfully
     float max_velocity;
     float max_vel_percent = .6; // will dissapear
-    Brain brain; // decision maker
+    // Brain brain; // decision maker
     float decision[2] = {0}; // holds the decision after the thinking process
     int reproduction_timeout = 1000000;
+    MADDPGAgent* agent;
 
     Animal(sf::Vector2f position_, int index_);
+
 
     void considerate_bounds(int window_width, int window_height);
 
@@ -42,4 +46,6 @@ public:
     void die();
     void look();
     void update();
+
+    torch::Tensor get_state() const;
 };
