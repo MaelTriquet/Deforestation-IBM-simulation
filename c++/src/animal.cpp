@@ -74,6 +74,8 @@ void Animal::update() {
         invisible--;
     if (is_dead && is_pred)
         rotting = -1000;
+    if (is_dead)
+        rotting--;
     is_in_tree = false;
     reproduction_timeout--;
 }

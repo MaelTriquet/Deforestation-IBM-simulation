@@ -6,8 +6,8 @@ bool appendCSV(const std::string& filename, Simulation& sim);
 int main() {
 
     // Create window
-    constexpr int32_t window_width = 1920;
-    constexpr int32_t window_height = 1080;
+    constexpr int32_t window_width = WINDOW_WIDTH;
+    constexpr int32_t window_height = WINDOW_HEIGHT;
 
     sf::ContextSettings settings;
     settings.antialiasingLevel = 1;
@@ -32,7 +32,7 @@ int main() {
         // update and show each frame
         for (int i = 0; i < 1; i++) {
             simulation.update();
-            // appendCSV("../../res/plot_info.csv", simulation);
+            appendCSV("../../res/plot_info.csv", simulation);
         }
         window.clear(sf::Color::Black);
         renderer.render(simulation);
