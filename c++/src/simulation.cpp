@@ -116,13 +116,13 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
 
     // animal_1 = animal_2 = predator or animal_1 = animal_2 = prey
     if (animal_1->reproduction_timeout <= 0 && animal_2->reproduction_timeout <= 0 && !animal_1->is_dead && !animal_2->is_dead) {
-        if (animal_1->is_pred && nb_pred < MAX_POP_PRED) {
+        if (animal_1->is_pred && nb_pred < MAX_POP_PRED && (animal_1->has_eaten || animal_2->has_eaten)) {
             int nb_child = Random::randint(PRED_N_MIN_CHILDREN, PRED_N_MAX_CHILDREN);
             for (int i = 0; i < nb_child; i++) {
                 Predator* child = ((Predator*)animal_1)->reproduce((Predator*)animal_2, id++);
                 m_pop.push_back(child);
             }
-        } else if (animal_2->is_prey && nb_prey < MAX_POP_PREY) {
+        } else if (animal_2->is_prey && nb_prey < MAX_POP_PREY && (animal_1->has_eaten || animal_2->has_eaten)) {
             int nb_child = Random::randint(PREY_N_MIN_CHILDREN, PREY_N_MAX_CHILDREN);
             for (int i = 0; i < nb_child; i++) {
                 Prey* child = ((Prey*)animal_1)->reproduce((Prey*)animal_2, id++);

@@ -31,12 +31,15 @@ Prey::Prey(Prey* parent_1_, Prey* parent_2_, int id_) :
 void Prey::eat() {
     if (in_tree->nb_fruit <= 0) return;
     in_tree->nb_fruit--;
+    has_eaten = true;
     energy += FRUIT_ENERGY;
 }
 
 Prey* Prey::reproduce(Prey* parent, int id) {
     parent->energy -= LOST_ENERGY_REPRODUCTION;
     energy -= LOST_ENERGY_REPRODUCTION;
+    has_eaten = false;
+    parent->has_eaten = false;
     parent->reproduction_timeout = REPRODUCTION_TIMEOUT * (Random::rand()/2 + .75);
     reproduction_timeout = REPRODUCTION_TIMEOUT * (Random::rand()/2 + .75);
     Prey* child = new Prey(this, parent, id);
@@ -47,3 +50,6 @@ Prey* Prey::reproduce(Prey* parent, int id) {
 void Prey::fight(Animal* predator) {
     predator->health -= PRED_LOST_ENERGY_FIGHT_BY_PREY;
 }
+/* `PREY_LOST_ENERGY_FIGHT` is a constant representing the amount of energy a
+Predator loses when fighting a prey. This value is subtracted from the prey's
+health during a fight between a Predator and a prey. */

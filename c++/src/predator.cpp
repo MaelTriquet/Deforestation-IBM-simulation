@@ -44,6 +44,7 @@ void Predator::eat(Animal* prey) {
     energy += PRED_GAIN_ENERGY_EATING;
     // sets the prey rotting to 0 to remove it from m_pop next check
     prey->rotting -= 50;
+    has_eaten = true;
 }
 
 void Predator::fight(Animal* prey) {
@@ -53,6 +54,8 @@ void Predator::fight(Animal* prey) {
 Predator* Predator::reproduce(Predator* parent, int id) {
     parent->energy -= LOST_ENERGY_REPRODUCTION;
     energy -= LOST_ENERGY_REPRODUCTION;
+    has_eaten = false;
+    parent->has_eaten = false;
     Predator* child = new Predator(this, parent, id);
     reproduction_timeout = REPRODUCTION_TIMEOUT * (Random::rand()/2 + .75);
     parent->reproduction_timeout = REPRODUCTION_TIMEOUT * (Random::rand()/2 + .75);

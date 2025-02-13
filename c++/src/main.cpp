@@ -3,6 +3,7 @@
 #include <fstream>
 #include "simulation.hpp"
 bool appendCSV(const std::string& filename, Simulation& sim);
+bool emptyCSV(const std::string& filename);
 int main() {
 
     // Create window
@@ -18,6 +19,8 @@ int main() {
 
     Simulation simulation{window_width, window_height};
     Renderer renderer{window};
+
+    emptyCSV("../../res/plot_info.csv");
 
 
     while (window.isOpen()) {
@@ -43,6 +46,22 @@ int main() {
         simulation.m_pop[i]->brain.delete_content();
     }
 }
+
+bool emptyCSV(const std::string& filename) {
+    // Create an output file stream in truncate mode
+    std::ofstream file(filename, std::ios::trunc);
+
+    // Check if the file was opened successfully
+    if (!file.is_open()) {
+        std::cerr << "Error opening file: " << filename << std::endl;
+        return false;
+    }
+
+    // Close the file to ensure changes are saved
+    file.close();
+    return true;
+}
+
 
 bool appendCSV(const std::string& filename, Simulation& sim) {
     // Create an output file stream in append mode

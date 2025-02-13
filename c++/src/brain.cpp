@@ -106,10 +106,10 @@ void Brain::mutate() {
             addConn();
     }
 
-    if (Random::rand() < .35) // prob add connection
+    if (Random::rand() < .3) // prob add connection
         addConn();
 
-    if (Random::rand() < .2) // prob add neuron
+    if (Random::rand() < .1) // prob add neuron
         addNeuron();
 }
 

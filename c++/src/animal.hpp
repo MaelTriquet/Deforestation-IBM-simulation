@@ -17,6 +17,7 @@ public:
     sf::Vector2f position;
     sf::Vector2f velocity{0, 0};
     bool is_dead;
+    bool has_eaten = false;
     sf::Color color;
     int fleeing = 0; // fright-meter, set high when spotting an ennemy
     Vision vision; // brain input
