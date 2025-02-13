@@ -11,11 +11,11 @@ Simulation::Simulation(int window_width_, int window_height_) :
 {
 
     for (int i = 0; i < PREY_START; i++) {
-        Prey* prey = new Prey(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, id++);
+        Prey* prey = new Prey(sf::Vector2f{(float)Random::randint(0, window_width), (float)Random::randint(0, window_height)}, id++);
         m_pop.push_back(prey);
     }
     for (int i = 0; i < PRED_START; i++) {
-        Predator* pred = new Predator(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, id++);
+        Predator* pred = new Predator(sf::Vector2f{(float)Random::randint(0, window_width), (float)Random::randint(0, window_height)}, id++);
         m_pop.push_back(pred);
     }
     for (int i = 0; i < TREE_START; i++) {
@@ -36,8 +36,8 @@ Simulation::~Simulation() {
 void Simulation::update() {
     for (Tree& t : m_trees)
         t.update();
-    float nb_prey = 0.f;
-    float nb_pred = 0.f;
+    nb_prey = 0;
+    nb_pred = 0;
     for (int i = m_pop.size() - 1; i > -1; i--) {
         m_pop[i]->update();
         if (!m_pop[i]->is_dead) {
@@ -65,12 +65,15 @@ void Simulation::update() {
     // for (int i = 0; i < 10; i++) {
     //     Predator* pred = new Predator(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, id++);
     //     m_pop.push_back(pred);
-    // }
+    // } 
 
-    std::cout << "Prédateurs : " << nb_pred / m_pop.size() * 100 << "%, ";
-    std::cout << "Proies : " << nb_prey / m_pop.size() * 100 << "%, " << "Population : " << m_pop.size() << std::endl;
-
-
+    /*
+    std::cout << "Prédateurs : " << (float) nb_pred / m_pop.size() * 100 << "%, ";
+    std::cout << "Proies : " << (float) nb_prey / m_pop.size() * 100 << "%, ";
+    std::cout << "Morts : " << (m_pop.size() - (float) nb_pred - (float) nb_prey) / m_pop.size() * 100 << "%, ";
+    std::cout << "Population : " << m_pop.size() << std::endl;
+    */ 
+   
     for (Animal* a : m_pop)
         a->considerate_bounds(window_width, window_height);
     // update grid cells content
@@ -91,8 +94,8 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
     float distance_bounce = (animal_1->radius + animal_2->radius - norm_vect);
     if (distance_bounce > 0 && norm_vect != 0) {
         sf::Vector2f vect_normalised = vect_between_centers * (1.f / norm_vect);
-        animal_1->position += vect_normalised*distance_bounce;
-        animal_2->position -= vect_normalised*distance_bounce;
+        animal_1->position += (distance_bounce + animal_1->radius / 2)*vect_normalised;
+        animal_2->position -= (distance_bounce + animal_1->radius / 2)*vect_normalised;
     }
 
     // animal_1 = prey and animal_2 = predator
@@ -100,22 +103,27 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
         return collide(animal_2, animal_1);
 
     // animal_1 = predator and animal_2 = prey
-    if (animal_1->is_pred && animal_2->is_prey) {
+    // the predator must see the prey to eat it
+    // if the prey can see the predator but the predator can't see the prey, the prey can attack the predator
+    if (animal_1->is_pred && animal_2->is_prey && animal_1->has_in_rays(animal_2)) {
         if (animal_2->is_dead && animal_1->energy <= MAX_ENERGY)
             return ((Predator*)animal_1)->eat(animal_2);
-        return ((Predator*)animal_1)->fight(animal_2);
+        ((Predator*)animal_1)->fight(animal_2);
+    }
+    if (animal_1->is_pred && animal_2->is_prey && !(animal_1->has_in_rays(animal_2)) && animal_2->has_in_rays(animal_1)) {
+        ((Prey*)animal_2)->fight(animal_1);
     }
 
     // animal_1 = animal_2 = predator or animal_1 = animal_2 = prey
     if (animal_1->reproduction_timeout <= 0 && animal_2->reproduction_timeout <= 0 && !animal_1->is_dead && !animal_2->is_dead) {
-        if (animal_1->is_pred && (m_pop.size() < MAX_POP || (is_prey_dominating && m_pop.size() < MAX_POP * 1.5))) {
-            int nb_child = Random::randint(1, 4);
+        if (animal_1->is_pred && nb_pred < MAX_POP_PRED) {
+            int nb_child = Random::randint(PRED_N_MIN_CHILDREN, PRED_N_MAX_CHILDREN);
             for (int i = 0; i < nb_child; i++) {
                 Predator* child = ((Predator*)animal_1)->reproduce((Predator*)animal_2, id++);
                 m_pop.push_back(child);
             }
-        } else if (animal_2->is_prey && (m_pop.size() < MAX_POP || (!is_prey_dominating && m_pop.size() < MAX_POP * 1.5))) {
-            int nb_child = Random::randint(2, 4);
+        } else if (animal_2->is_prey && nb_prey < MAX_POP_PREY) {
+            int nb_child = Random::randint(PREY_N_MIN_CHILDREN, PREY_N_MAX_CHILDREN);
             for (int i = 0; i < nb_child; i++) {
                 Prey* child = ((Prey*)animal_1)->reproduce((Prey*)animal_2, id++);
                 m_pop.push_back(child);

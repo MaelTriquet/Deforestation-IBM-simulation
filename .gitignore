@@ -9,3 +9,7 @@ build
 
 # configuration files
 .vscode
+
+# other files
+temp*.*
+todo.md

@@ -49,3 +49,8 @@ Prey* Prey::reproduce(Prey* parent, int id) {
     child->reproduction_timeout = REPRODUCTION_TIMEOUT;
     return child;
 };
+
+void Prey::fight(Animal* predator) {
+    float predator_energy = (float)predator->energy;
+    predator->energy -= PRED_LOST_ENERGY_FIGHT_BY_PREY;
+}
