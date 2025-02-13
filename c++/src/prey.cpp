@@ -39,10 +39,10 @@ void Prey::eat() {
 Prey* Prey::reproduce(Prey* parent, int id) {
     parent->energy -= LOST_ENERGY_REPRODUCTION;
     energy -= LOST_ENERGY_REPRODUCTION;
-    parent->reproduction_timeout = REPRODUCTION_TIMEOUT;
-    reproduction_timeout = REPRODUCTION_TIMEOUT;
+    parent->reproduction_timeout = REPRODUCTION_TIMEOUT * (Random::rand()/2 + .75);
+    reproduction_timeout = REPRODUCTION_TIMEOUT * (Random::rand()/2 + .75);
     Prey* child = new Prey(this, parent, id);
-    child->reproduction_timeout = REPRODUCTION_TIMEOUT;
+    child->reproduction_timeout = REPRODUCTION_TIMEOUT * (Random::rand()/2 + .75);
     return child;
 };
 

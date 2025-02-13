@@ -34,17 +34,12 @@ void Renderer::render(const Simulation& simulation) const {
             }
         }
         sf::CircleShape shape(a->radius);
-        if (a->is_colliding) {
-            shape.setFillColor(sf::Color{255, 0, 255});
-        } else if (a->invisible > 0) {
+        if (a->invisible > 0) {
             shape.setFillColor(sf::Color::White);
-        } else {
-            shape.setFillColor(a->color);
-        }
-        if (a->is_dead) {
+        } else if (a->is_dead) {
             shape.setFillColor(sf::Color{255, 0, 255, (sf::Uint8)((float) a->rotting / ROT_TIME * 255)});
         } else {
-            shape.setFillColor(sf::Color{a->color.r, a->color.g, a->color.b, 255});
+            shape.setFillColor(a->color);
         }
         shape.setPosition(a->position - sf::Vector2f(a->radius, a->radius));
         m_target.draw(shape);

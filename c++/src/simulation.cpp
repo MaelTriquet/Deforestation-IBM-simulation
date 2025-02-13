@@ -323,13 +323,15 @@ float Simulation::segmentIntersectsCircle(const sf::Vector2f& A, const sf::Vecto
 // check invisibility
 void Simulation::collide(Tree& t, Animal* a) {
     a->is_in_tree = true;
-    if (a->is_prey) {
-        if (a->in_tree == &t && a->energy <= MAX_ENERGY) return ((Prey*)a)->eat();
+    if (!a->in_tree)
         a->in_tree = &t;
-        if (a->energy <= MAX_ENERGY) ((Prey*)a)->eat();
+    if (a->is_prey) {
+        if (a->energy <= MAX_ENERGY) 
+            ((Prey*)a)->eat();
     }
     if (a->in_tree == &t) return;
     a->in_tree = &t;
-    if (Random::rand() < t.hiding_prob)
+    if (Random::rand() < t.hiding_prob) {
         a->invisible = INVISIBILITY_TIME;
+    }
 }
