@@ -54,7 +54,7 @@ void Animal::look() {
 bool Animal::has_in_rays(Animal* animal) {
     bool in_rays = false;
     for (int i = 0; i < NB_RAY; i++) {
-        if ((animal->is_pred && vision.rays[i] > 0) || (animal->is_prey && vision.rays[i + NB_RAY] > 0)) {
+        if ((is_pred && !animal->is_pred && vision.rays[i] > 0 && vision.rays[i+NB_RAY] > 0) || (is_prey && vision.rays[i] > 0 && vision.rays[i+NB_RAY] < 0)) {
             in_rays = true;
             break;
         }

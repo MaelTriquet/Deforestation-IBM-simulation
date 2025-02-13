@@ -67,11 +67,13 @@ void Simulation::update() {
     //     m_pop.push_back(pred);
     // } 
 
+    /*
     std::cout << "Prédateurs : " << (float) nb_pred / m_pop.size() * 100 << "%, ";
     std::cout << "Proies : " << (float) nb_prey / m_pop.size() * 100 << "%, ";
     std::cout << "Morts : " << (m_pop.size() - (float) nb_pred - (float) nb_prey) / m_pop.size() * 100 << "%, ";
     std::cout << "Population : " << m_pop.size() << std::endl;
-
+    */ 
+   
     for (Animal* a : m_pop)
         a->considerate_bounds(window_width, window_height);
     // update grid cells content
