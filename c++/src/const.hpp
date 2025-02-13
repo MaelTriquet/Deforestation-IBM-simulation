@@ -2,8 +2,8 @@
 #include <cmath>
 
 // simulation
-#define MAX_POP_PRED 500
-#define MAX_POP_PREY 500
+#define MAX_POP_PRED 100
+#define MAX_POP_PREY 100
 #define PRED_START MAX_POP_PRED * .4f
 #define PREY_START MAX_POP_PREY * .5f
 #define TREE_START 250

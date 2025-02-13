@@ -113,10 +113,13 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
     if (animal_1->is_pred && animal_2->is_prey && !(animal_1->has_in_rays(animal_2)) && animal_2->has_in_rays(animal_1)) {
         ((Prey*)animal_2)->fight(animal_1);
     }
+    if (animal_1->is_pred && animal_2->is_prey)
+        return;
 
     // animal_1 = animal_2 = predator or animal_1 = animal_2 = prey
     if (animal_1->reproduction_timeout <= 0 && animal_2->reproduction_timeout <= 0 && !animal_1->is_dead && !animal_2->is_dead) {
         if (animal_1->is_pred && nb_pred < MAX_POP_PRED) {
+            std::cout << Random::randint(1, 5000) << " : " << animal_1->is_pred << " / " << animal_2->is_prey << "\n";
             int nb_child = Random::randint(PRED_N_MIN_CHILDREN, PRED_N_MAX_CHILDREN);
             for (int i = 0; i < nb_child; i++) {
                 Predator* child = ((Predator*)animal_1)->reproduce((Predator*)animal_2, id++);
