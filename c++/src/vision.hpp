@@ -5,6 +5,7 @@
 
 struct Vision {
     float energy;
+    float health;
     float fleeing;
     sf::Vector2f velocity;
     float rays[NB_RAY * 2];

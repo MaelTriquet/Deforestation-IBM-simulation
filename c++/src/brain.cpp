@@ -82,8 +82,9 @@ void Brain::think(const Vision& vision, float* decision) {
     neurons[1]->value = vision.fleeing;
     neurons[3]->value = vision.velocity.x;
     neurons[4]->value = vision.velocity.y;
-    for (int i = 5; i < inputs; i++)
-        neurons[i]->value = vision.rays[i-5];
+    neurons[5]->value = vision.health;
+    for (int i = 6; i < inputs; i++)
+        neurons[i]->value = vision.rays[i-6];
 
     organiseNeurons();
     // feedForward

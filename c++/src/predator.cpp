@@ -47,16 +47,15 @@ void Predator::eat(Animal* prey) {
 }
 
 void Predator::fight(Animal* prey) {
-    float prey_energy = (float)prey->energy;
-    prey->energy -= PREY_LOST_ENERGY_FIGHT;
+    prey->health -= PREY_LOST_ENERGY_FIGHT;
 }
 
 Predator* Predator::reproduce(Predator* parent, int id) {
     parent->energy -= LOST_ENERGY_REPRODUCTION;
     energy -= LOST_ENERGY_REPRODUCTION;
     Predator* child = new Predator(this, parent, id);
-    reproduction_timeout = REPRODUCTION_TIMEOUT;
-    parent->reproduction_timeout = REPRODUCTION_TIMEOUT;
-    child->reproduction_timeout = REPRODUCTION_TIMEOUT;
+    reproduction_timeout = REPRODUCTION_TIMEOUT * (Random::rand()/2 + .75);
+    parent->reproduction_timeout = REPRODUCTION_TIMEOUT * (Random::rand()/2 + .75);
+    child->reproduction_timeout = REPRODUCTION_TIMEOUT * (Random::rand()/2 + .75);
     return child;
 };
