@@ -49,8 +49,7 @@ void Predator::eat(Animal* prey) {
 }
 
 void Predator::fight(Animal* prey) {
-    float prey_energy = (float)prey->energy;
-    prey->energy -= PREY_LOST_ENERGY_FIGHT;
+    prey->health -= PREY_LOST_ENERGY_FIGHT;
 }
 
 Predator* Predator::reproduce(Predator* parent, int id) {

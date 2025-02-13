@@ -18,10 +18,6 @@ Prey::Prey(Prey* parent_1_, Prey* parent_2_, int id_) :
     is_pred = false;
     is_prey = true;
     max_velocity = PREY_MAX_VELOCITY;
-    // energy = parent_1_->energy + parent_2_->energy;
-    // energy /= 2;
-    // if (energy > INITIAL_ENERGY)
-    //     energy = INITIAL_ENERGY;
     brain.delete_content();
     if (Random::rand() < .5)
         brain = Brain(parent_1_->brain, parent_2_->brain);
@@ -51,6 +47,5 @@ Prey* Prey::reproduce(Prey* parent, int id) {
 };
 
 void Prey::fight(Animal* predator) {
-    float predator_energy = (float)predator->energy;
     predator->energy -= PRED_LOST_ENERGY_FIGHT_BY_PREY;
 }

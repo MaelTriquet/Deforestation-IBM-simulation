@@ -4,7 +4,7 @@ Animal::Animal(sf::Vector2f position_, int index_) :
     position(position_),
     is_dead(false),
     index{index_},
-    brain{4 + NB_RAY * 2, 2}
+    brain{5 + NB_RAY * 2, 2}
 {
     brain.addConn();
 };
@@ -28,24 +28,34 @@ void Animal::move(int window_width, int window_height) {
     velocity = sf::Vector2f(cos(decision[0]*M_PI_2), sin(decision[0]*M_PI_2));
     velocity *= decision[1] * max_velocity;
     position += velocity;
-    // energy -= decision[2] * decision[2] * max_velocity /(float)PREY_MAX_VELOCITY;
-    if (is_prey) {
-        energy -= decision[1] * decision[1];
-    }
-    else {
-        energy -= decision[1] * decision[1] * max_velocity + 2;
+    
+    if (energy > 0) {
+        if (is_prey) {
+            energy -= decision[1] * decision[1];
+        }
+        else {
+            energy -= decision[1] * decision[1] * max_velocity + 2;
+        }
+    } else {
+        if (is_prey) {
+            health -= decision[1] * decision[1];
+        }
+        else {
+            health -= decision[1] * decision[1] * max_velocity + 2;
+        }
     }
     considerate_bounds(window_width, window_height);
 };
 
 void Animal::die() {
-    is_dead = (energy <= 0);
+    is_dead = (health <= 0);
 };
 
 // fills the vision parts that don't depend on other animals
 // ray vision handled in Simulation::fill_ray_visions
 void Animal::look() {
-    vision.energy = (float)energy / (float)MAX_ENERGY;
+    vision.energy = energy / (float)MAX_ENERGY;
+    vision.health = health / (float)MAX_ENERGY;
     vision.fleeing = fleeing;
     vision.velocity = velocity / max_velocity;
 }
@@ -64,8 +74,8 @@ bool Animal::has_in_rays(Animal* animal) {
 
 // updates all naturally decrementing attributes and check death
 void Animal::update() {
-    if (energy > 2*INITIAL_ENERGY)
-        energy = 2*INITIAL_ENERGY;
+    if (energy > MAX_ENERGY)
+        energy = MAX_ENERGY;
     die();
     is_colliding = false;
     if (!is_in_tree)
