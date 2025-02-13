@@ -26,22 +26,27 @@ void Animal::move(int window_width, int window_height) {
     look();
     brain.think(vision, decision);
     velocity = sf::Vector2f(cos(decision[0]*M_PI_2), sin(decision[0]*M_PI_2));
-    velocity *= decision[1] * max_velocity;
+    if (decision[1] > 1)
+        velocity *= max_velocity;
+    else if (decision[1] < -1)
+        velocity *= -max_velocity;
+    else 
+        velocity *= decision[1] * max_velocity;
     position += velocity;
     
     if (energy > 0) {
         if (is_prey) {
-            energy -= decision[1] * decision[1];
+            energy -= decision[1] * decision[1] * max_velocity;
         }
         else {
-            energy -= decision[1] * decision[1] * max_velocity + 2;
+            energy -= decision[1] * decision[1] * max_velocity + 3;
         }
     } else {
         if (is_prey) {
-            health -= decision[1] * decision[1];
+            health -= decision[1] * decision[1] * max_velocity;
         }
         else {
-            health -= decision[1] * decision[1] * max_velocity + 2;
+            health -= decision[1] * decision[1] * max_velocity + 3;
         }
     }
     considerate_bounds(window_width, window_height);

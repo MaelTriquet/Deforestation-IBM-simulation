@@ -41,7 +41,10 @@ Predator::Predator(Predator* parent_1_, Predator* parent_2_, int id_) :
 };
 
 void Predator::eat(Animal* prey) {
-    energy += PRED_GAIN_ENERGY_EATING;
+    if (energy <= MAX_ENERGY)
+        energy += PRED_GAIN_ENERGY_EATING;
+    else 
+        health += PRED_GAIN_ENERGY_EATING;
     // sets the prey rotting to 0 to remove it from m_pop next check
     prey->rotting -= 50;
     has_eaten = true;

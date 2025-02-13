@@ -39,15 +39,16 @@ void Renderer::render(const Simulation& simulation) const {
         } else if (a->is_dead) {
             shape.setFillColor(sf::Color{255, 0, 255, (sf::Uint8)((float) a->rotting / ROT_TIME * 255)});
         } else {
-            shape.setFillColor(a->color);
+            shape.setFillColor(sf::Color{a->color.r, a->color.g, a->color.b, (sf::Uint8)(a->health / (float)MAX_ENERGY * 255)});
         }
         shape.setPosition(a->position - sf::Vector2f(a->radius, a->radius));
         m_target.draw(shape);
     }
-    for (const Tree t : simulation.m_trees) {
-        sf::CircleShape shape(t.radius);
-        shape.setFillColor(t.color);
-        shape.setPosition(t.position - sf::Vector2f(t.radius, t.radius));
+    for (const Tree* t : simulation.m_trees) {
+        if (t->is_dead) continue;
+        sf::CircleShape shape(t->radius);
+        shape.setFillColor(t->color);
+        shape.setPosition(t->position - sf::Vector2f(t->radius, t->radius));
         m_target.draw(shape);
     }
 }

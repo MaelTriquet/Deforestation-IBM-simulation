@@ -13,7 +13,7 @@ class Animal {
 public:
     int radius = ANIMALS_RADIUS;// size of the animal
     float energy = INITIAL_ENERGY;
-    float health = INITIAL_ENERGY;
+    float health = MAX_ENERGY;
     sf::Vector2f position;
     sf::Vector2f velocity{0, 0};
     bool is_dead;

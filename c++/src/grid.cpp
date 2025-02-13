@@ -30,12 +30,16 @@ void Grid::update_animals(std::vector<Animal*>& pop) const {
 }
 
 // trees don't move, only associate once
-void Grid::init_trees(std::vector<Tree>& trees) const {
+void Grid::init_trees(std::vector<Tree*>& trees) const {
+    for (int i = 0; i < width * height; i++)
+        cells[i].trees.clear();
+    
     int i, j;
-    for (Tree& t : trees) {
-        j = std::floor(t.position.x) / radius;
-        i = std::floor(t.position.y) / radius;
-        cells[i * width + j].trees.push_back(&t);
+    for (Tree* t : trees) {
+        if (t->is_dead) continue;
+        j = std::floor(t->position.x) / radius;
+        i = std::floor(t->position.y) / radius;
+        cells[i * width + j].trees.push_back(t);
     }
 }
 
