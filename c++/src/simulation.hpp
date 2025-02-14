@@ -11,7 +11,7 @@ private:
 public:
     static int id; // next animal id
     std::vector<Animal*> m_pop; // alive pop
-    std::vector<Tree> m_trees; // tree pop
+    std::vector<Tree*> m_trees; // tree pop
     int window_width;
     int window_height;
     // collision grid
@@ -30,6 +30,6 @@ public:
     void fill_ray_visions();
     void detect_collisions();
     float segmentIntersectsCircle(const sf::Vector2f& A, const sf::Vector2f& AB, const sf::Vector2f& C, int radius);
-    void collide(Tree& t, Animal* a);
+    void collide(Tree* t, Animal* a);
     void collide(Animal* animal_1, Animal* animal_2);
 };

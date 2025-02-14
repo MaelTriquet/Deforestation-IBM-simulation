@@ -19,7 +19,7 @@ Simulation::Simulation(int window_width_, int window_height_) :
         m_pop.push_back(pred);
     }
     for (int i = 0; i < TREE_START; i++) {
-        m_trees.emplace_back(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, 0.25);
+        m_trees.push_back(new Tree(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, 0.25));
     }
 
     grid.init_trees(m_trees);
@@ -30,12 +30,26 @@ Simulation::Simulation(int window_width_, int window_height_) :
 Simulation::~Simulation() {
     for (int i = 0; i < m_pop.size(); i++)
         delete m_pop[i];
+
+    for (int i = 0; i < m_trees.size(); i++)
+        delete m_trees[i];
 }
 
 
 void Simulation::update() {
-    for (Tree& t : m_trees)
-        t.update();
+
+    if (Random::rand() < .05)
+        m_trees.push_back(new Tree(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, 0.25));
+    Tree* new_tree;
+    int nb_tree = 0;
+    for (Tree* t : m_trees) {
+        if (t->is_dead) continue;
+        nb_tree++;
+        new_tree = t->update();
+        if (new_tree != 0) {
+            m_trees.push_back(new_tree);
+        }
+    }
     nb_prey = 0;
     nb_pred = 0;
     for (int i = m_pop.size() - 1; i > -1; i--) {
@@ -70,6 +84,7 @@ void Simulation::update() {
     std::cout << "Prédateurs : " << nb_pred << ", ";
     std::cout << "Proies : " << nb_prey << ", ";
     std::cout << "Morts : " << m_pop.size() - nb_pred - nb_prey << ", ";
+    std::cout << "Arbres : " << nb_tree << ", ";
     std::cout << "Population : " << m_pop.size() << std::endl;
    
     for (Animal* a : m_pop)
@@ -77,6 +92,8 @@ void Simulation::update() {
     // update grid cells content
     grid.update_animals(m_pop);
     ray_grid.update_animals(m_pop);
+    grid.init_trees(m_trees);
+    ray_grid.init_trees(m_trees);
 
     // check for events
     detect_collisions();
@@ -104,7 +121,7 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
     // the predator must see the prey to eat it
     // if the prey can see the predator but the predator can't see the prey, the prey can attack the predator
     if (animal_1->is_pred && animal_2->is_prey && animal_1->has_in_rays(animal_2)) {
-        if (animal_2->is_dead && animal_1->energy <= MAX_ENERGY)
+        if (animal_2->is_dead && (animal_1->energy <= MAX_ENERGY || animal_1->health <= MAX_ENERGY))
             return ((Predator*)animal_1)->eat(animal_2);
         ((Predator*)animal_1)->fight(animal_2);
     }
@@ -189,7 +206,7 @@ void Simulation::detect_collisions() {
                 for (Tree* tree : neighbour_cell->trees) {
                     if (collision_with_tree(animal_current_cell, tree)) {
                         // animal_current_cell->is_colliding = true;
-                        collide(*tree, animal_current_cell);
+                        collide(tree, animal_current_cell);
                     }
                 }
             }
@@ -321,17 +338,17 @@ float Simulation::segmentIntersectsCircle(const sf::Vector2f& A, const sf::Vecto
 }
 
 // check invisibility
-void Simulation::collide(Tree& t, Animal* a) {
+void Simulation::collide(Tree* t, Animal* a) {
     a->is_in_tree = true;
     if (!a->in_tree)
-        a->in_tree = &t;
+        a->in_tree = t;
     if (a->is_prey) {
-        if (a->energy <= MAX_ENERGY) 
+        if ((a->energy <= MAX_ENERGY || a->health <= MAX_ENERGY)) 
             ((Prey*)a)->eat();
     }
-    if (a->in_tree == &t) return;
-    a->in_tree = &t;
-    if (Random::rand() < t.hiding_prob) {
+    if (a->in_tree == t) return;
+    a->in_tree = t;
+    if (Random::rand() < t->hiding_prob) {
         a->invisible = INVISIBILITY_TIME;
     }
 }

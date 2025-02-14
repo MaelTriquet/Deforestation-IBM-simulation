@@ -32,7 +32,7 @@ public:
     ~Grid();
 
     void update_animals(std::vector<Animal*>& pop) const;
-    void init_trees(std::vector<Tree>& trees) const;
+    void init_trees(std::vector<Tree*>& trees) const;
 
     std::unique_ptr<std::vector<Cell*>> get_neighbours(int index);
 };
