@@ -10,6 +10,7 @@ build
 # configuration files
 .vscode
 
+res/bayes
 # other files
 temp*.*
 todo.md

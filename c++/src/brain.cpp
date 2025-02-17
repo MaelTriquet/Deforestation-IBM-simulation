@@ -92,7 +92,7 @@ void Brain::think(const Vision& vision, float* decision) {
 
     // fill input
     neurons[0]->value = vision.energy;
-    neurons[1]->value = vision.velocity.x; // ici
+    neurons[1]->value = vision.velocity.x;
     neurons[2]->value = vision.velocity.y;
     neurons[3]->value = vision.health;
     for (int i = 4; i < inputs; i++)
@@ -209,11 +209,11 @@ void Brain::delete_content() {
 }
 
 void Brain::show() const {
-    for (Neuron* n : organised_neurons) {
-        std::cout << "Layer : " << n->layer << ", idx : " << n->innovation << ", connected to :\n";
-        for (Gene* g : n->outgoing_conns) {
-            std::cout << g->to->innovation << " ";
-        }
-        std::cout << "\n\n";
-    }
+    // for (Neuron* n : organised_neurons) {
+    //     std::cout << "Layer : " << n->layer << ", idx : " << n->innovation << ", connected to :\n";
+    //     for (Gene* g : n->outgoing_conns) {
+    //         std::cout << g->to->innovation << " ";
+    //     }
+    //     std::cout << "\n\n";
+    // }
 }

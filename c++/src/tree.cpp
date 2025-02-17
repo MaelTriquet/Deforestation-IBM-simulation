@@ -6,8 +6,8 @@ Tree::Tree(sf::Vector2f position_, float hiding_prob_) :
 {};
 
 Tree* Tree::update() {
-    if (radius < MIN_TREES_RADIUS)
-        is_dead = true;
+    // if (radius < 1)
+    //     is_dead = true;
     if (is_dead) return 0x0;
     Tree* new_tree = 0;
     if (radius < max_radius) {
@@ -28,5 +28,5 @@ Tree* Tree::update() {
         new_tree = new Tree(position + sf::Vector2f(x, y), hiding_prob);
         has_reproduced = true;
     }
-    return new_tree;
+    return 0x0;
 }

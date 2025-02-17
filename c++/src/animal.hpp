@@ -30,7 +30,7 @@ public:
     bool is_colliding = false;
     bool is_in_tree = false;
     Tree* in_tree = nullptr; // if is_in_tree = true, this is the pointer to that tree
-    int rotting = ROT_TIME; // how long a corpse stays around after death
+    float rotting = ROT_TIME; // how long a corpse stays around after death
     int invisible = 0; // camouflage counter when hiding in a tree successfully
     int reproduction_timeout = REPRODUCTION_TIMEOUT;
     sf::Color color;

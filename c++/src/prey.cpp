@@ -28,12 +28,14 @@ Prey::Prey(Prey* parent_1_, Prey* parent_2_, int id_) :
 };
 
 
+
 void Prey::eat() {
     if (in_tree->is_dead){
         in_tree = nullptr;
         return;
     }
-    in_tree->radius -= 2;
+    if (in_tree->radius > 1)
+    in_tree->radius -= 1;
     has_eaten = true;
     if (energy <= MAX_ENERGY)
         energy += FRUIT_ENERGY;

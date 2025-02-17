@@ -9,6 +9,7 @@ private:
     static std::mt19937 gen;
     static std::uniform_real_distribution<> dis;
 public:
+    static long long seed;
     static float rand();
     static int randint(int max);
     static int randint(int min, int max);

@@ -8,6 +8,13 @@ Renderer::Renderer(sf::RenderTarget& target):
 
 // draws everything from the simulation
 void Renderer::render(const Simulation& simulation) const {
+    for (const Tree* t : simulation.m_trees) {
+        if (t->is_dead) continue;
+        sf::CircleShape shape(t->radius);
+        shape.setFillColor(t->color);
+        shape.setPosition(t->position - sf::Vector2f(t->radius, t->radius));
+        m_target.draw(shape);
+    }
     for (const Animal* a : simulation.m_pop) {
         // if (a == simulation.m_pop[0] or a == simulation.m_pop[1]) {
         if (false) {
@@ -38,18 +45,11 @@ void Renderer::render(const Simulation& simulation) const {
         if (a->invisible > 0) {
             shape.setFillColor(sf::Color::White);
         } else if (a->is_dead) {
-            shape.setFillColor(sf::Color{255, 0, 255, (sf::Uint8)((float) a->rotting / ROT_TIME * 255)});
+            shape.setFillColor(sf::Color{255, 0, 255});//, (sf::Uint8)((float) a->rotting / ROT_TIME * 255)});
         } else {
             shape.setFillColor(sf::Color{a->color.r, a->color.g, a->color.b, (sf::Uint8)(a->health / (float)MAX_HEALTH * 255)});
         }
         shape.setPosition(a->position - sf::Vector2f(a->radius, a->radius));
-        m_target.draw(shape);
-    }
-    for (const Tree* t : simulation.m_trees) {
-        if (t->is_dead) continue;
-        sf::CircleShape shape(t->radius);
-        shape.setFillColor(t->color);
-        shape.setPosition(t->position - sf::Vector2f(t->radius, t->radius));
         m_target.draw(shape);
     }
 }

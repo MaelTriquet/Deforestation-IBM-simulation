@@ -22,15 +22,6 @@ void Animal::considerate_bounds(int window_width, int window_height) {
         position.y -= window_height;
 }
 
-// fills the vision parts that don't depend on other animals
-// ray vision handled in Simulation::fill_ray_visions
-void Animal::look() {
-    vision.energy = energy / (float)MAX_ENERGY;
-    vision.health = health / (float)MAX_ENERGY;
-    vision.fleeing = fleeing; // ici
-    vision.velocity = velocity / max_velocity;
-}
-
 // look, think and act
 void Animal::move(int window_width, int window_height) {
 
@@ -76,7 +67,17 @@ void Animal::die() {
     is_dead = (health <= 0);
 };
 
-// checks if the animal can see another animal
+// fills the vision parts that don't depend on other animals
+// ray vision handled in Simulation::fill_ray_visions
+void Animal::look() {
+    vision.energy = energy / (float)MAX_ENERGY;
+    vision.health = health / (float)MAX_ENERGY;
+    vision.fleeing = fleeing;
+    vision.velocity.x = brain.neurons[brain.neurons.size()-2]->value;
+    vision.velocity.y = brain.neurons[brain.neurons.size()-1]->value;
+}
+
+// check is the animal sees another animal
 bool Animal::has_in_rays(Animal* animal) {
     bool in_rays = false;
     for (int i = 0; i < NB_RAY; i++) {
@@ -100,14 +101,18 @@ void Animal::update() {
 
     if (!is_in_tree)
         invisible = 0;
-    else    
+    else
         invisible--;
     is_in_tree = false;
 
     if (is_dead && is_pred)
-        rotting = 0;
-    if (is_dead)
-        rotting--;
-    
+        rotting = -1000;
+    if (is_dead) {
+        rotting -= .5;
+        radius =  rotting / (float) ROT_TIME * ANIMALS_RADIUS * .7;
+    }
+
+    is_in_tree = false;
+
     reproduction_timeout--;
 }
