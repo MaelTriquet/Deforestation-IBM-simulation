@@ -1,7 +1,8 @@
 #include "random.hpp"
 
 std::random_device Random::rd;
-std::mt19937 Random::gen(rd());
+long long Random::seed = rd();
+std::mt19937 Random::gen(seed);
 std::uniform_real_distribution<> Random::dis(0.0, 1.0);
 
 float Random::rand() {

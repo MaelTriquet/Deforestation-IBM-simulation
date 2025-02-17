@@ -42,6 +42,8 @@ int main() {
 		window.display();
     }
 
+    std::cout << Random::seed << "\n";
+
     for (int i = 0; i < simulation.m_pop.size(); i++) {
         simulation.m_pop[i]->brain.delete_content();
     }

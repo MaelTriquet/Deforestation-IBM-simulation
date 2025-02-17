@@ -4,7 +4,7 @@ Animal::Animal(sf::Vector2f position_, int index_) :
     position(position_),
     is_dead(false),
     index{index_},
-    brain{5 + NB_RAY * 2, 2}
+    brain{4 + NB_RAY * 2, 2}
 {
     brain.addConn();
 };
@@ -62,7 +62,8 @@ void Animal::look() {
     vision.energy = energy / (float)MAX_ENERGY;
     vision.health = health / (float)MAX_ENERGY;
     vision.fleeing = fleeing;
-    vision.velocity = velocity / max_velocity;
+    vision.velocity.x = brain.neurons[brain.neurons.size()-2]->value;
+    vision.velocity.y = brain.neurons[brain.neurons.size()-1]->value;
 }
 
 // check is the animal sees another animal
@@ -85,12 +86,14 @@ void Animal::update() {
     is_colliding = false;
     if (!is_in_tree)
         invisible = 0;
-    else    
+    else
         invisible--;
     if (is_dead && is_pred)
         rotting = -1000;
-    if (is_dead)
-        rotting--;
+    if (is_dead) {
+        rotting -= .5;
+        radius =  rotting / (float) ROT_TIME * ANIMALS_RADIUS * .7;
+    }
     is_in_tree = false;
     reproduction_timeout--;
 }

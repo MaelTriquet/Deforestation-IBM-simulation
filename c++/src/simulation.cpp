@@ -20,6 +20,7 @@ Simulation::Simulation(int window_width_, int window_height_) :
     }
     for (int i = 0; i < TREE_START; i++) {
         m_trees.push_back(new Tree(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, 0.25));
+        m_trees[m_trees.size()-1]->radius = TREES_RADIUS;
     }
 
     grid.init_trees(m_trees);
@@ -38,7 +39,7 @@ Simulation::~Simulation() {
 
 void Simulation::update() {
 
-    if (Random::rand() < .05)
+    if (Random::rand() < -1)
         m_trees.push_back(new Tree(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, 0.25));
     Tree* new_tree;
     int nb_tree = 0;
