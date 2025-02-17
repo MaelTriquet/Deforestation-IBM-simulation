@@ -34,6 +34,8 @@ if [ $? -eq 0 ]; then
         echo "Running the program (Attempt $i):"
         ./MySFMLProject > "$RUN_DIR/results.txt"
         echo "Output saved to $RUN_DIR/results.txt"
+        echo "Score : "
+        cat "$RUN_DIR/results.txt"
 
         cp "/home/mael/Documents/PFE/PFE/Deforestation-IBM-simulation/res/plot_info.csv" "$RUN_DIR"
         echo "saved csv file to $RUN_DIR/"

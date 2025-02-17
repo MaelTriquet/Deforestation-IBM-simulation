@@ -76,17 +76,16 @@ int main() {
     }
 
     if (simulation.nb_pred <= 0) {
-        std::cout << delta_t_pred;
         if (delta_t_pred >= 10000)
             score += .999;
         else
-            score += (float)delta_t_pred/10000;
+            score += ((float)delta_t_pred)/10000.;
     }
     if (simulation.nb_prey <= 0) {
         if (delta_t_prey >= 10000)
             score += .999;
         else
-            score += (float)delta_t_prey/10000;
+            score += ((float)delta_t_prey)/10000.;
     }
 
     std::cout << score << "\n";
