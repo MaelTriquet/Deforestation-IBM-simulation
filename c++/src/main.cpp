@@ -29,7 +29,7 @@ int main() {
 
     emptyCSV("../../res/plot_info.csv");
 
-    while (max_pop_frame > 0 && simulation.nb_pred > 0 && simulation.nb_prey > 0) {
+    while (max_pop_frame > 0 && simulation.nb_pred > 1 && simulation.nb_prey > 1) {
         // check for user closing the window
         // sf::Event event{};
         // while (window.pollEvent(event)) {
@@ -75,13 +75,13 @@ int main() {
 		// window.display();
     }
 
-    if (simulation.nb_pred <= 0) {
+    if (simulation.nb_pred <= 1) {
         if (delta_t_pred >= 10000)
             score += .999;
         else
             score += ((float)delta_t_pred)/10000.;
     }
-    if (simulation.nb_prey <= 0) {
+    if (simulation.nb_prey <= 1) {
         if (delta_t_prey >= 10000)
             score += .999;
         else

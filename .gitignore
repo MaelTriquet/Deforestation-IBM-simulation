@@ -10,7 +10,10 @@ build
 # configuration files
 .vscode
 
-res/bayes
 # other files
 temp*.*
 todo.md
+
+# results
+plot_info.csv
+res/bayes

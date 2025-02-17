@@ -20,9 +20,9 @@ public:
     Grid ray_grid;
     bool is_prey_dominating = true;
 
-    int nb_prey = 1;
-    int nb_pred = 1;
-    int nb_tree = 1;
+    int nb_prey = 2;
+    int nb_pred = 2;
+    int nb_tree = 2;
 
     Simulation(int window_width_, int window_height_);
     ~Simulation();
