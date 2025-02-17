@@ -40,7 +40,7 @@ void Renderer::render(const Simulation& simulation) const {
         } else if (a->is_dead) {
             shape.setFillColor(sf::Color{255, 0, 255, (sf::Uint8)((float) a->rotting / ROT_TIME * 255)});
         } else {
-            shape.setFillColor(sf::Color{a->color.r, a->color.g, a->color.b, (sf::Uint8)(a->health / (float)MAX_ENERGY * 255)});
+            shape.setFillColor(sf::Color{a->color.r, a->color.g, a->color.b, (sf::Uint8)(a->health / (float)MAX_HEALTH * 255)});
         }
         shape.setPosition(a->position - sf::Vector2f(a->radius, a->radius));
         m_target.draw(shape);

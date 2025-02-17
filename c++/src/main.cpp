@@ -13,7 +13,7 @@ int main() {
     sf::ContextSettings settings;
     settings.antialiasingLevel = 1;
     sf::RenderWindow window(sf::VideoMode(window_width, window_height), "PFE", sf::Style::Default, settings);
-    const uint32_t frame_rate = 60;
+    const uint32_t frame_rate = FRAME_RATE;
     window.setFramerateLimit(frame_rate);
 
 
@@ -73,23 +73,8 @@ bool appendCSV(const std::string& filename, Simulation& sim) {
         return false;
     }
 
-    int nb_prey = 0;
-    int nb_pred = 0;
-    int nb_dead = 0;
-    for (int i = 0; i < sim.m_pop.size(); i++) {
-        if (sim.m_pop[i]->is_dead){
-            nb_dead++;
-            continue;
-        }
-        if (sim.m_pop[i]->is_pred) {
-            nb_pred++;
-            continue;
-        }
-        nb_prey++;
-    }
-
     // Write data to the file
-    file << nb_pred << "," << nb_prey << "," << nb_dead << "\n";
+    file << sim.nb_pred << "," << sim.nb_prey << "," << sim.m_pop.size() - sim.nb_pred - sim.nb_prey << "," << sim.nb_tree << "\n";
 
     // Close the file
     file.close();

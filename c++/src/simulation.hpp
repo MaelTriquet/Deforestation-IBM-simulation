@@ -22,6 +22,7 @@ public:
 
     int nb_prey;
     int nb_pred;
+    int nb_tree;
 
     Simulation(int window_width_, int window_height_);
     ~Simulation();

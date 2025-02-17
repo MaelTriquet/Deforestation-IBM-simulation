@@ -5,22 +5,23 @@
 Brain::Brain(int inputs_, int outputs_) :
     inputs(inputs_),
     outputs(outputs_),
-    layers{2},
-    last_neuron_idx{0}
+    layers{2}, // ici
+    last_neuron_idx{0} // ici
 {
-    // create necessary neurons
-
+    // create the input layer neurons
     for (int i = 0; i < inputs; i++)
         neurons.push_back(new Neuron(false, 0, last_neuron_idx++, i));
     neurons.push_back(new Neuron(true, 0, last_neuron_idx++, inputs));
 
+    // create the output layer neurons
     for (int j = 0; j < outputs; j++) {
         neurons.push_back(new Neuron(false, 1, last_neuron_idx++, inputs + 1 + j));
         Gene* bias_conn = new Gene(neurons[inputs], neurons[last_neuron_idx-1], Random::rand() * 2 - 1, true, innovationHistory::getInnoGene(neurons[inputs]->innovation, neurons[last_neuron_idx-1]->innovation));
         genes.push_back(bias_conn);
         neurons[inputs]->outgoing_conns.push_back(bias_conn);
     }
-   organiseNeurons();
+
+    organiseNeurons();
 }
 
 Brain::Brain(const Brain& parent1, const Brain& parent2) :
@@ -59,10 +60,21 @@ Brain::Brain(const Brain& parent1, const Brain& parent2) :
         n1->outgoing_conns.push_back(genes[genes.size()-1]);
     }
 
+    // sort neurons
     organiseNeurons();
-    // show();
 }
 
+// organises neurons
+void Brain::organiseNeurons() {
+    organised_neurons.clear();
+    for (int i = 0; i < layers; i++) {
+        for (int j = 0; j < neurons.size(); j++)
+            if (neurons[j]->layer == i)
+                organised_neurons.push_back(neurons[j]);
+    }
+}
+
+// finds a neuron given an innovation value
 Neuron* Brain::find_neuron_from_inno(int inno) {
     for (Neuron* n : neurons)
         if (n->innovation == inno)  
@@ -72,6 +84,7 @@ Neuron* Brain::find_neuron_from_inno(int inno) {
 
 // fills decision with the outcome of the feedForward from the given inputs
 void Brain::think(const Vision& vision, float* decision) {
+
     // reset neurons values
     for (Neuron* n : neurons)
         if (!n->bias)
@@ -79,14 +92,15 @@ void Brain::think(const Vision& vision, float* decision) {
 
     // fill input
     neurons[0]->value = vision.energy;
-    neurons[1]->value = vision.fleeing;
-    neurons[3]->value = vision.velocity.x;
-    neurons[4]->value = vision.velocity.y;
-    neurons[5]->value = vision.health;
-    for (int i = 6; i < inputs; i++)
-        neurons[i]->value = vision.rays[i-6];
+    neurons[1]->value = vision.velocity.x; // ici
+    neurons[2]->value = vision.velocity.y;
+    neurons[3]->value = vision.health;
+    for (int i = 4; i < inputs; i++)
+        neurons[i]->value = vision.rays[i-4];
 
+    // organise neurons
     organiseNeurons();
+
     // feedForward
     for (int i = 0; i < organised_neurons.size() - outputs; i++)
         organised_neurons[i]->feedForward(i < inputs);
@@ -98,7 +112,9 @@ void Brain::think(const Vision& vision, float* decision) {
 
 // set each weight to a random one with the prob MUTATION_RATE
 void Brain::mutate() {
-    if (Random::rand() < MUTATION_RATE) {// prob mutate weight
+
+    // modification of a weight or add a connection if not possible
+    if (Random::rand() < MUTATION_RATE) {
         int idx = Random::randint(genes.size());
         if (idx < genes.size())
             genes[idx]->weight = Random::rand() * 2 - 1;
@@ -106,14 +122,18 @@ void Brain::mutate() {
             addConn();
     }
 
-    if (Random::rand() < .3) // prob add connection
+    // add a connection
+    if (Random::rand() < PROB_ADD_CONNECTION)
         addConn();
 
-    if (Random::rand() < .1) // prob add neuron
+    // add a neuron
+    if (Random::rand() < PROB_ADD_NEURON)
         addNeuron();
 }
 
+
 void Brain::addConn() {
+    
     // if fully connected, add a neuron
     // count max conn | REQUIRES ORAGNISED_NEURONS UP TO DATE 
     organiseNeurons();
@@ -176,15 +196,6 @@ void Brain::addNeuron() {
     to_break->enabled = false;
 }
 
-void Brain::organiseNeurons() {
-    organised_neurons.clear();
-
-    for (int i = 0; i < layers; i++) {
-        for (int j = 0; j < neurons.size(); j++)
-            if (neurons[j]->layer == i)
-                organised_neurons.push_back(neurons[j]);
-    }
-}
 
 
 void Brain::delete_content() {

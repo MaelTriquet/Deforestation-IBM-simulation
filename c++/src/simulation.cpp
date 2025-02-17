@@ -38,10 +38,10 @@ Simulation::~Simulation() {
 
 void Simulation::update() {
 
-    if (Random::rand() < .05)
+    if (Random::rand() < PROB_TREE_RANDOM_SPAWN)
         m_trees.push_back(new Tree(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, 0.25));
     Tree* new_tree;
-    int nb_tree = 0;
+    nb_tree = 0;
     for (Tree* t : m_trees) {
         if (t->is_dead) continue;
         nb_tree++;
@@ -133,13 +133,13 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
 
     // animal_1 = animal_2 = predator or animal_1 = animal_2 = prey
     if (animal_1->reproduction_timeout <= 0 && animal_2->reproduction_timeout <= 0 && !animal_1->is_dead && !animal_2->is_dead) {
-        if (animal_1->is_pred && nb_pred < MAX_POP_PRED && (animal_1->has_eaten || animal_2->has_eaten)) {
+        if (animal_1->is_pred && nb_pred < MAX_POP_PRED && (animal_1->has_eaten && animal_2->has_eaten)) {
             int nb_child = Random::randint(PRED_N_MIN_CHILDREN, PRED_N_MAX_CHILDREN);
             for (int i = 0; i < nb_child; i++) {
                 Predator* child = ((Predator*)animal_1)->reproduce((Predator*)animal_2, id++);
                 m_pop.push_back(child);
             }
-        } else if (animal_2->is_prey && nb_prey < MAX_POP_PREY && (animal_1->has_eaten || animal_2->has_eaten)) {
+        } else if (animal_2->is_prey && nb_prey < MAX_POP_PREY && (animal_1->has_eaten && animal_2->has_eaten)) {
             int nb_child = Random::randint(PREY_N_MIN_CHILDREN, PREY_N_MAX_CHILDREN);
             for (int i = 0; i < nb_child; i++) {
                 Prey* child = ((Prey*)animal_1)->reproduce((Prey*)animal_2, id++);
@@ -279,8 +279,8 @@ void Simulation::fill_ray_visions() {
                         t->position += offset;
                         float dist = std::sqrt((a->position.x - t->position.x) * (a->position.x - t->position.x) + (a->position.y - t->position.y) * (a->position.y - t->position.y));
                         t->position -= offset;
-                        if (dist > RAY_LENGTH + TREES_RADIUS) continue;
-                        float res = segmentIntersectsCircle(a->position, ray, t->position + offset, TREES_RADIUS);
+                        if (dist > RAY_LENGTH + MAX_TREES_RADIUS) continue;
+                        float res = segmentIntersectsCircle(a->position, ray, t->position + offset, MAX_TREES_RADIUS);
                         if (res < 0) continue; 
                         if (a->vision.rays[i] < res) {
                             a->vision.rays[i] = res;

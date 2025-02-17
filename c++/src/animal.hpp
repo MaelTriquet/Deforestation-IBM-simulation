@@ -11,30 +11,29 @@
 
 class Animal {
 public:
-    int radius = ANIMALS_RADIUS;// size of the animal
+    int index; // to compare 2 animals
+    int radius = ANIMALS_RADIUS;
     float energy = INITIAL_ENERGY;
-    float health = MAX_ENERGY;
+    float health = MAX_HEALTH;
     sf::Vector2f position;
     sf::Vector2f velocity{0, 0};
-    bool is_dead;
-    bool has_eaten = false;
-    sf::Color color;
+    float max_velocity;
     int fleeing = 0; // fright-meter, set high when spotting an ennemy
     Vision vision; // brain input
     float max_ray_angle; // side vision
-    int index; // to compare 2 animals
+    Brain brain; // decision maker
+    float decision[2] = {0}; // holds the decision after the thinking process
     bool is_pred;
     bool is_prey;
+    bool is_dead;
+    bool has_eaten = false;
     bool is_colliding = false;
     bool is_in_tree = false;
     Tree* in_tree = nullptr; // if is_in_tree = true, this is the pointer to that tree
     int rotting = ROT_TIME; // how long a corpse stays around after death
     int invisible = 0; // camouflage counter when hiding in a tree successfully
-    float max_velocity;
-    float max_vel_percent = .6; // will dissapear
-    Brain brain; // decision maker
-    float decision[2] = {0}; // holds the decision after the thinking process
     int reproduction_timeout = REPRODUCTION_TIMEOUT;
+    sf::Color color;
 
     Animal(sf::Vector2f position_, int index_);
 

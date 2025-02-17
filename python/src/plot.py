@@ -12,7 +12,7 @@ def remove_zeros(df) :
 
 
 # plot the two curves of population over times (preys and predators) 
-def plot_pop(preys_list, predators_list, save_path="../../data/graphics/temp.png", figsize=(15, 6)) :
+def plot_pop(preys_list, predators_list, trees_list, save_path="../../data/graphics/temp.png", figsize=(15, 6)) :
 
     # initialisation
     frames_list = np.arange(1, len(preys_list) + 1, 1)
@@ -22,11 +22,12 @@ def plot_pop(preys_list, predators_list, save_path="../../data/graphics/temp.png
     plt.figure(figsize=figsize)
     plt.plot(frames_list, preys_list, label="Proies", color="blue")
     plt.plot(frames_list, predators_list, label="Prédateurs", color="red")
+    plt.plot(frames_list, trees_list, label="Arbres", color="Green")
 
     # add the labels and title
     plt.xlabel("Frame")
     plt.ylabel("Population")
-    plt.title("Évolution des populations des proies et des prédateurs au cours du temps")
+    plt.title("Évolution des populations des arbres, proies et prédateurs au cours du temps")
     plt.legend()
     plt.grid(True, linestyle="--", alpha=0.7)
 
@@ -79,7 +80,7 @@ if __name__ == "__main__" :
     a, b = (int(sys.argv[3]), int(sys.argv[4])) if len(sys.argv) >= 5 else (0, 100000)
 
     # manage the files and folders
-    file_path = os.path.join("..", "..", "data", f"{file_name}.csv")
+    file_path = os.path.join("..", "..", "res" if file_name == "plot_info" else "data", f"{file_name}.csv")
     if temp :
         save_path_1 = os.path.join("..", "..", "data", "graphics", "temp1.png")
         save_path_2 = os.path.join("..", "..", "data", "graphics", "temp2.png")
@@ -93,12 +94,13 @@ if __name__ == "__main__" :
     # load the data
     data = pd.read_csv(file_path)
     data = remove_zeros(data)
-    data.columns = ["Predators", "Preys", "Corpses"]
+    data.columns = ["Predators", "Preys", "Corpses", "Trees"]
 
     # prepare the data
     preys_list = data["Preys"].to_numpy()[a:b]
     predators_list = data["Predators"].to_numpy()[a:b]
+    trees_list = data["Trees"].to_numpy()[a:b]
 
     # plot the curves
-    plot_pop(preys_list, predators_list, save_path=save_path_1)
+    plot_pop(preys_list, predators_list, trees_list, save_path=save_path_1)
     plot_pop_sum(preys_list, predators_list, save_path=save_path_2)
