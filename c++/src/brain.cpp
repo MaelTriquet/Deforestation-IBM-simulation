@@ -197,11 +197,11 @@ void Brain::delete_content() {
 }
 
 void Brain::show() const {
-    for (Neuron* n : organised_neurons) {
-        std::cout << "Layer : " << n->layer << ", idx : " << n->innovation << ", connected to :\n";
-        for (Gene* g : n->outgoing_conns) {
-            std::cout << g->to->innovation << " ";
-        }
-        std::cout << "\n\n";
-    }
+    // for (Neuron* n : organised_neurons) {
+    //     std::cout << "Layer : " << n->layer << ", idx : " << n->innovation << ", connected to :\n";
+    //     for (Gene* g : n->outgoing_conns) {
+    //         std::cout << g->to->innovation << " ";
+    //     }
+    //     std::cout << "\n\n";
+    // }
 }
