@@ -11,12 +11,12 @@ if ! [[ "$1" =~ ^[0-9]+$ ]]; then
     echo "Error: Argument must be an integer."
     exit 1
 fi
-RES_PATH="/home/hugo/cours/ing3/pfe/res/bayes"
+RES_PATH="/home/mael/Documents/PFE/PFE/Deforestation-IBM-simulation/res/bayes"
 # Create a directory named "settings_$1" where $1 is the provided argument
 SETTINGS_DIR="$RES_PATH/settings_$1"
 mkdir -p "$SETTINGS_DIR"
 
-cd "/home/hugo/cours/ing3/pfe/c++/build"
+cd "/home/mael/Documents/PFE/PFE/Deforestation-IBM-simulation/c++/build"
 # Compile the C++ code using make
 make
 
@@ -37,10 +37,10 @@ if [ $? -eq 0 ]; then
         echo "Score : "
         cat "$RUN_DIR/results.txt"
 
-        cp "/home/hugo/cours/ing3/pfe/res/plot_info.csv" "$RUN_DIR"
+        cp "/home/mael/Documents/PFE/PFE/Deforestation-IBM-simulation/res/plot_info.csv" "$RUN_DIR"
         echo "saved csv file to $RUN_DIR/"
         # Copy the file "{path}/const.cpp" to the "settings_$1" directory
-        cp "/home/hugo/cours/ing3/pfe/c++/src/const.hpp" "$SETTINGS_DIR/"
+        cp "/home/mael/Documents/PFE/PFE/Deforestation-IBM-simulation/c++/src/const.hpp" "$SETTINGS_DIR/"
         echo "Copied const.cpp to $SETTINGS_DIR/"
     done
 else
