@@ -5,6 +5,7 @@
 #include "predator.hpp"
 #include "prey.hpp"
 #include "grid.hpp"
+#include "thread_pool.hpp"
 
 class Simulation {
 private:
@@ -20,11 +21,13 @@ public:
     Grid ray_grid;
     bool is_prey_dominating = true;
 
+    tp::ThreadPool& thread_pool;
+
     int nb_prey = 2;
     int nb_pred = 2;
     int nb_tree = 2;
 
-    Simulation(int window_width_, int window_height_);
+    Simulation(int window_width_, int window_height_, tp::ThreadPool& thread_pool_);
     ~Simulation();
 
     void update();

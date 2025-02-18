@@ -3,11 +3,12 @@
 
 int Simulation::id = 0;
 
-Simulation::Simulation(int window_width_, int window_height_) :
+Simulation::Simulation(int window_width_, int window_height_, tp::ThreadPool& thread_pool_) :
     window_width(window_width_),
     window_height(window_height_),
     grid(window_width, window_height, 2*ANIMALS_RADIUS),
-    ray_grid(window_width, window_height, ANIMALS_RADIUS + RAY_LENGTH)
+    ray_grid(window_width, window_height, ANIMALS_RADIUS + RAY_LENGTH),
+    thread_pool{thread_pool_}
 {
 
     for (int i = 0; i < PREY_START; i++) {
@@ -53,10 +54,25 @@ void Simulation::update() {
     }
     nb_prey = 0;
     nb_pred = 0;
+
+    // First collision pass
+    for (uint32_t i{0}; i < m_pop.size(); ++i) {
+        thread_pool.addTask([this, i] {
+            m_pop[i]->update();
+            if (!m_pop[i]->is_dead)
+                m_pop[i]->move(WINDOW_WIDTH, WINDOW_HEIGHT);
+        });
+    }
+    thread_pool.waitForCompletion();
+
+    // for (int i = m_pop.size() - 1; i > -1; i--) {
+    //     m_pop[i]->update();
+    //     if (!m_pop[i]->is_dead)
+    //         m_pop[i]->move(WINDOW_WIDTH, WINDOW_HEIGHT);
+    // }
+
     for (int i = m_pop.size() - 1; i > -1; i--) {
-        m_pop[i]->update();
         if (!m_pop[i]->is_dead) {
-            m_pop[i]->move(window_width, window_height);
             if (m_pop[i]->is_pred)
                 nb_pred++;
             else 

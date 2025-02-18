@@ -2,6 +2,7 @@
 #include "renderer.hpp"
 #include <fstream>
 #include "simulation.hpp"
+#include "thread_pool.hpp"
 
 bool appendCSV(const std::string& filename, Simulation& sim);
 bool emptyCSV(const std::string& filename);
@@ -10,6 +11,8 @@ int main() {
     // Create window
     constexpr int32_t window_width = WINDOW_WIDTH;
     constexpr int32_t window_height = WINDOW_HEIGHT;
+
+    tp::ThreadPool thread_pool(10);
 
     // sf::ContextSettings settings;
     // settings.antialiasingLevel = 1;
@@ -24,7 +27,7 @@ int main() {
     int delta_t_pred = 0;
     bool prey_low = false;
 
-    Simulation simulation{window_width, window_height};
+    Simulation simulation{window_width, window_height, thread_pool};
     // Renderer renderer{window};
 
     emptyCSV("../../res/plot_info.csv");
