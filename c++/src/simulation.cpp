@@ -40,17 +40,17 @@ Simulation::~Simulation() {
 
 void Simulation::update() {
 
-    // if (Random::rand() < .05)
-    //     m_trees.push_back(new Tree(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, 0.25));
+    if (Random::rand() < PROB_TREE_RANDOM_SPAWN)
+        m_trees.push_back(new Tree(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, 0.25));
     Tree* new_tree;
     nb_tree = 0;
     for (Tree* t : m_trees) {
         if (t->is_dead) continue;
         nb_tree++;
         new_tree = t->update();
-        // if (new_tree != 0) {
-        //     m_trees.push_back(new_tree);
-        // }
+        if (new_tree != 0) {
+            m_trees.push_back(new_tree);
+        }
     }
     nb_prey = 0;
     nb_pred = 0;
@@ -393,7 +393,7 @@ void Simulation::collide(Tree* t, Animal* a) {
     if (!a->in_tree)
         a->in_tree = t;
     if (a->is_prey) {
-        if ((a->energy <= MAX_ENERGY || a->health <= MAX_ENERGY)) 
+        if ((a->energy <= MAX_ENERGY || a->health <= MAX_ENERGY) && !a->is_dead) 
             ((Prey*)a)->eat();
     }
     if (a->in_tree == t) return;

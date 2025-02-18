@@ -44,7 +44,7 @@ void Animal::move(int window_width, int window_height) {
     // loose energy
     if (energy > 0) {
         if (is_prey) {
-            energy -= decision[1] * decision[1] * max_velocity + PREY_PASSIVE_ENERGY_LOSS; // ici
+            energy -= decision[1] * decision[1] * max_velocity + PREY_PASSIVE_ENERGY_LOSS;
         }
         else {
             energy -= decision[1] * decision[1] * max_velocity + PRED_PASSIVE_ENERGY_LOSS;
@@ -106,10 +106,10 @@ void Animal::update() {
     is_in_tree = false;
 
     if (is_dead && is_pred)
-        rotting = -1000;
+        rotting = 0;
     if (is_dead) {
-        rotting -= .5;
-        radius = rotting / (float) ROT_TIME * ANIMALS_RADIUS * .7;
+        rotting -= ROTTING_PER_FRAME;
+        radius = rotting / (float) ROT_TIME * ANIMALS_RADIUS * RADIUS_PERCENT_ROTTING;
     }
 
     is_in_tree = false;
