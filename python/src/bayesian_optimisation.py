@@ -3,51 +3,53 @@ import re
 import sigopt #type: ignore
 
 # constants
-N_ITER = 400
+N_ITER = 10000
 CONST_PARAMETERS = {
+    "MAX_ENERGY" : "1000",
+    "PRED_GAIN_ENERGY_EATING" : "100",
+    "PRED_LOST_ENERGY_FIGHT_BY_PREY" : "30",
+    "PREY_LOST_ENERGY_FIGHT_BY_PRED" : "120",
+    "FRUIT_ENERGY" : "70",
+    "MAX_POP_PRED" : "1000000",
+    "MAX_POP_PREY" : "1000000",
     "WINDOW_HEIGHT" : "800",
     "WINDOW_WIDTH" : "800",
-    "PRED_START" : "MAX_POP_PRED / 2",
-    "PREY_START" : "MAX_POP_PREY / 2",
+    "ANIMALS_RADIUS" : "9",
     "MAX_TREES_RADIUS" : "12",
     "MIN_TREES_RADIUS" : "2",
-    "PROB_TREE_RANDOM_SPAWN" : "0.2",
-    "ANIMALS_RADIUS" : "9",
     "INITIAL_ENERGY" : "MAX_ENERGY * 0.8",
-    "MAX_HEALTH" : "MAX_ENERGY",
-    "MUTATION_RATE" : "0.8",
-    "PROB_ADD_CONNECTION" : "0.25",
-    "PROB_ADD_NEURON" : "0.08",
     "NB_RAY" : "8",
     "RAY_LENGTH" : "101",
     "PRED_LOST_ENERGY_FIGHT" : "0",
     "PRED_MAX_VELOCITY" : "7",
     "PRED_MAX_RAY_ANGLE" : "M_PI_2",
     "PREY_MAX_VELOCITY" : "5",
-    "PREY_MAX_RAY_ANGLE" : "M_PI_2"
+    "LOST_ENERGY_REPRODUCTION" : "10",
+    "PREY_MAX_RAY_ANGLE" : "M_PI_2",
+    "INVISIBILITY_TIME" : "1000",
+    "MUTATION_RATE" : "0.75",
+    "PROB_ADD_CONNECTION" : "0.15",
+    "PROB_ADD_NEURON" : "0.15",
+    "MAX_HEALTH" : "700",
+    "TIME_TREE_GROWTH" : "200",
+    "ROT_TIME" : "175",
+    "REPRODUCTION_TIMEOUT" : "200",
+    "PROB_TREE_RANDOM_SPAWN" : "0.5",
+    "TREE_RADIUS_BEFORE_REPRODUCTION_PERCENT" : "0.8",
+    "RADIUS_PERCENT_ROTTING" : "0.8",
+    "ROTTING_PER_FRAME" : "0.5",
 }
 SIGOPT_PARAMETERS = [
-    {"name": "MAX_POP_PRED",                   "type": "int",    "bounds": {"min": 10, "max": 30}, "mult" : 10},
-    {"name": "MAX_POP_PREY",                   "type": "int",    "bounds": {"min": 10, "max": 30}, "mult" : 10},
-    {"name": "TREE_START",                     "type": "int",    "bounds": {"min": 20, "max": 70}, "mult" : 10},
-    {"name": "FRUIT_ENERGY",                   "type": "int",    "bounds": {"min": 1, "max": 20}, "mult" : 10},
-    {"name": "TIME_TREE_GROWTH",               "type": "double", "bounds": {"min": 6, "max": 60}, "mult" : 10},
-    {"name": "MAX_ENERGY",                     "type": "int",    "bounds": {"min": 10, "max": 100}, "mult" : 50},
-    {"name": "ROT_TIME",                       "type": "int",    "bounds": {"min": 1, "max": 20}, "mult" : 50},
-    {"name": "LOST_ENERGY_REPRODUCTION",       "type": "int",    "bounds": {"min": 0, "max": 10}, "mult" : 10},
-    {"name": "REPRODUCTION_TIMEOUT",           "type": "int",    "bounds": {"min": 5, "max": 30}, "mult" : 10},
-    {"name": "PRED_GAIN_ENERGY_EATING",        "type": "int",    "bounds": {"min": 5, "max": 30}, "mult" : 10},
-    {"name": "PRED_LOST_ENERGY_FIGHT_BY_PREY", "type": "int",    "bounds": {"min": 0, "max": 20}, "mult" : 50},
-    {"name": "PRED_PASSIVE_ENERGY_LOSS",       "type": "int",    "bounds": {"min": 0, "max": 6}, "mult" : 1},
-    {"name": "PRED_N_MIN_CHILDREN",            "type": "int",    "bounds": {"min": 1, "max": 2}, "mult" : 1},
-    {"name": "PRED_N_MAX_CHILDREN",            "type": "int",    "bounds": {"min": 2, "max": 5}, "mult" : 1},
-    {"name": "INVISIBILITY_TIME",              "type": "int",    "bounds": {"min": 1, "max": 30}, "mult" : 100},
-    {"name": "PREY_LOST_ENERGY_FIGHT_BY_PRED", "type": "int",    "bounds": {"min": 0, "max": 20}, "mult" : 100},
-    {"name": "PREY_PASSIVE_ENERGY_LOSS",       "type": "int",    "bounds": {"min": 0, "max": 3}, "mult" : 1},
-    {"name": "PREY_N_MIN_CHILDREN",            "type": "int",    "bounds": {"min": 1, "max": 3}, "mult" : 1},
-    {"name": "PREY_N_MAX_CHILDREN",            "type": "int",    "bounds": {"min": 3, "max": 7}, "mult" : 1},
+    {"name": "PREY_START",                              "type": "int",    "bounds": {"min": 50, "max": 500}},
+    {"name": "PRED_START",                              "type": "int",    "bounds": {"min": 50, "max": 300}},
+    {"name": "TREE_START",                              "type": "int",    "bounds": {"min": 100, "max": 700}},
+    {"name": "PRED_PASSIVE_ENERGY_LOSS",                "type": "int",    "bounds": {"min": 0, "max": 6}},
+    {"name": "PRED_N_MIN_CHILDREN",                     "type": "int",    "bounds": {"min": 1, "max": 2}},
+    {"name": "PRED_N_MAX_CHILDREN",                     "type": "int",    "bounds": {"min": 2, "max": 5}},
+    {"name": "PREY_PASSIVE_ENERGY_LOSS",                "type": "int",    "bounds": {"min": 0, "max": 3}},
+    {"name": "PREY_N_MIN_CHILDREN",                     "type": "int",    "bounds": {"min": 1, "max": 3}},
+    {"name": "PREY_N_MAX_CHILDREN",                     "type": "int",    "bounds": {"min": 3, "max": 8}},
 ]
-
 
 # transform the constants from a .hpp file to a python dictionary
 def hpp_to_dict(file_path="../../c++/src/const.hpp") :
@@ -90,8 +92,7 @@ def dict_to_hpp(const_dict, file_path="../../c++/src/const2.hpp") :
 
         # write the non constants constants
         for const_name, const_value in const_dict.items() :
-            dict_sigopt_param = [dict_param for dict_param in SIGOPT_PARAMETERS if dict_param["name"] == const_name][0]
-            file.write(f"#define {const_name} {const_value*dict_sigopt_param['mult']}\n")
+            file.write(f"#define {const_name} {const_value}\n")
         
         # write the (real) constants
         for const_name, const_value in CONST_PARAMETERS.items() :
@@ -106,14 +107,14 @@ def main() :
     # initialisation
     conn = sigopt.Connection(driver="lite")
     n_iter = N_ITER
-    best_avg_score = 0
+    best_max_score = 0
     current_params = {}
     best_params = {}
 
     # first experiment
     experiment = conn.experiments().create(
         name = "Forest life simulation",
-        parameters = [{k : v for k, v in dict_params.items() if k != "mult"} for dict_params in SIGOPT_PARAMETERS],
+        parameters = SIGOPT_PARAMETERS,
         metrics = [{
             "name"      : "score",
             "objective" : "maximize",
@@ -125,8 +126,12 @@ def main() :
     # iterate to find the best parameters
     for i in range(n_iter) :
 
-        # new SigOpt suggestion, given by Bayesian optimization
-        suggestion = conn.experiments(experiment.id).suggestions().create()
+        # new SigOpt suggestion, given by Bayesian optimization (or random method)
+        # the exploration probability decreases with the number of iterations
+        if i % 5 == 0 or i % 5 == 1 :
+            suggestion = conn.experiments(experiment.id).suggestions().create(type="random")
+        else :
+            suggestion = conn.experiments(experiment.id).suggestions().create()
         current_params = suggestion.assignments
 
         # apply the new constants to the .hpp file
@@ -136,43 +141,31 @@ def main() :
         subprocess.run(["./run.sh", str(i)], check=True, text=True, capture_output=True)
 
         # read the results of the three simulations and get their average score
-        avg_score = 0
+        max_score = 0
         for j in range(1, 4) :
             with open(f"../../res/bayes/settings_{i}/run_{j}/results.txt", "r") as file :
                 lines_list = file.readlines()
-            avg_score += float(lines_list[0].strip())
-        avg_score /= 3
+            if max_score < float(lines_list[0].strip()) :
+                max_score = float(lines_list[0].strip())
 
         # we give back the score to SigOpt to help it find the next point to evaluate
         conn.experiments(experiment.id).observations().create(
             suggestion = suggestion.id,
-            values=[{"name" : "score", "value" : avg_score}],
+            values=[{"name" : "score", "value" : max_score}],
         )
 
         # end of the iteration
         # only the best accuracy is saved and new random parameters are generated
-        if avg_score > best_avg_score :
-            best_avg_score = avg_score
+        if max_score > best_max_score :
+            best_max_score = max_score
             best_params = current_params.copy()
 
         # message
-        print(f"Itération / score : {i} / {best_avg_score}")
+        print(f"Itération / score / random exploration : {i} / {best_max_score} / {i % 5 in [0, 1]}")
 
-    return best_params, best_avg_score
+    return best_params, best_max_score
+
 
 # test of the program
 if __name__ == "__main__" :
     main()
-
-
-
-
-"""
-Python : 
-- lancer le bash
-- lire les résultats de la simulation
-- les envoyer à SigOpt
-- récupérer les nouveaux paramètres
-- relancer le bash
-en boucle --> n fois
-"""
