@@ -2,7 +2,7 @@
 
 std::random_device Random::rd;
 long long Random::seed = rd();
-std::mt19937 Random::gen(seed);
+std::mt19937 Random::gen(1790094863);
 std::uniform_real_distribution<> Random::dis(0.0, 1.0);
 
 float Random::rand() {
