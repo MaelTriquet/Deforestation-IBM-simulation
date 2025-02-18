@@ -19,7 +19,6 @@ public:
     Grid grid;
     //ray detection grid (different size)
     Grid ray_grid;
-    bool is_prey_dominating = true;
 
     tp::ThreadPool& thread_pool;
 

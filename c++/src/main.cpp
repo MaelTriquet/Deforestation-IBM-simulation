@@ -48,22 +48,26 @@ int main() {
                 score++;
                 pred_low = false;
                 delta_t_pred = 0;
+                max_pop_frame = 5000;
             }
 
             if (!pred_low && simulation.nb_pred < .4 * MAX_POP_PRED) {
                 score++;
                 pred_low = true;
+                max_pop_frame = 5000;
             }
 
-            if (prey_low && simulation.nb_prey > .6 * MAX_POP_PRED) {
+            if (prey_low && simulation.nb_prey > .6 * MAX_POP_PREY) {
                 score++;
                 prey_low = false;
                 delta_t_prey = 0;
+                max_pop_frame = 5000;
             }
 
-            if (!prey_low && simulation.nb_prey < .4 * MAX_POP_PRED) {
+            if (!prey_low && simulation.nb_prey < .4 * MAX_POP_PREY) {
                 score++;
                 prey_low = true;
+                max_pop_frame = 5000;
             }
             if (pred_low)
                 delta_t_pred++;

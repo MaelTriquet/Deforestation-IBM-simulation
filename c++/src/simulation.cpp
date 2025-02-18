@@ -85,8 +85,6 @@ void Simulation::update() {
         m_pop.erase(m_pop.begin() + i);
     }
 
-    is_prey_dominating = nb_pred < nb_prey;
-
     // if (nb_prey == 0)
     // for (int i = 0; i < 10; i++) {
     //     Prey* prey = new Prey(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, id++);
