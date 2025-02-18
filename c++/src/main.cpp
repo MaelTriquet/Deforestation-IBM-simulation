@@ -5,7 +5,8 @@
 #include <torch/torch.h>
 
 int main() {
-    // Paramètres de la fenêtre
+
+    std::cout << "Initialisation des variables..." << std::endl;
     constexpr int32_t window_width  = 800;
     constexpr int32_t window_height = 800;
     sf::ContextSettings settings;
@@ -14,19 +15,25 @@ int main() {
     const uint32_t frame_rate = 60;
     window.setFramerateLimit(frame_rate);
 
-    // Initialisation de la simulation et de MADDPG
-    Simulation simulation{window_width, window_height};
-    Renderer renderer{window};
-    MADDPG maddpg(
-        simulation.m_pop.size(), // Nombre d'agents
-        4 + NB_RAY * 3,         // Dimension de l'état
-        2,                      // Nombre d'actions
-        0.001, 0.001,            // Learning rates
-        10000,                   // Capacité du replay buffer
-        64,                      // Taille des batchs
-        10                       // Intervalle de mise à jour
-    );
 
+    std::cout << "Initialisation de la simulation" << std::endl;
+    
+    Simulation simulation{window_width, window_height};
+    std::cout << "Initialisation du Renderer" << std::endl;
+
+    Renderer renderer{window};
+    std::cout << "Initialisation du MADDPG" << std::endl;
+    
+    MADDPG maddpg(
+        simulation.m_pop,  // On passe la population existante
+        10000,             // Capacité du replay buffer
+        64,                // Taille des batchs
+        10                 // Intervalle de mise à jour
+    );
+    
+
+    std::cout << "Ouverture..." << std::endl;
+    
     while (window.isOpen()) {
         // Gestion des événements
         sf::Event event{};
@@ -35,12 +42,17 @@ int main() {
                 window.close();
             }
         }
-
+        
+        int count = 0;
         // Mise à jour de la simulation et des agents
         for (int i = 0; i < 1; i++) {
             for (auto& agent : simulation.m_pop) {
+                // std::cout << "Récupèration de l'état..." << std::endl;
                 torch::Tensor state = agent->get_state();
+                // std::cout << "Taille de state: " << state.sizes() << std::endl;
+                // std::cout << "Action de l'animal..." << std::endl;
                 torch::Tensor action = agent->agent->select_action(state);
+                // std::cout << "Déplacement n°"<< count <<"..." << std::endl;
                 agent->move(window_width, window_height);
 
                 float reward = (agent->energy <= 0) ? -100 : 0;
@@ -53,7 +65,10 @@ int main() {
                 torch::Tensor next_state = agent->get_state();
                 bool done = (agent->energy <= 0);
                 maddpg.store_experience(state, action, reward, next_state, done);
+
+                count++;
             }
+            std::cout << "Mise à jour de la simulation..." << std::endl;
             simulation.update();
         }
         

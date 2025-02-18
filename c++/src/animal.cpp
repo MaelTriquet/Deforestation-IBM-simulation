@@ -7,7 +7,7 @@ Animal::Animal(sf::Vector2f position_, int index_) :
     position(position_),
     index(index_),
     is_dead(false),
-    agent(new MADDPGAgent(4 + NB_RAY * 3, 2, 0.001, 0.001))  // Initialisation correcte de l'agent MADDPG
+    agent(new MADDPGAgent(6 + NB_RAY * 3, 2, 0.001, 0.001))  // Initialisation correcte de l'agent MADDPG
 {
     velocity = sf::Vector2f(0, 0);
     energy = INITIAL_ENERGY;
@@ -30,10 +30,11 @@ void Animal::considerate_bounds(int window_width, int window_height) {
 void Animal::move(int window_width, int window_height) {
     look();
     torch::Tensor action = agent->select_action(get_state());
-    float direction = action[0].item<float>() * M_PI_2;
-    float speed = action[1].item<float>() * max_velocity;
+    action = action.squeeze(0);
+    
+    velocity = sf::Vector2f(cos(action[0].item<float>() * M_PI_2), sin(action[0].item<float>() * M_PI_2));
+    velocity *= action[1].item<float>() * max_velocity;
 
-    velocity = sf::Vector2f(cos(direction), sin(direction)) * speed;
     position += velocity;
     if (is_prey)
         energy -= decision[1] * decision[1];
@@ -85,5 +86,6 @@ torch::Tensor Animal::get_state() const {
         state_vector.push_back(vision.rays[i]);
     }
     
-    return torch::tensor(state_vector, torch::dtype(torch::kFloat32));
+    return torch::tensor(state_vector, torch::dtype(torch::kFloat32)).unsqueeze(0);
+
 }

@@ -32,14 +32,17 @@ Predator::Predator(Predator* parent_1_, Predator* parent_2_, int id_) :
     //         }
     //     }
     // }
-    brain.delete_content();
-    if (Random::rand() < .5)
-        brain = Brain(parent_1_->brain);
-    else
-        brain = Brain(parent_2_->brain);
+    // Supprime l'ancien réseau
+    delete agent;
 
-    for (int i = 0; i < 5; i++)
-        brain.mutate();
+    // Crée un nouvel agent basé sur l'un des parents
+    if (Random::rand() < 0.5)
+        agent = new MADDPGAgent(*parent_1_->agent); 
+    else
+        agent = new MADDPGAgent(*parent_2_->agent);
+
+    // Mutation de l'agent
+    agent->mutate();
 };
 
 void Predator::eat(Animal* prey) {

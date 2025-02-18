@@ -13,6 +13,52 @@ MADDPGAgent::MADDPGAgent(int state_dim, int action_dim, float lr_actor, float lr
       critic_optimizer(critic->parameters(), torch::optim::AdamOptions(lr_critic))
 {
     // Copie manuelle des poids pour initialiser les réseaux cibles
+    auto actor_params = actor->parameters();
+    auto target_params = target_actor->parameters();
+
+    if (actor_params.size() != target_params.size()) {
+        std::cerr << "Erreur : Nombre de paramètres différents entre actor et target_actor" << std::endl;
+    } else {
+        for (size_t i = 0; i < actor_params.size(); i++) {
+            if (!target_params[i].defined() || !actor_params[i].defined()) {
+
+                continue;
+            }
+            target_params[i].data().copy_(actor_params[i].data());
+
+        }
+    }
+
+    auto critic_params = critic->parameters();
+    auto target_critic_params = target_critic->parameters();
+
+    if (critic_params.size() != target_critic_params.size()) {
+        std::cerr << "Erreur : Nombre de paramètres différents entre critic et target_critic" << std::endl;
+    } else {
+        for (size_t i = 0; i < critic_params.size(); i++) {
+            if (!target_critic_params[i].defined() || !critic_params[i].defined()) {
+
+                continue;
+            }
+            target_critic_params[i].data().copy_(critic_params[i].data());
+
+        }
+    }
+
+
+}
+
+MADDPGAgent::MADDPGAgent(const MADDPGAgent& other)
+    : actor(torch::nn::Sequential(other.actor)),
+      critic(torch::nn::Sequential(other.critic)),
+      target_actor(torch::nn::Sequential(other.target_actor)),
+      target_critic(torch::nn::Sequential(other.target_critic)),
+      actor_optimizer(actor->parameters(), torch::optim::AdamOptions(0.001)),
+      critic_optimizer(critic->parameters(), torch::optim::AdamOptions(0.001)),
+      gamma(other.gamma),
+      tau(other.tau) {
+    
+    // Copie manuelle des poids
     for (auto& target_param : target_actor->parameters()) {
         auto& source_param = actor->parameters()[&target_param - &target_actor->parameters()[0]];
         target_param.data().copy_(source_param.data());
@@ -27,6 +73,16 @@ MADDPGAgent::MADDPGAgent(int state_dim, int action_dim, float lr_actor, float lr
 torch::Tensor MADDPGAgent::select_action(torch::Tensor state) {
     return actor->forward(state).detach();
 }
+
+void MADDPGAgent::mutate() {
+    for (auto& param : actor->parameters()) {
+        if (param.requires_grad()) {
+            torch::Tensor noise = torch::randn_like(param) * 0.1;  // Ajoute un bruit gaussien faible
+            param.data().add_(noise);
+        }
+    }
+}
+
 
 void MADDPGAgent::update(std::vector<std::tuple<torch::Tensor, torch::Tensor, float, torch::Tensor, bool>> &replay_buffer,
                          const std::vector<MADDPGAgent*> &other_agents) {

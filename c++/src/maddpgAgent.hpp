@@ -22,12 +22,20 @@ public:
     // Constructeur
     MADDPGAgent(int state_dim, int action_dim, float lr_actor, float lr_critic);
 
+    MADDPGAgent(const MADDPGAgent& other); // Par copie
+
+    void mutate();
+
+
+
     // Sélection d'une action
     torch::Tensor select_action(torch::Tensor state);
 
     // Mise à jour des réseaux
     void update(std::vector<std::tuple<torch::Tensor, torch::Tensor, float, torch::Tensor, bool>> &replay_buffer, 
                 const std::vector<MADDPGAgent*> &other_agents);
+
+        
 
 private:
     void soft_update(torch::nn::Sequential& target, torch::nn::Sequential& source, float tau);

@@ -9,18 +9,22 @@ Simulation::Simulation(int window_width_, int window_height_) :
     grid(window_width, window_height, 2*ANIMALS_RADIUS),
     ray_grid(window_width, window_height, ANIMALS_RADIUS + RAY_LENGTH)
 {
-
+    
+    std::cout << "Création de la simulation" << std::endl;
     for (int i = 0; i < PREY_START; i++) {
         Prey* prey = new Prey(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, id++);
         m_pop.push_back(prey);
     }
+    std::cout << "Toutes les proies sont ajoutées" << std::endl;
     for (int i = 0; i < PRED_START; i++) {
         Predator* pred = new Predator(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, id++);
         m_pop.push_back(pred);
     }
+    std::cout << "Tous les prédateurs sont ajoutés" << std::endl;
     for (int i = 0; i < TREE_START; i++) {
         m_trees.emplace_back(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, 0.25);
     }
+    std::cout << "Tous les arbres sont ajoutés" << std::endl;
 
     grid.init_trees(m_trees);
     ray_grid.init_trees(m_trees);
@@ -38,21 +42,37 @@ void Simulation::update() {
         t.update();
     float nb_prey = 0.f;
     float nb_pred = 0.f;
-    for (int i = m_pop.size() - 1; i > -1; i--) {
+    for (int i = m_pop.size() - 1; i >= 0; i--) {  
+        std::cout << "[LOG 1] Vérification de l'animal à l'index " << i << std::endl;
+        
         m_pop[i]->update();
+        std::cout << "[LOG 2] Après update() de l'animal " << i << std::endl;
+        
         if (!m_pop[i]->is_dead) {
+            std::cout << "[LOG 3] L'animal " << i << " est vivant, on le déplace." << std::endl;
             m_pop[i]->move(window_width, window_height);
-            if (m_pop[i]->is_pred)
-                nb_pred++;
-            else 
-                nb_prey++;
             continue;
         }
-        if (m_pop[i]->rotting > 0) continue;
-        m_pop[i]->brain.delete_content();
-        delete m_pop[i];
+    
+        if (m_pop[i]->rotting > 0) {
+            std::cout << "[LOG 4] L'animal " << i << " est mort mais en train de pourrir." << std::endl;
+            continue;
+        }
+    
+        std::cout << "[LOG 5] Suppression de l'animal index " << i 
+                  << " | Type: " << (m_pop[i]->is_pred ? "Prédator" : "Proie") 
+                  << " | Énergie: " << m_pop[i]->energy << std::endl;
+    
+        delete m_pop[i]->agent;  
+        std::cout << "[LOG 6] Agent supprimé pour l'animal " << i << std::endl;
+        
+        delete m_pop[i];  
+        std::cout << "[LOG 7] Animal supprimé " << i << std::endl;
+    
         m_pop.erase(m_pop.begin() + i);
+        std::cout << "[LOG 8] Animal supprimé du vecteur m_pop " << i << std::endl;
     }
+    
 
     is_prey_dominating = nb_pred < nb_prey;
 

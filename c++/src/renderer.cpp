@@ -10,7 +10,7 @@ Renderer::Renderer(sf::RenderTarget& target):
 void Renderer::render(const Simulation& simulation) const {
     for (const Animal* a : simulation.m_pop) {
         if (a == simulation.m_pop[0]) {
-            a->brain.show();
+            //a->brain.show();
             sf::Vector2f ray;
             for (int i = 0; i < NB_RAY; i++) {
                 float theta = -a->max_ray_angle/2 + i * a->max_ray_angle / (float)(NB_RAY-1);

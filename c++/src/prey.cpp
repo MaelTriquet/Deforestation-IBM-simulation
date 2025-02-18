@@ -2,7 +2,7 @@
 
 Prey::Prey(sf::Vector2f position_, int index_) : 
     Animal(position_, index_)
-{
+{       
     color = sf::Color(0, 0, 255);
     max_ray_angle = PREY_MAX_RAY_ANGLE;
     is_pred = false;
@@ -22,12 +22,18 @@ Prey::Prey(Prey* parent_1_, Prey* parent_2_, int id_) :
     // energy /= 2;
     // if (energy > INITIAL_ENERGY)
     //     energy = INITIAL_ENERGY;
-    brain.delete_content();
-    if (Random::rand() < .5)
-        brain = Brain(parent_1_->brain);
+    
+    // Supprime l'ancien réseau
+    delete agent;
+
+    // Crée un nouvel agent basé sur l'un des parents
+    if (Random::rand() < 0.5)
+        agent = new MADDPGAgent(*parent_1_->agent); 
     else
-        brain = Brain(parent_2_->brain);
-    brain.mutate();
+        agent = new MADDPGAgent(*parent_2_->agent);
+
+    // Mutation de l'agent
+    agent->mutate();
 
 };
 

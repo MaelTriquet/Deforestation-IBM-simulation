@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "maddpgAgent.hpp"
 #include "animal.hpp"
 #include "tree.hpp"
 #include "const.hpp"
