@@ -109,7 +109,7 @@ void Animal::update() {
         rotting = -1000;
     if (is_dead) {
         rotting -= .5;
-        radius =  rotting / (float) ROT_TIME * ANIMALS_RADIUS * .7;
+        radius = rotting / (float) ROT_TIME * ANIMALS_RADIUS * .7;
     }
 
     is_in_tree = false;

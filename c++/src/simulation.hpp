@@ -32,8 +32,10 @@ public:
 
     void update();
     void fill_ray_visions();
+    void fill_ray_visions(int start, int end);
     void detect_collisions();
     float segmentIntersectsCircle(const sf::Vector2f& A, const sf::Vector2f& AB, const sf::Vector2f& C, int radius);
     void collide(Tree* t, Animal* a);
     void collide(Animal* animal_1, Animal* animal_2);
+    void detect_collisions_threaded(int start, int end);
 };

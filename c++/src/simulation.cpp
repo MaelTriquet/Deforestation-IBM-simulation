@@ -6,7 +6,7 @@ int Simulation::id = 0;
 Simulation::Simulation(int window_width_, int window_height_, tp::ThreadPool& thread_pool_) :
     window_width(window_width_),
     window_height(window_height_),
-    grid(window_width, window_height, 2*ANIMALS_RADIUS),
+    grid(window_width, window_height, 2*MAX_TREES_RADIUS),
     ray_grid(window_width, window_height, ANIMALS_RADIUS + RAY_LENGTH),
     thread_pool{thread_pool_}
 {
@@ -57,11 +57,11 @@ void Simulation::update() {
 
     // First collision pass
     for (uint32_t i{0}; i < m_pop.size(); ++i) {
-        thread_pool.addTask([this, i] {
-            m_pop[i]->update();
-            if (!m_pop[i]->is_dead)
-                m_pop[i]->move(WINDOW_WIDTH, WINDOW_HEIGHT);
-        });
+        m_pop[i]->update();
+        if (!m_pop[i]->is_dead)
+            thread_pool.addTask([this, i] {
+                    m_pop[i]->move(WINDOW_WIDTH, WINDOW_HEIGHT);
+            });
     }
     thread_pool.waitForCompletion();
 
@@ -169,8 +169,25 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
 }
 
 void Simulation::detect_collisions() {
+    
+    for (int i = 0; i < grid.width * grid.height; i += 2*grid.width) {
+        thread_pool.addTask([this, i] {
+                detect_collisions_threaded(i, i + grid.height);
+        });
+    }
 
-    // anonymous function to detect if two given animals are colliding
+    thread_pool.waitForCompletion();
+
+    for (int i = grid.width; i < grid.width * grid.height; i += 2*grid.width) {
+        thread_pool.addTask([this, i] {
+                detect_collisions_threaded(i, i + grid.height);
+        });
+    }
+    thread_pool.waitForCompletion();
+}
+
+void Simulation::detect_collisions_threaded(int start, int end) {
+
     auto collision_with_animal = [](Animal* animal_1, Animal* animal_2) {
         sf::Vector2f temp_vect = (animal_1->position - animal_2->position);
         float squared_distance = temp_vect.x*temp_vect.x + temp_vect.y*temp_vect.y;
@@ -186,8 +203,7 @@ void Simulation::detect_collisions() {
         return (squared_distance < squared_radius);
     };
 
-    // iterating on the cells of the grid
-    for (int i = 0; i < grid.width * grid.height; i++) {
+    for (int i = start; i < end; i++) {
         Cell current_cell = grid.cells[i];
         std::unique_ptr<std::vector<Cell*>> neighbours = grid.get_neighbours(i);
 
@@ -232,11 +248,26 @@ void Simulation::detect_collisions() {
         }
     }
 }
-
-
 void Simulation::fill_ray_visions() {
-    std::unique_ptr<std::vector<Cell*>> neighbours;
-    for (int i = 0; i < ray_grid.width * ray_grid.height; i++) {
+    for (int i = 0; i < ray_grid.width * ray_grid.height; i += 2*ray_grid.width) {
+        thread_pool.addTask([this, i] {
+                detect_collisions_threaded(i, i + ray_grid.height);
+        });
+    }
+
+    thread_pool.waitForCompletion();
+
+    for (int i = ray_grid.width; i < ray_grid.width * ray_grid.height; i += 2*ray_grid.width) {
+        thread_pool.addTask([this, i] {
+                detect_collisions_threaded(i, i + ray_grid.height);
+        });
+    }
+    thread_pool.waitForCompletion();
+}
+
+void Simulation::fill_ray_visions(int start, int end) {
+    for (int i = start; i < end; i++) {
+        std::unique_ptr<std::vector<Cell*>> neighbours;
         neighbours = ray_grid.get_neighbours(i);
         for (Animal* a : ray_grid.cells[i].animals) {
             sf::Vector2f ray;
