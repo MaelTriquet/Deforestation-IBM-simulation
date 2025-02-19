@@ -4,8 +4,6 @@ import sigopt #type: ignore
 
 # constants
 N_ITER = 10000
-# constants
-N_ITER = 10000
 CONST_PARAMETERS = {
     "PRED_START" : "MAX_POP_PRED * MAX_POP_PRED_PERCENT",
     "PREY_START" : "MAX_POP_PREY * MAX_POP_PREY_PERCENT",
@@ -54,7 +52,28 @@ SIGOPT_PARAMETERS = [
     {"name": "PREY_N_MAX_CHILDREN",            "type": "int",    "bounds": {"min": 3, "max": 8}},
     {"name": "MAX_HEALTH",                     "type": "int",    "bounds": {"min": 300, "max": 2000}},
 ]
+CONSTANTS_BY_ORDER = [
 
+    # simulation part
+    ["WINDOW_WIDTH", "WINDOW_HEIGHT"], 
+
+    # initialisation part
+    ["MAX_POP_PRED", "MAX_POP_PRED_PERCENT", "PRED_START", "MAX_POP_PREY", "MAX_POP_PREY_PERCENT", "PREY_START", "TREE_START"],
+
+    # trees part
+    ["MIN_TREES_RADIUS", "MAX_TREES_RADIUS", "PROB_TREE_RANDOM_SPAWN", "TREE_RADIUS_BEFORE_REPRODUCTION_PERCENT", "FRUIT_ENERGY", "TIME_TREE_GROWTH"], 
+
+    # animals part
+    ["ANIMALS_RADIUS", "MAX_HEALTH", "MAX_ENERGY", "INITIAL_ENERGY", "NB_RAY", "RAY_LENGTH", "INVISIBILITY_TIME", "REPRODUCTION_TIMEOUT", "LOST_ENERGY_REPRODUCTION", "MUTATION_RATE", "PROB_ADD_CONNECTION", "PROB_ADD_NEURON", "ROT_TIME", "RADIUS_PERCENT_ROTTING", "ROTTING_PER_FRAME"], 
+
+    # preys part
+    ["PREY_MAX_VELOCITY", "PREY_MAX_RAY_ANGLE", "PREY_LOST_ENERGY_FIGHT_BY_PRED", "PREY_PASSIVE_ENERGY_LOSS", "PREY_N_MIN_CHILDREN", "PREY_N_MAX_CHILDREN"],
+
+    # predators part 
+    ["PRED_MAX_VELOCITY", "PRED_MAX_RAY_ANGLE", "PRED_LOST_ENERGY_FIGHT", "PRED_GAIN_ENERGY_EATING", "PRED_LOST_ENERGY_FIGHT_BY_PREY", "PRED_PASSIVE_ENERGY_LOSS", "PRED_N_MIN_CHILDREN", "PRED_N_MAX_CHILDREN"], 
+
+]
+CONSTANTS_CATEGORIES_NAMES = ["simulation", "initialisation", "trees", "animals", "preys", "predators"]
 
 # transform the constants from a .hpp file to a python dictionary
 def hpp_to_dict(file_path="../../c++/src/const.hpp") :
@@ -95,13 +114,15 @@ def dict_to_hpp(const_dict, file_path="../../c++/src/const2.hpp") :
         file.write("#include <cmath>\n")
         file.write("#pragma once\n\n")
 
-        # write the non constants constants
-        for const_name, const_value in const_dict.items() :
-            file.write(f"#define {const_name} {const_value}\n")
-        
-        # write the (real) constants
-        for const_name, const_value in CONST_PARAMETERS.items() :
-            file.write(f"#define {const_name} {const_value}\n")
+        # write the categories
+        for i, category in enumerate(CONSTANTS_BY_ORDER) :
+            file.write(f"// {CONSTANTS_CATEGORIES_NAMES[i]}\n")
+            for const_name in category :
+                if const_name in const_dict.keys() :
+                    file.write(f"#define {const_name} {const_dict[const_name]}\n")
+                else :
+                    file.write(f"#define {const_name} {CONST_PARAMETERS[const_name]}\n")
+            file.write("\n")
 
     return
 
@@ -147,14 +168,11 @@ def main() :
 
         # read the results of the three simulations and get their average score
         max_score = 0
-        try :
-            for j in range(1, 2) :
-                with open(f"../../res/bayes/settings_{i}/run_{j}/results.txt", "r") as file :
-                    lines_list = file.readlines()
-                if max_score < float(lines_list[0].strip()) :
-                    max_score = float(lines_list[0].strip())
-        except :
-            continue
+        for j in range(1, 2) :
+            with open(f"../../res/bayes/settings_{i}/run_{j}/results.txt", "r") as file :
+                lines_list = file.readlines()
+            if max_score < float(lines_list[0].strip()) :
+                max_score = float(lines_list[0].strip())
 
         # we give back the score to SigOpt to help it find the next point to evaluate
         conn.experiments(experiment.id).observations().create(
