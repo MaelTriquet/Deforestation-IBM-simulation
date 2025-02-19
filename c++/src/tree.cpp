@@ -28,5 +28,5 @@ Tree* Tree::update() {
         new_tree = new Tree(position + sf::Vector2f(x, y), hiding_prob);
         has_reproduced = true;
     }
-    return 0x0;
+    return new_tree;
 }

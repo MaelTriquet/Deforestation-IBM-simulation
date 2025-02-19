@@ -4,52 +4,55 @@ import sigopt #type: ignore
 
 # constants
 N_ITER = 10000
+# constants
+N_ITER = 10000
 CONST_PARAMETERS = {
+    "PRED_START" : "MAX_POP_PRED * MAX_POP_PRED_PERCENT",
+    "PREY_START" : "MAX_POP_PREY * MAX_POP_PREY_PERCENT",
     "WINDOW_HEIGHT" : "800",
     "WINDOW_WIDTH" : "800",
     "ANIMALS_RADIUS" : "9",
     "MAX_TREES_RADIUS" : "12",
     "MIN_TREES_RADIUS" : "2",
-    "RAY_LENGTH" : "101",
+    "INITIAL_ENERGY" : "MAX_ENERGY * 0.8",
+    "NB_RAY" : "8",
+    "RAY_LENGTH" : "70",
+    "PRED_LOST_ENERGY_FIGHT" : "0",
+    "PRED_MAX_VELOCITY" : "7",
+    "PRED_MAX_RAY_ANGLE" : "M_PI_2",
+    "PREY_MAX_VELOCITY" : "5",
+    "LOST_ENERGY_REPRODUCTION" : "10",
+    "PREY_MAX_RAY_ANGLE" : "M_PI_2",
+    "INVISIBILITY_TIME" : "1000",
+    "MUTATION_RATE" : "0.75",
+    "PROB_ADD_CONNECTION" : "0.15",
+    "PROB_ADD_NEURON" : "0.15",
+    "PROB_TREE_RANDOM_SPAWN" : "0.2",
+    "TREE_RADIUS_BEFORE_REPRODUCTION_PERCENT" : "0.8",
+    "RADIUS_PERCENT_ROTTING" : "0.8", 
+    "ROTTING_PER_FRAME" : "1"
 }
-
 SIGOPT_PARAMETERS = [
-    {"name": "MAX_POP_PRED",                     "type": "int",    "bounds": {"min": 135, "max": 165}},
-    {"name": "MAX_POP_PREY",                     "type": "int",    "bounds": {"min": 243, "max": 297}},
-    {"name": "TREE_START",                       "type": "int",    "bounds": {"min": 369, "max": 451}},
-    {"name": "FRUIT_ENERGY",                     "type": "int",    "bounds": {"min": 162, "max": 198}},
-    {"name": "TIME_TREE_GROWTH",                 "type": "double",  "bounds": {"min": 341.14, "max": 416.95}},
-    {"name": "MAX_ENERGY",                       "type": "int",    "bounds": {"min": 2880, "max": 3520}},
-    {"name": "ROT_TIME",                         "type": "int",    "bounds": {"min": 585, "max": 715}},
-    {"name": "LOST_ENERGY_REPRODUCTION",         "type": "int",    "bounds": {"min": 72, "max": 88}},
-    {"name": "REPRODUCTION_TIMEOUT",             "type": "int",    "bounds": {"min": 63, "max": 77}},
-    {"name": "PRED_GAIN_ENERGY_EATING",          "type": "int",    "bounds": {"min": 171, "max": 209}},
-    {"name": "PRED_LOST_ENERGY_FIGHT_BY_PREY",   "type": "int",    "bounds": {"min": 180, "max": 220}},
-    {"name": "PRED_PASSIVE_ENERGY_LOSS",         "type": "int",    "bounds": {"min": 5, "max": 7}},
-    {"name": "PRED_N_MIN_CHILDREN",              "type": "int",    "bounds": {"min": 1, "max": 2}},  
-    {"name": "PRED_N_MAX_CHILDREN",              "type": "int",    "bounds": {"min": 3, "max": 6}},  
-    {"name": "INVISIBILITY_TIME",                "type": "int",    "bounds": {"min": 1710, "max": 2090}},
-    {"name": "PREY_LOST_ENERGY_FIGHT_BY_PRED",   "type": "int",    "bounds": {"min": 90, "max": 110}},
-    {"name": "PREY_PASSIVE_ENERGY_LOSS",         "type": "int",    "bounds": {"min": 2, "max": 4}},  
-    {"name": "PREY_N_MIN_CHILDREN",              "type": "int",    "bounds": {"min": 1, "max": 3}},  
-    {"name": "PREY_N_MAX_CHILDREN",              "type": "int",    "bounds": {"min": 3, "max": 7}},  
-    {"name": "PRED_START",                       "type": "int",    "bounds": {"min": 67, "max": 83}},
-    {"name": "PREY_START",                       "type": "int",    "bounds": {"min": 121, "max": 149}},
-    {"name": "PROB_TREE_RANDOM_SPAWN",           "type": "double",  "bounds": {"min": 0.18, "max": 0.22}},
-    {"name": "INITIAL_ENERGY",                   "type": "double",  "bounds": {"min": 2304, "max": 2816}},
-    {"name": "MAX_HEALTH",                       "type": "int",    "bounds": {"min": 2880, "max": 3520}},
-    {"name": "MUTATION_RATE",                    "type": "double",  "bounds": {"min": 0.72, "max": 0.88}},
-    {"name": "PROB_ADD_CONNECTION",              "type": "double",  "bounds": {"min": 0.225, "max": 0.275}},
-    {"name": "PROB_ADD_NEURON",                  "type": "double",  "bounds": {"min": 0.072, "max": 0.088}},
-    {"name": "NB_RAY",                           "type": "int",    "bounds": {"min": 7, "max": 9}},
-    {"name": "PRED_LOST_ENERGY_FIGHT",           "type": "int",    "bounds": {"min": 0, "max": 2}},  
-    {"name": "PRED_MAX_VELOCITY",                "type": "int",    "bounds": {"min": 6, "max": 8}},  
-    {"name": "PRED_MAX_RAY_ANGLE",               "type": "double",  "bounds": {"min": 1.41, "max": 1.73}},  
-    {"name": "PREY_MAX_VELOCITY",                "type": "int",    "bounds": {"min": 4, "max": 6}},  
-    {"name": "PREY_MAX_RAY_ANGLE",               "type": "double",  "bounds": {"min": 1.41, "max": 1.73}},  
-    {"name": "ROTTING_PER_FRAME",                "type": "double",  "bounds": {"min": 0.45, "max": 0.55}},  
-    {"name": "RADIUS_PERCENT_ROTTING",           "type": "double",  "bounds": {"min": 0.63, "max": 0.77}},  
-    {"name": "TREE_RADIUS_BEFORE_REPRODUCTION_PERCENT", "type": "double", "bounds": {"min": 0.72, "max": 0.88}}
+    {"name": "MAX_POP_PRED",                   "type": "int",    "bounds": {"min": 200, "max": 700}},
+    {"name": "MAX_POP_PRED_PERCENT",           "type": "double", "bounds": {"min": 0.5, "max": 1}},
+    {"name": "MAX_POP_PREY",                   "type": "int",    "bounds": {"min": 200, "max": 700}},
+    {"name": "MAX_POP_PREY_PERCENT",           "type": "double", "bounds": {"min": 0.5, "max": 1}},
+    {"name": "TREE_START",                     "type": "int",    "bounds": {"min": 100, "max": 700}},
+    {"name": "FRUIT_ENERGY",                   "type": "int",    "bounds": {"min": 10, "max": 200}},
+    {"name": "TIME_TREE_GROWTH",               "type": "double", "bounds": {"min": 120, "max": 600}},
+    {"name": "MAX_ENERGY",                     "type": "int",    "bounds": {"min": 500, "max": 5000}},
+    {"name": "ROT_TIME",                       "type": "int",    "bounds": {"min": 50, "max": 1000}},
+    {"name": "REPRODUCTION_TIMEOUT",           "type": "int",    "bounds": {"min": 50, "max": 300}},
+    {"name": "PRED_GAIN_ENERGY_EATING",        "type": "int",    "bounds": {"min": 50, "max": 300}},
+    {"name": "PRED_LOST_ENERGY_FIGHT_BY_PREY", "type": "int",    "bounds": {"min": 0, "max": 1000}},
+    {"name": "PRED_PASSIVE_ENERGY_LOSS",       "type": "int",    "bounds": {"min": 0, "max": 6}},
+    {"name": "PRED_N_MIN_CHILDREN",            "type": "int",    "bounds": {"min": 1, "max": 2}},
+    {"name": "PRED_N_MAX_CHILDREN",            "type": "int",    "bounds": {"min": 2, "max": 5}},
+    {"name": "PREY_LOST_ENERGY_FIGHT_BY_PRED", "type": "int",    "bounds": {"min": 0, "max": 2000}},
+    {"name": "PREY_PASSIVE_ENERGY_LOSS",       "type": "int",    "bounds": {"min": 0, "max": 3}},
+    {"name": "PREY_N_MIN_CHILDREN",            "type": "int",    "bounds": {"min": 1, "max": 3}},
+    {"name": "PREY_N_MAX_CHILDREN",            "type": "int",    "bounds": {"min": 3, "max": 8}},
+    {"name": "MAX_HEALTH",                     "type": "int",    "bounds": {"min": 300, "max": 2000}},
 ]
 
 
@@ -140,15 +143,18 @@ def main() :
         dict_to_hpp(current_params, file_path="../../c++/src/const.hpp")
 
         # run the bash script : the three simulations run and the results are written in the corresponding folder
-        subprocess.run(["./run.sh", str(i)], check=True, text=True, capture_output=True)
+        subprocess.run(["./run_once.sh", str(i)], check=True, text=True, capture_output=True)
 
         # read the results of the three simulations and get their average score
         max_score = 0
-        for j in range(1, 4) :
-            with open(f"../../res/bayes/settings_{i}/run_{j}/results.txt", "r") as file :
-                lines_list = file.readlines()
-            if max_score < float(lines_list[0].strip()) :
-                max_score = float(lines_list[0].strip())
+        try :
+            for j in range(1, 2) :
+                with open(f"../../res/bayes/settings_{i}/run_{j}/results.txt", "r") as file :
+                    lines_list = file.readlines()
+                if max_score < float(lines_list[0].strip()) :
+                    max_score = float(lines_list[0].strip())
+        except :
+            continue
 
         # we give back the score to SigOpt to help it find the next point to evaluate
         conn.experiments(experiment.id).observations().create(

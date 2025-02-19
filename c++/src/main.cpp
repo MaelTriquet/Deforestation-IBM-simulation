@@ -14,11 +14,11 @@ int main() {
 
     tp::ThreadPool thread_pool(10);
 
-    // sf::ContextSettings settings;
-    // settings.antialiasingLevel = 1;
-    // sf::RenderWindow window(sf::VideoMode(window_width, window_height), "PFE", sf::Style::Default, settings);
-    // const uint32_t frame_rate = 60;
-    // window.setFramerateLimit(frame_rate);
+    sf::ContextSettings settings;
+    settings.antialiasingLevel = 1;
+    sf::RenderWindow window(sf::VideoMode(window_width, window_height), "PFE", sf::Style::Default, settings);
+    const uint32_t frame_rate = 60;
+    window.setFramerateLimit(frame_rate);
 
     int max_pop_frame = 5000;
     float score = 0.;
@@ -28,18 +28,18 @@ int main() {
     bool prey_low = false;
 
     Simulation simulation{window_width, window_height, thread_pool};
-    // Renderer renderer{window};
+    Renderer renderer{window};
 
     emptyCSV("../../res/plot_info.csv");
 
     while (max_pop_frame > 0 && simulation.nb_pred > 1 && simulation.nb_prey > 1) {
         // check for user closing the window
-        // sf::Event event{};
-        // while (window.pollEvent(event)) {
-        //     if (event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-        //         window.close();
-        //     }
-        // }
+        sf::Event event{};
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+                window.close();
+            }
+        }
 
         // update and show each frame
         for (int i = 0; i < 1; i++) {
@@ -77,9 +77,9 @@ int main() {
             if (simulation.nb_pred == MAX_POP_PRED || simulation.nb_prey == MAX_POP_PREY)
                 max_pop_frame--;
         }
-        // window.clear(sf::Color::Black);
-        // renderer.render(simulation);
-		// window.display();
+        window.clear(sf::Color::Black);
+        renderer.render(simulation);
+		window.display();
     }
 
     if (simulation.nb_pred <= 1) {
