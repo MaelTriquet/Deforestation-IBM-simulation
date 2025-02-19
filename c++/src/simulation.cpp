@@ -100,11 +100,11 @@ void Simulation::update() {
     //     m_pop.push_back(pred);
     // } 
 
-    std::cout << "Prédateurs : " << nb_pred << ", ";
-    std::cout << "Proies : " << nb_prey << ", ";
-    std::cout << "Morts : " << m_pop.size() - nb_pred - nb_prey << ", ";
-    std::cout << "Arbres : " << nb_tree << ", ";
-    std::cout << "Population : " << m_pop.size() << std::endl;
+    // std::cout << "Prédateurs : " << nb_pred << ", ";
+    // std::cout << "Proies : " << nb_prey << ", ";
+    // std::cout << "Morts : " << m_pop.size() - nb_pred - nb_prey << ", ";
+    // std::cout << "Arbres : " << nb_tree << ", ";
+    // std::cout << "Population : " << m_pop.size() << std::endl;
    
     for (Animal* a : m_pop)
         a->considerate_bounds(window_width, window_height);
