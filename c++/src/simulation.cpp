@@ -35,7 +35,7 @@ Simulation::~Simulation() {
 
     for (int i = 0; i < m_trees.size(); i++)
         delete m_trees[i];
-}
+}   
 
 
 void Simulation::update() {
@@ -44,22 +44,26 @@ void Simulation::update() {
         m_trees.push_back(new Tree(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, 0.25));
     Tree* new_tree;
     nb_tree = 0;
-    for (Tree* t : m_trees) {
-        if (t->is_dead) continue;
+    for (int i = 0; i < m_trees.size(); i++) {
+        if (m_trees[i]->is_dead) continue;
         nb_tree++;
-        new_tree = t->update();
-        if (new_tree != 0) {
+        new_tree = m_trees[i]->update();
+        if (new_tree != 0x0) {
             m_trees.push_back(new_tree);
         }
     }
     nb_prey = 0;
     nb_pred = 0;
 
-    // First collision pass
-    for (uint32_t i{0}; i < m_pop.size(); ++i) {
+    for (int i = m_pop.size() - 1; i > -1; i--) {
+        if (m_pop[i] == 0x0)
+        m_pop.erase(m_pop.begin() + i);
+    }
+
+    for (int i = 0; i < m_pop.size(); i++) {
         m_pop[i]->update();
         if (!m_pop[i]->is_dead)
-            thread_pool.addTask([this, i] {
+        thread_pool.addTask([this, i] {
                     m_pop[i]->move(WINDOW_WIDTH, WINDOW_HEIGHT);
             });
     }
@@ -85,8 +89,6 @@ void Simulation::update() {
         m_pop.erase(m_pop.begin() + i);
     }
 
-    is_prey_dominating = nb_pred < nb_prey;
-
     // if (nb_prey == 0)
     // for (int i = 0; i < 10; i++) {
     //     Prey* prey = new Prey(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, id++);
@@ -98,11 +100,11 @@ void Simulation::update() {
     //     m_pop.push_back(pred);
     // } 
 
-    // std::cout << "Prédateurs : " << nb_pred << ", ";
-    // std::cout << "Proies : " << nb_prey << ", ";
-    // std::cout << "Morts : " << m_pop.size() - nb_pred - nb_prey << ", ";
-    // std::cout << "Arbres : " << nb_tree << ", ";
-    // std::cout << "Population : " << m_pop.size() << std::endl;
+    std::cout << "Prédateurs : " << nb_pred << ", ";
+    std::cout << "Proies : " << nb_prey << ", ";
+    std::cout << "Morts : " << m_pop.size() - nb_pred - nb_prey << ", ";
+    std::cout << "Arbres : " << nb_tree << ", ";
+    std::cout << "Population : " << m_pop.size() << std::endl;
    
     for (Animal* a : m_pop)
         a->considerate_bounds(window_width, window_height);
@@ -113,8 +115,8 @@ void Simulation::update() {
     ray_grid.init_trees(m_trees);
 
     // check for events
-    detect_collisions();
     fill_ray_visions();
+    detect_collisions();
 }
 
 // handles Animal/Animal collision (fight, eat or reproduce)
@@ -141,7 +143,7 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
         if (animal_2->is_dead && (animal_1->energy <= MAX_ENERGY || animal_1->health <= MAX_ENERGY))
             return ((Predator*)animal_1)->eat(animal_2);
         ((Predator*)animal_1)->fight(animal_2);
-    }
+    } 
     if (animal_1->is_pred && animal_2->is_prey && !(animal_1->has_in_rays(animal_2)) && animal_2->has_in_rays(animal_1)) {
         ((Prey*)animal_2)->fight(animal_1);
     }
@@ -150,17 +152,17 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
 
     // animal_1 = animal_2 = predator or animal_1 = animal_2 = prey
     if (animal_1->reproduction_timeout <= 0 && animal_2->reproduction_timeout <= 0 && !animal_1->is_dead && !animal_2->is_dead) {
-        if (animal_1->is_pred && nb_pred < MAX_POP_PRED && (animal_1->has_eaten || animal_2->has_eaten)) {
+        if (animal_1->is_pred && (animal_1->has_eaten || animal_2->has_eaten)) {
             int nb_child = Random::randint(PRED_N_MIN_CHILDREN, PRED_N_MAX_CHILDREN);
             for (int i = 0; i < nb_child; i++) {
                 if (nb_pred >= MAX_POP_PRED) break;
                 Predator* child = ((Predator*)animal_1)->reproduce((Predator*)animal_2, id++);
                 m_pop.push_back(child);
             }
-        } else if (animal_2->is_prey && nb_prey < MAX_POP_PREY && (animal_1->has_eaten || animal_2->has_eaten)) {
+        } else if (animal_2->is_prey && (animal_1->has_eaten || animal_2->has_eaten)) {
             int nb_child = Random::randint(PREY_N_MIN_CHILDREN, PREY_N_MAX_CHILDREN);
             for (int i = 0; i < nb_child; i++) {
-                if (nb_prey < MAX_POP_PREY) break;
+                if (nb_prey >= MAX_POP_PREY) break;
                 Prey* child = ((Prey*)animal_1)->reproduce((Prey*)animal_2, id++);
                 m_pop.push_back(child);
             }
@@ -170,20 +172,31 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
 
 void Simulation::detect_collisions() {
     
-    for (int i = 0; i < grid.width * grid.height; i += 2*grid.width) {
-        thread_pool.addTask([this, i] {
-                detect_collisions_threaded(i, i + grid.height);
-        });
-    }
+    // for (int i = 0; i < grid.width * (grid.height-1); i += 3*grid.width) {
+    //     thread_pool.addTask([this, i] {
+    //             detect_collisions_threaded(i, i + grid.width);
+    //     });
+    // }
 
-    thread_pool.waitForCompletion();
+    // thread_pool.waitForCompletion();
 
-    for (int i = grid.width; i < grid.width * grid.height; i += 2*grid.width) {
-        thread_pool.addTask([this, i] {
-                detect_collisions_threaded(i, i + grid.height);
-        });
-    }
-    thread_pool.waitForCompletion();
+    // for (int i = grid.width; i < grid.width * grid.height; i += 3*grid.width) {
+    //     thread_pool.addTask([this, i] {
+    //             detect_collisions_threaded(i, i + grid.width);
+    //     });
+    // }
+    // thread_pool.waitForCompletion();
+
+    // for (int i = 2*grid.width; i < grid.width * grid.height; i += 3*grid.width) {
+    //     thread_pool.addTask([this, i] {
+    //             detect_collisions_threaded(i, i + grid.width);
+    //     });
+    // }
+    // thread_pool.waitForCompletion();
+
+    // if (grid.height % 3 == 1)
+    //     detect_collisions_threaded(grid.width * (grid.height-1), grid.width * grid.height);
+    detect_collisions_threaded(0, grid.height * grid.width);
 }
 
 void Simulation::detect_collisions_threaded(int start, int end) {
@@ -249,27 +262,19 @@ void Simulation::detect_collisions_threaded(int start, int end) {
     }
 }
 void Simulation::fill_ray_visions() {
-    for (int i = 0; i < ray_grid.width * ray_grid.height; i += 2*ray_grid.width) {
+    for (int i = 0; i < ray_grid.width * ray_grid.height; i += ray_grid.width) {
         thread_pool.addTask([this, i] {
-                detect_collisions_threaded(i, i + ray_grid.height);
-        });
-    }
-
-    thread_pool.waitForCompletion();
-
-    for (int i = ray_grid.width; i < ray_grid.width * ray_grid.height; i += 2*ray_grid.width) {
-        thread_pool.addTask([this, i] {
-                detect_collisions_threaded(i, i + ray_grid.height);
+                fill_ray_visions(i, i + ray_grid.width);
         });
     }
     thread_pool.waitForCompletion();
 }
 
 void Simulation::fill_ray_visions(int start, int end) {
-    for (int i = start; i < end; i++) {
+    for (int v = start; v < end; v++) {
         std::unique_ptr<std::vector<Cell*>> neighbours;
-        neighbours = ray_grid.get_neighbours(i);
-        for (Animal* a : ray_grid.cells[i].animals) {
+        neighbours = ray_grid.get_neighbours(v);
+        for (Animal* a : ray_grid.cells[v].animals) {
             sf::Vector2f ray;
             for (int i = 0; i < NB_RAY; i++) {
                 a->vision.rays[i] = 0;
@@ -303,9 +308,7 @@ void Simulation::fill_ray_visions(int start, int end) {
                     
                     for (Animal* a2 : neigh->animals) {
                         if (a-> index == a2->index) continue;
-                        a2->position += offset;
-                        float dist = std::sqrt((a->position.x - a2->position.x) * (a->position.x - a2->position.x) + (a->position.y - a2->position.y) * (a->position.y - a2->position.y));
-                        a2->position -= offset;
+                        float dist = std::sqrt((a->position.x - a2->position.x-offset.x) * (a->position.x - a2->position.x - offset.x) + (a->position.y - a2->position.y - offset.y) * (a->position.y - a2->position.y - offset.y));
                         if (dist > RAY_LENGTH + ANIMALS_RADIUS) continue;
                         float res = segmentIntersectsCircle(a->position, ray, a2->position + offset, ANIMALS_RADIUS);
                         if (res < 0) continue;
@@ -326,9 +329,7 @@ void Simulation::fill_ray_visions(int start, int end) {
                     }
 
                     for (Tree* t : neigh->trees) {
-                        t->position += offset;
-                        float dist = std::sqrt((a->position.x - t->position.x) * (a->position.x - t->position.x) + (a->position.y - t->position.y) * (a->position.y - t->position.y));
-                        t->position -= offset;
+                        float dist = std::sqrt((a->position.x - t->position.x - offset.x) * (a->position.x - t->position.x-  offset.x) + (a->position.y - t->position.y - offset.y) * (a->position.y - t->position.y - offset.y));
                         if (dist > RAY_LENGTH + MAX_TREES_RADIUS) continue;
                         float res = segmentIntersectsCircle(a->position, ray, t->position + offset, MAX_TREES_RADIUS);
                         if (res < 0) continue; 

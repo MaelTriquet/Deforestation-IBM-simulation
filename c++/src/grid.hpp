@@ -21,7 +21,7 @@ struct Cell
 // Used for optimisation purposes, makes collision detection from O(n²) to O(m²) where m is the number of neighbouring agents
 class Grid {
 public:
-    Cell* cells;
+    Cell* cells; // array
     int radius; 
     int width;
     int height;

@@ -4,14 +4,11 @@ import sigopt #type: ignore
 
 # constants
 N_ITER = 10000
+# constants
+N_ITER = 10000
 CONST_PARAMETERS = {
-    "MAX_ENERGY" : "1000",
-    "PRED_GAIN_ENERGY_EATING" : "100",
-    "PRED_LOST_ENERGY_FIGHT_BY_PREY" : "30",
-    "PREY_LOST_ENERGY_FIGHT_BY_PRED" : "120",
-    "FRUIT_ENERGY" : "70",
-    "MAX_POP_PRED" : "1000000",
-    "MAX_POP_PREY" : "1000000",
+    "PRED_START" : "MAX_POP_PRED * MAX_POP_PRED_PERCENT",
+    "PREY_START" : "MAX_POP_PREY * MAX_POP_PREY_PERCENT",
     "WINDOW_HEIGHT" : "800",
     "WINDOW_WIDTH" : "800",
     "ANIMALS_RADIUS" : "9",
@@ -19,7 +16,7 @@ CONST_PARAMETERS = {
     "MIN_TREES_RADIUS" : "2",
     "INITIAL_ENERGY" : "MAX_ENERGY * 0.8",
     "NB_RAY" : "8",
-    "RAY_LENGTH" : "101",
+    "RAY_LENGTH" : "70",
     "PRED_LOST_ENERGY_FIGHT" : "0",
     "PRED_MAX_VELOCITY" : "7",
     "PRED_MAX_RAY_ANGLE" : "M_PI_2",
@@ -30,26 +27,34 @@ CONST_PARAMETERS = {
     "MUTATION_RATE" : "0.75",
     "PROB_ADD_CONNECTION" : "0.15",
     "PROB_ADD_NEURON" : "0.15",
-    "MAX_HEALTH" : "700",
-    "TIME_TREE_GROWTH" : "200",
-    "ROT_TIME" : "175",
-    "REPRODUCTION_TIMEOUT" : "200",
-    "PROB_TREE_RANDOM_SPAWN" : "0.5",
+    "PROB_TREE_RANDOM_SPAWN" : "0.2",
     "TREE_RADIUS_BEFORE_REPRODUCTION_PERCENT" : "0.8",
-    "RADIUS_PERCENT_ROTTING" : "0.8",
-    "ROTTING_PER_FRAME" : "0.5",
+    "RADIUS_PERCENT_ROTTING" : "0.8", 
+    "ROTTING_PER_FRAME" : "1"
 }
 SIGOPT_PARAMETERS = [
-    {"name": "PREY_START",                              "type": "int",    "bounds": {"min": 50, "max": 500}},
-    {"name": "PRED_START",                              "type": "int",    "bounds": {"min": 50, "max": 300}},
-    {"name": "TREE_START",                              "type": "int",    "bounds": {"min": 100, "max": 700}},
-    {"name": "PRED_PASSIVE_ENERGY_LOSS",                "type": "int",    "bounds": {"min": 0, "max": 6}},
-    {"name": "PRED_N_MIN_CHILDREN",                     "type": "int",    "bounds": {"min": 1, "max": 2}},
-    {"name": "PRED_N_MAX_CHILDREN",                     "type": "int",    "bounds": {"min": 2, "max": 5}},
-    {"name": "PREY_PASSIVE_ENERGY_LOSS",                "type": "int",    "bounds": {"min": 0, "max": 3}},
-    {"name": "PREY_N_MIN_CHILDREN",                     "type": "int",    "bounds": {"min": 1, "max": 3}},
-    {"name": "PREY_N_MAX_CHILDREN",                     "type": "int",    "bounds": {"min": 3, "max": 8}},
+    {"name": "MAX_POP_PRED",                   "type": "int",    "bounds": {"min": 200, "max": 700}},
+    {"name": "MAX_POP_PRED_PERCENT",           "type": "double", "bounds": {"min": 0.5, "max": 1}},
+    {"name": "MAX_POP_PREY",                   "type": "int",    "bounds": {"min": 200, "max": 700}},
+    {"name": "MAX_POP_PREY_PERCENT",           "type": "double", "bounds": {"min": 0.5, "max": 1}},
+    {"name": "TREE_START",                     "type": "int",    "bounds": {"min": 100, "max": 700}},
+    {"name": "FRUIT_ENERGY",                   "type": "int",    "bounds": {"min": 10, "max": 200}},
+    {"name": "TIME_TREE_GROWTH",               "type": "double", "bounds": {"min": 120, "max": 600}},
+    {"name": "MAX_ENERGY",                     "type": "int",    "bounds": {"min": 500, "max": 5000}},
+    {"name": "ROT_TIME",                       "type": "int",    "bounds": {"min": 50, "max": 1000}},
+    {"name": "REPRODUCTION_TIMEOUT",           "type": "int",    "bounds": {"min": 50, "max": 300}},
+    {"name": "PRED_GAIN_ENERGY_EATING",        "type": "int",    "bounds": {"min": 50, "max": 300}},
+    {"name": "PRED_LOST_ENERGY_FIGHT_BY_PREY", "type": "int",    "bounds": {"min": 0, "max": 1000}},
+    {"name": "PRED_PASSIVE_ENERGY_LOSS",       "type": "int",    "bounds": {"min": 0, "max": 6}},
+    {"name": "PRED_N_MIN_CHILDREN",            "type": "int",    "bounds": {"min": 1, "max": 2}},
+    {"name": "PRED_N_MAX_CHILDREN",            "type": "int",    "bounds": {"min": 2, "max": 5}},
+    {"name": "PREY_LOST_ENERGY_FIGHT_BY_PRED", "type": "int",    "bounds": {"min": 0, "max": 2000}},
+    {"name": "PREY_PASSIVE_ENERGY_LOSS",       "type": "int",    "bounds": {"min": 0, "max": 3}},
+    {"name": "PREY_N_MIN_CHILDREN",            "type": "int",    "bounds": {"min": 1, "max": 3}},
+    {"name": "PREY_N_MAX_CHILDREN",            "type": "int",    "bounds": {"min": 3, "max": 8}},
+    {"name": "MAX_HEALTH",                     "type": "int",    "bounds": {"min": 300, "max": 2000}},
 ]
+
 
 # transform the constants from a .hpp file to a python dictionary
 def hpp_to_dict(file_path="../../c++/src/const.hpp") :
@@ -138,15 +143,18 @@ def main() :
         dict_to_hpp(current_params, file_path="../../c++/src/const.hpp")
 
         # run the bash script : the three simulations run and the results are written in the corresponding folder
-        subprocess.run(["./run.sh", str(i)], check=True, text=True, capture_output=True)
+        subprocess.run(["./run_once.sh", str(i)], check=True, text=True, capture_output=True)
 
         # read the results of the three simulations and get their average score
         max_score = 0
-        for j in range(1, 4) :
-            with open(f"../../res/bayes/settings_{i}/run_{j}/results.txt", "r") as file :
-                lines_list = file.readlines()
-            if max_score < float(lines_list[0].strip()) :
-                max_score = float(lines_list[0].strip())
+        try :
+            for j in range(1, 2) :
+                with open(f"../../res/bayes/settings_{i}/run_{j}/results.txt", "r") as file :
+                    lines_list = file.readlines()
+                if max_score < float(lines_list[0].strip()) :
+                    max_score = float(lines_list[0].strip())
+        except :
+            continue
 
         # we give back the score to SigOpt to help it find the next point to evaluate
         conn.experiments(experiment.id).observations().create(

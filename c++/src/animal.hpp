@@ -32,7 +32,7 @@ public:
     Tree* in_tree = nullptr; // if is_in_tree = true, this is the pointer to that tree
     float rotting = ROT_TIME; // how long a corpse stays around after death
     int invisible = 0; // camouflage counter when hiding in a tree successfully
-    int reproduction_timeout = REPRODUCTION_TIMEOUT;
+    int reproduction_timeout = 0;
     sf::Color color;
 
     Animal(sf::Vector2f position_, int index_);

@@ -11,7 +11,7 @@ class Simulation {
 private:
 public:
     static int id; // next animal id
-    std::vector<Animal*> m_pop; // alive pop
+    std::vector<Animal*> m_pop{2 * (MAX_POP_PRED + MAX_POP_PREY)}; // alive pop
     std::vector<Tree*> m_trees; // tree pop
     int window_width;
     int window_height;
@@ -19,7 +19,6 @@ public:
     Grid grid;
     //ray detection grid (different size)
     Grid ray_grid;
-    bool is_prey_dominating = true;
 
     tp::ThreadPool& thread_pool;
 
