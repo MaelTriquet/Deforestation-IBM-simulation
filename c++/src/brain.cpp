@@ -168,6 +168,13 @@ void Brain::addConn() {
 void Brain::addNeuron() {
     if (genes.empty())
         return addConn();
+    bool enabled_exists = false;
+    for (Gene* g : genes)
+        if (g->enabled)
+            enabled_exists = true;
+            
+    if (!enabled_exists)
+        return addConn();
 
     int gene_idx = Random::randint(genes.size());
     while (!genes[gene_idx]->enabled)
