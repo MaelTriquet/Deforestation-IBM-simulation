@@ -35,7 +35,7 @@ Simulation::~Simulation() {
 
     for (int i = 0; i < m_trees.size(); i++)
         delete m_trees[i];
-}
+}   
 
 
 void Simulation::update() {
@@ -172,21 +172,31 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
 
 void Simulation::detect_collisions() {
     
-    for (int i = 0; i < grid.width * grid.height; i += 2*grid.width) {
-        thread_pool.addTask([this, i] {
-                detect_collisions_threaded(i, i + grid.width);
-        });
-    }
+    // for (int i = 0; i < grid.width * (grid.height-1); i += 3*grid.width) {
+    //     thread_pool.addTask([this, i] {
+    //             detect_collisions_threaded(i, i + grid.width);
+    //     });
+    // }
 
-    thread_pool.waitForCompletion();
+    // thread_pool.waitForCompletion();
 
-    for (int i = grid.width; i < grid.width * grid.height; i += 2*grid.width) {
-        thread_pool.addTask([this, i] {
-                detect_collisions_threaded(i, i + grid.width);
-        });
-    }
-    thread_pool.waitForCompletion();
-    // detect_collisions_threaded(0, grid.height * grid.width);
+    // for (int i = grid.width; i < grid.width * grid.height; i += 3*grid.width) {
+    //     thread_pool.addTask([this, i] {
+    //             detect_collisions_threaded(i, i + grid.width);
+    //     });
+    // }
+    // thread_pool.waitForCompletion();
+
+    // for (int i = 2*grid.width; i < grid.width * grid.height; i += 3*grid.width) {
+    //     thread_pool.addTask([this, i] {
+    //             detect_collisions_threaded(i, i + grid.width);
+    //     });
+    // }
+    // thread_pool.waitForCompletion();
+
+    // if (grid.height % 3 == 1)
+    //     detect_collisions_threaded(grid.width * (grid.height-1), grid.width * grid.height);
+    detect_collisions_threaded(0, grid.height * grid.width);
 }
 
 void Simulation::detect_collisions_threaded(int start, int end) {
@@ -252,15 +262,7 @@ void Simulation::detect_collisions_threaded(int start, int end) {
     }
 }
 void Simulation::fill_ray_visions() {
-    for (int i = 0; i < ray_grid.width * ray_grid.height; i += 2*ray_grid.width) {
-        thread_pool.addTask([this, i] {
-                fill_ray_visions(i, i + ray_grid.width);
-        });
-    }
-
-    thread_pool.waitForCompletion();
-
-    for (int i = ray_grid.width; i < ray_grid.width * ray_grid.height; i += 2*ray_grid.width) {
+    for (int i = 0; i < ray_grid.width * ray_grid.height; i += ray_grid.width) {
         thread_pool.addTask([this, i] {
                 fill_ray_visions(i, i + ray_grid.width);
         });
@@ -306,9 +308,7 @@ void Simulation::fill_ray_visions(int start, int end) {
                     
                     for (Animal* a2 : neigh->animals) {
                         if (a-> index == a2->index) continue;
-                        a2->position += offset;
-                        float dist = std::sqrt((a->position.x - a2->position.x) * (a->position.x - a2->position.x) + (a->position.y - a2->position.y) * (a->position.y - a2->position.y));
-                        a2->position -= offset;
+                        float dist = std::sqrt((a->position.x - a2->position.x-offset.x) * (a->position.x - a2->position.x - offset.x) + (a->position.y - a2->position.y - offset.y) * (a->position.y - a2->position.y - offset.y));
                         if (dist > RAY_LENGTH + ANIMALS_RADIUS) continue;
                         float res = segmentIntersectsCircle(a->position, ray, a2->position + offset, ANIMALS_RADIUS);
                         if (res < 0) continue;
