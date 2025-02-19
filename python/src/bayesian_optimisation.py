@@ -1,5 +1,6 @@
 import subprocess
 import re
+import glob
 import sigopt #type: ignore
 
 # constants
@@ -37,13 +38,13 @@ SIGOPT_PARAMETERS = [
     {"name": "MAX_POP_PREY_PERCENT",           "type": "double", "bounds": {"min": 0.5, "max": 1}},
     {"name": "TREE_START",                     "type": "int",    "bounds": {"min": 100, "max": 700}},
     {"name": "FRUIT_ENERGY",                   "type": "int",    "bounds": {"min": 10, "max": 200}},
-    {"name": "TIME_TREE_GROWTH",               "type": "double", "bounds": {"min": 120, "max": 600}},
+    {"name": "TIME_TREE_GROWTH",               "type": "int",    "bounds": {"min": 120, "max": 600}},
     {"name": "MAX_ENERGY",                     "type": "int",    "bounds": {"min": 500, "max": 5000}},
     {"name": "ROT_TIME",                       "type": "int",    "bounds": {"min": 50, "max": 1000}},
     {"name": "REPRODUCTION_TIMEOUT",           "type": "int",    "bounds": {"min": 50, "max": 300}},
     {"name": "PRED_GAIN_ENERGY_EATING",        "type": "int",    "bounds": {"min": 50, "max": 300}},
     {"name": "PRED_LOST_ENERGY_FIGHT_BY_PREY", "type": "int",    "bounds": {"min": 0, "max": 1000}},
-    {"name": "PRED_PASSIVE_ENERGY_LOSS",       "type": "int",    "bounds": {"min": 0, "max": 6}},
+    {"name": "PRED_PASSIVE_ENERGY_LOSS",       "type": "int",    "bounds": {"min": 0, "max": 3}},
     {"name": "PRED_N_MIN_CHILDREN",            "type": "int",    "bounds": {"min": 1, "max": 2}},
     {"name": "PRED_N_MAX_CHILDREN",            "type": "int",    "bounds": {"min": 2, "max": 5}},
     {"name": "PREY_LOST_ENERGY_FIGHT_BY_PRED", "type": "int",    "bounds": {"min": 0, "max": 2000}},
@@ -92,7 +93,7 @@ def hpp_to_dict(file_path="../../c++/src/const.hpp") :
             const_dict[const_name] = const_value
 
     # keep only the good lines (with numbers, mainly for tests)
-    const_dict = {k: v for k, v in const_dict.items() if re.match(r"^[0-9]", v)}
+    const_dict = {k : v for k, v in const_dict.items() if re.match(r"^[0-9]", v) and k not in CONST_PARAMETERS.keys()}
 
     # convert the values to their types
     for const_name, const_value in const_dict.items() :
@@ -127,6 +128,39 @@ def dict_to_hpp(const_dict, file_path="../../c++/src/const2.hpp") :
     return
 
 
+# get all the previous scores and associate them with the previous number of iterations
+def get_previous_scores() :
+
+    # initialisation
+    scores_dict = {}
+    path_list = glob.glob("../../res/bayes/settings_*/run_1/results.txt")
+
+    # get all the files "results.txt"
+    for file_path in path_list[:-1] :
+        with open(file_path, "r") as f :
+            content = f.readlines()
+        score = float(content[0].strip())
+        iter = int(file_path.split("/")[4].split("_")[1])
+        scores_dict[iter] = score
+    
+    return scores_dict
+
+
+# get all constants from the .hpp files for each iteration
+def get_previous_constants() :
+
+    # initialisation
+    constants_dict = {}
+    path_list = glob.glob("../../res/bayes/settings_*/const.hpp")
+    
+    # get all the files "const.hpp"
+    for file_path in path_list :
+        iter = int(file_path.split("/")[4].split("_")[1])
+        constants_dict[iter] = hpp_to_dict(file_path)
+
+    return constants_dict
+
+
 # main
 def main() :
 
@@ -148,6 +182,15 @@ def main() :
         }],
         observation_budget = n_iter
     )
+
+    # reuse of all previous attempts
+    dict_prev_scores = get_previous_scores()
+    dict_prev_constants = get_previous_constants()
+    for iter, constants in dict_prev_constants.items() :
+        conn.experiments(experiment.id).observations().create(
+            assignments = constants,
+            values=[{"name" : "score", "value" : dict_prev_scores[iter]}],
+        )
 
     # iterate to find the best parameters
     for i in range(n_iter) :

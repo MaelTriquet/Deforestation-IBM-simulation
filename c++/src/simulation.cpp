@@ -40,17 +40,17 @@ Simulation::~Simulation() {
 
 void Simulation::update() {
 
-    if (Random::rand() < PROB_TREE_RANDOM_SPAWN)
-        m_trees.push_back(new Tree(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, 0.25));
+    // if (Random::rand() < PROB_TREE_RANDOM_SPAWN)
+    //     m_trees.push_back(new Tree(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, 0.25));
     Tree* new_tree;
     nb_tree = 0;
     for (int i = 0; i < m_trees.size(); i++) {
         if (m_trees[i]->is_dead) continue;
         nb_tree++;
         new_tree = m_trees[i]->update();
-        if (new_tree != 0x0) {
-            m_trees.push_back(new_tree);
-        }
+        // if (new_tree != 0x0) {
+        //     m_trees.push_back(new_tree);
+        // }
     }
     nb_prey = 0;
     nb_pred = 0;
@@ -158,6 +158,7 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
                 if (nb_pred >= MAX_POP_PRED) break;
                 Predator* child = ((Predator*)animal_1)->reproduce((Predator*)animal_2, id++);
                 m_pop.push_back(child);
+                nb_pred++;
             }
         } else if (animal_2->is_prey && (animal_1->has_eaten || animal_2->has_eaten)) {
             int nb_child = Random::randint(PREY_N_MIN_CHILDREN, PREY_N_MAX_CHILDREN);
@@ -165,6 +166,7 @@ void Simulation::collide(Animal* animal_1, Animal* animal_2) {
                 if (nb_prey >= MAX_POP_PREY) break;
                 Prey* child = ((Prey*)animal_1)->reproduce((Prey*)animal_2, id++);
                 m_pop.push_back(child);
+                nb_prey++;
             }
         }
     }

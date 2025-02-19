@@ -20,7 +20,7 @@ int main() {
     // const uint32_t frame_rate = 60;
     // window.setFramerateLimit(frame_rate);
 
-    int max_pop_frame = 5000;
+    int max_pop_frame = 1500;
     float score = 0.;
     bool pred_low = false;
     int delta_t_prey = 0;
@@ -48,33 +48,33 @@ int main() {
                 score++;
                 pred_low = false;
                 delta_t_pred = 0;
-                max_pop_frame = 5000;
+                max_pop_frame = 1500;
             }
 
             if (!pred_low && simulation.nb_pred < .4 * MAX_POP_PRED) {
                 score++;
                 pred_low = true;
-                max_pop_frame = 5000;
+                max_pop_frame = 1500;
             }
 
             if (prey_low && simulation.nb_prey > .6 * MAX_POP_PREY) {
                 score++;
                 prey_low = false;
                 delta_t_prey = 0;
-                max_pop_frame = 5000;
+                max_pop_frame = 1500;
             }
 
             if (!prey_low && simulation.nb_prey < .4 * MAX_POP_PREY) {
                 score++;
                 prey_low = true;
-                max_pop_frame = 5000;
+                max_pop_frame = 1500;
             }
             if (pred_low)
                 delta_t_pred++;
             if (prey_low)
                 delta_t_prey++;
             appendCSV("../../res/plot_info.csv", simulation);
-            if (simulation.nb_pred == MAX_POP_PRED || simulation.nb_prey == MAX_POP_PREY)
+            if (simulation.nb_pred >= MAX_POP_PRED * .95 || simulation.nb_prey >= MAX_POP_PREY * .95)
                 max_pop_frame--;
         }
         // window.clear(sf::Color::Black);

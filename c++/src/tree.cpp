@@ -6,14 +6,14 @@ Tree::Tree(sf::Vector2f position_, float hiding_prob_) :
 {};
 
 Tree* Tree::update() {
-    if (radius < MIN_TREES_RADIUS)
-        is_dead = true;
-    if (is_dead) return 0x0;
+    // if (radius < MIN_TREES_RADIUS)
+    //     is_dead = true;
+    // if (is_dead) return 0x0;
     Tree* new_tree = 0x0;
     if (radius < max_radius) {
         if (radius < (float)max_radius * TREE_RADIUS_BEFORE_REPRODUCTION_PERCENT)
             has_reproduced = false;
-        radius += (float)MAX_TREES_RADIUS / TIME_TREE_GROWTH;
+        radius += (float)MAX_TREES_RADIUS / (float)TIME_TREE_GROWTH;
     } else if (!has_reproduced) {
         float x = (Random::rand()*2-1) * max_radius * 3;
         float y = (Random::rand()*2-1) * max_radius * 3;
