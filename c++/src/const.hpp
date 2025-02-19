@@ -63,9 +63,6 @@
 #define PROB_ADD_NEURON 0.15
 #define ROT_TIME 338
 #define RADIUS_PERCENT_ROTTING 0.8
-<<<<<<< HEAD
-#define ROTTING_PER_FRAME 1
-=======
 #define ROTTING_PER_FRAME 1
 
 // preys
@@ -86,4 +83,3 @@
 #define PRED_N_MIN_CHILDREN 1
 #define PRED_N_MAX_CHILDREN 2
 
->>>>>>> a3aee00de817078f60b0f0fb4cbf0909e7f55ba9
