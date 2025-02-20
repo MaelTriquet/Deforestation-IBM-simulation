@@ -1,6 +1,6 @@
 #include "maddpg.hpp"
 
-MADDPG::MADDPG(std::vector<Animal*>& population, size_t buffer_capacity, size_t batch_size, size_t update_interval)
+MADDPG::MADDPG(std::vector<Animal*>& population, size_t buffer_capacity, size_t batch_size, size_t update_interval, int step_count)
     : replay_buffer(buffer_capacity), batch_size(batch_size), update_interval(update_interval), step_count(0) {
 
     for (Animal* animal : population) {
@@ -11,13 +11,7 @@ MADDPG::MADDPG(std::vector<Animal*>& population, size_t buffer_capacity, size_t 
 }
 
 void MADDPG::store_experience(torch::Tensor state, torch::Tensor action, float reward, torch::Tensor next_state, bool done) {
-
-
     replay_buffer.push(state, action, reward, next_state, done);
-    step_count++;
-    if (step_count % update_interval == 0) {
-        update_agents();
-    }
 }
 
 void MADDPG::update_agents() {

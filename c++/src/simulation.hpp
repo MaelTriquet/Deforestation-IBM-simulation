@@ -5,6 +5,7 @@
 #include "predator.hpp"
 #include "prey.hpp"
 #include "grid.hpp"
+#include "maddpg.hpp"
 
 class Simulation {
 private:
@@ -19,6 +20,7 @@ public:
     //ray detection grid (different size)
     Grid ray_grid;
     bool is_prey_dominating = true;
+    MADDPG maddpg;
 
     Simulation(int window_width_, int window_height_);
     ~Simulation();

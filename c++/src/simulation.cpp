@@ -7,7 +7,13 @@ Simulation::Simulation(int window_width_, int window_height_) :
     window_width(window_width_),
     window_height(window_height_),
     grid(window_width, window_height, 2*ANIMALS_RADIUS),
-    ray_grid(window_width, window_height, ANIMALS_RADIUS + RAY_LENGTH)
+    ray_grid(window_width, window_height, ANIMALS_RADIUS + RAY_LENGTH),
+    maddpg(
+        m_pop,  // On passe la population existante
+        10000,             // Capacité du replay buffer
+        64,                // Taille des batchs
+        100                // Intervalle de mise à jour
+    )
 {
     
     std::cout << "Création de la simulation" << std::endl;
@@ -43,35 +49,66 @@ void Simulation::update() {
     float nb_prey = 0.f;
     float nb_pred = 0.f;
     for (int i = m_pop.size() - 1; i >= 0; i--) {  
-        std::cout << "[LOG 1] Vérification de l'animal à l'index " << i << std::endl;
+        
+        if (m_pop[i]->is_pred)
+        {
+            nb_pred++;
+        }else{
+            nb_prey++;
+        }
+
+        
         
         m_pop[i]->update();
-        std::cout << "[LOG 2] Après update() de l'animal " << i << std::endl;
         
+        torch::Tensor state = m_pop[i]->get_state();
+        torch::Tensor action = m_pop[i]->agent->select_action(state);
+        bool done = (m_pop[i]->energy <= 0);
+        
+
         if (!m_pop[i]->is_dead) {
-            std::cout << "[LOG 3] L'animal " << i << " est vivant, on le déplace." << std::endl;
-            m_pop[i]->move(window_width, window_height);
+            m_pop[i]->move(window_width, window_height, action);
+
+
+
+            torch::Tensor next_state = m_pop[i]->get_state();
+            maddpg.store_experience(state, action, m_pop[i]->reward, next_state, done);
             continue;
+            
         }
-    
-        if (m_pop[i]->rotting > 0) {
-            std::cout << "[LOG 4] L'animal " << i << " est mort mais en train de pourrir." << std::endl;
-            continue;
-        }
-    
-        std::cout << "[LOG 5] Suppression de l'animal index " << i 
-                  << " | Type: " << (m_pop[i]->is_pred ? "Prédator" : "Proie") 
-                  << " | Énergie: " << m_pop[i]->energy << std::endl;
-    
-        delete m_pop[i]->agent;  
-        std::cout << "[LOG 6] Agent supprimé pour l'animal " << i << std::endl;
+
+        maddpg.store_experience(state, action, -100, state, done);
         
+
+
+    
+        if (m_pop[i]->rotting > 0) continue;
+    
+
         delete m_pop[i];  
-        std::cout << "[LOG 7] Animal supprimé " << i << std::endl;
     
         m_pop.erase(m_pop.begin() + i);
-        std::cout << "[LOG 8] Animal supprimé du vecteur m_pop " << i << std::endl;
+
+        
+
+
     }
+
+    if (maddpg.step_count == maddpg.update_interval) {
+        std::cout << "Mise à jour des agents..." << std::endl;
+        for(Animal* a : m_pop){
+            if(a->agent){
+                a->agent->update(maddpg.replay_buffer.buffer);
+            }
+        }
+        
+        maddpg.step_count = 0;
+    } else {
+        maddpg.step_count++;
+    }
+
+    
+    
     
 
     is_prey_dominating = nb_pred < nb_prey;
@@ -87,8 +124,9 @@ void Simulation::update() {
     //     m_pop.push_back(pred);
     // }
 
-    std::cout << "Prédateurs : " << nb_pred / m_pop.size() * 100 << "%, ";
-    std::cout << "Proies : " << nb_prey / m_pop.size() * 100 << "%, " << "Population : " << m_pop.size() << std::endl;
+
+    // std::cout << "Prédateurs : " << nb_pred / m_pop.size() * 100 << "%, ";
+    // std::cout << "Proies : " << nb_prey / m_pop.size() * 100 << "%, " << "Population : " << m_pop.size() << std::endl;
 
     // update grid cells content
     grid.update_animals(m_pop);
@@ -199,9 +237,9 @@ void Simulation::detect_collisions() {
 
 void Simulation::fill_ray_visions() {
     std::unique_ptr<std::vector<Cell*>> neighbours;
-    for (int i = 0; i < ray_grid.width * ray_grid.height; i++) {
-        neighbours = ray_grid.get_neighbours(i);
-        for (Animal* a : ray_grid.cells[i].animals) {
+    for (int k = 0; k < ray_grid.width * ray_grid.height; k++) {
+        neighbours = ray_grid.get_neighbours(k);
+        for (Animal* a : ray_grid.cells[k].animals) {
             sf::Vector2f ray;
             for (int i = 0; i < NB_RAY; i++) {
                 // create the ray

@@ -2,6 +2,8 @@
 #include <torch/torch.h>
 #include <vector>
 #include <tuple>
+#include <deque>
+
 
 class MADDPGAgent {
 public:
@@ -32,8 +34,7 @@ public:
     torch::Tensor select_action(torch::Tensor state);
 
     // Mise à jour des réseaux
-    void update(std::vector<std::tuple<torch::Tensor, torch::Tensor, float, torch::Tensor, bool>> &replay_buffer, 
-                const std::vector<MADDPGAgent*> &other_agents);
+    void update(std::deque<std::tuple<torch::Tensor, torch::Tensor, float, torch::Tensor, bool>> &replay_buffer);
 
         
 

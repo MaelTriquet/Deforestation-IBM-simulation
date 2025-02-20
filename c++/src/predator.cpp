@@ -53,11 +53,15 @@ void Predator::eat(Animal* prey) {
 }
 
 void Predator::fight(Animal* prey) {
+    reward += 30;
+    prey->reward -= 30;
     float a = (float)prey->energy * PRED_PERCENT_DAMAGE;
     prey->energy -= PREY_LOST_ENERGY_FIGHT > a ? PREY_LOST_ENERGY_FIGHT : a;
 }
 
 Predator* Predator::reproduce(Predator* parent, int id) {
+    reward += 100;
+    parent->reward += 100;
     parent->energy -= LOST_ENERGY_REPRODUCTION;
     energy -= LOST_ENERGY_REPRODUCTION;
     Predator* child = new Predator(this, parent, id);

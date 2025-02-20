@@ -46,6 +46,8 @@ void Prey::eat() {
 }
 
 Prey* Prey::reproduce(Prey* parent, int id) {
+    reward += 100;
+    parent->reward += 100;
     parent->energy -= LOST_ENERGY_REPRODUCTION;
     energy -= LOST_ENERGY_REPRODUCTION;
     parent->reproduction_timeout = REPRODUCTION_TIMEOUT;

@@ -36,13 +36,15 @@ public:
     float decision[2] = {0}; // holds the decision after the thinking process
     int reproduction_timeout = 1000000;
     MADDPGAgent* agent;
+    int reward = 0;
 
     Animal(sf::Vector2f position_, int index_);
+    ~Animal();
 
 
     void considerate_bounds(int window_width, int window_height);
 
-    void move(int window_width, int window_height);
+    void move(int window_width, int window_height, torch::Tensor action);
     void die();
     void look();
     void update();

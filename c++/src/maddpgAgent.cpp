@@ -3,7 +3,8 @@
 MADDPGAgent::MADDPGAgent(int state_dim, int action_dim, float lr_actor, float lr_critic)
     : actor(torch::nn::Sequential(torch::nn::Linear(state_dim, 64), torch::nn::ReLU(),
                                   torch::nn::Linear(64, 64), torch::nn::ReLU(),
-                                  torch::nn::Linear(64, action_dim), torch::nn::Tanh())),
+                                  
+                                  torch::nn::Linear(64, action_dim))),
       critic(torch::nn::Sequential(torch::nn::Linear(state_dim + action_dim, 64), torch::nn::ReLU(),
                                    torch::nn::Linear(64, 64), torch::nn::ReLU(),
                                    torch::nn::Linear(64, 1))),
@@ -57,16 +58,37 @@ MADDPGAgent::MADDPGAgent(const MADDPGAgent& other)
       critic_optimizer(critic->parameters(), torch::optim::AdamOptions(0.001)),
       gamma(other.gamma),
       tau(other.tau) {
+
+    auto actor_params = actor->parameters();
+    auto target_params = target_actor->parameters();
     
-    // Copie manuelle des poids
-    for (auto& target_param : target_actor->parameters()) {
-        auto& source_param = actor->parameters()[&target_param - &target_actor->parameters()[0]];
-        target_param.data().copy_(source_param.data());
+    if (actor_params.size() != target_params.size()) {
+        std::cerr << "Erreur : Nombre de paramètres différents entre actor et target_actor" << std::endl;
+    } else {
+        for (size_t i = 0; i < actor_params.size(); i++) {
+            if (!target_params[i].defined() || !actor_params[i].defined()) {
+
+                continue;
+            }
+            target_params[i].data().copy_(actor_params[i].data());
+
+        }
     }
 
-    for (auto& target_param : target_critic->parameters()) {
-        auto& source_param = critic->parameters()[&target_param - &target_critic->parameters()[0]];
-        target_param.data().copy_(source_param.data());
+    auto critic_params = critic->parameters();
+    auto target_critic_params = target_critic->parameters();
+
+    if (critic_params.size() != target_critic_params.size()) {
+        std::cerr << "Erreur : Nombre de paramètres différents entre critic et target_critic" << std::endl;
+    } else {
+        for (size_t i = 0; i < critic_params.size(); i++) {
+            if (!target_critic_params[i].defined() || !critic_params[i].defined()) {
+
+                continue;
+            }
+            target_critic_params[i].data().copy_(critic_params[i].data());
+
+        }
     }
 }
 
@@ -84,8 +106,7 @@ void MADDPGAgent::mutate() {
 }
 
 
-void MADDPGAgent::update(std::vector<std::tuple<torch::Tensor, torch::Tensor, float, torch::Tensor, bool>> &replay_buffer,
-                         const std::vector<MADDPGAgent*> &other_agents) {
+void MADDPGAgent::update(std::deque<std::tuple<torch::Tensor, torch::Tensor, float, torch::Tensor, bool>> &replay_buffer) {
     if (replay_buffer.empty()) return;
     
     // Échantillonnage d'une expérience
@@ -107,18 +128,18 @@ void MADDPGAgent::update(std::vector<std::tuple<torch::Tensor, torch::Tensor, fl
     actor_optimizer.zero_grad();
     loss_actor.backward();
     actor_optimizer.step();
-    
-    // Mise à jour douce des réseaux cibles
-    soft_update(target_actor, actor, tau);
-    soft_update(target_critic, critic, tau);
+
+    // // Mise à jour douce des réseaux cibles
+    // soft_update(target_actor, actor, tau);
+    // soft_update(target_critic, critic, tau);
 }
 
-void MADDPGAgent::soft_update(torch::nn::Sequential& target, torch::nn::Sequential& source, float tau) {
-    for (auto& target_param : target->parameters()) {
-        for (auto& source_param : source->parameters()) {
-            target_param.data().mul_(1 - tau).add_(source_param.data(), tau);
-        }
-    }
-}
+// void MADDPGAgent::soft_update(torch::nn::Sequential& target, torch::nn::Sequential& source, float tau) {
+//     for (auto& target_param : target->parameters()) {
+//         for (auto& source_param : source->parameters()) {
+//             target_param.data().mul_(1 - tau).add_(source_param.data(), tau);
+//         }
+//     }
+// }
 
 

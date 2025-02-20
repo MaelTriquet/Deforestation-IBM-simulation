@@ -14,6 +14,10 @@ Animal::Animal(sf::Vector2f position_, int index_) :
     max_velocity = is_prey ? PREY_MAX_VELOCITY : PRED_MAX_VELOCITY;
 }
 
+Animal::~Animal(){
+    delete agent;
+}
+
 //keeps all animals within the window, using a tore-like world modelisation
 void Animal::considerate_bounds(int window_width, int window_height) {
     while (position.x < 0) 
@@ -27,13 +31,12 @@ void Animal::considerate_bounds(int window_width, int window_height) {
 }
 
 // look, think and act
-void Animal::move(int window_width, int window_height) {
+void Animal::move(int window_width, int window_height, torch::Tensor action) {
     look();
-    torch::Tensor action = agent->select_action(get_state());
     action = action.squeeze(0);
     
     velocity = sf::Vector2f(cos(action[0].item<float>() * M_PI_2), sin(action[0].item<float>() * M_PI_2));
-    velocity *= action[1].item<float>() * max_velocity;
+    velocity *= std::tanh(action[1].item<float>()) * max_velocity;
 
     position += velocity;
     if (is_prey)
@@ -67,6 +70,8 @@ void Animal::update() {
         invisible--;
     if (is_dead)
         rotting--;
+    else
+        reward++;
     if (is_dead && is_pred)
         rotting = -1000;
     is_in_tree = false;

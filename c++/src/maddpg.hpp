@@ -14,7 +14,7 @@ public:
     int step_count;
 
     // Constructeur
-    MADDPG(std::vector<Animal*>& population, size_t buffer_capacity, size_t batch_size, size_t update_interval);
+    MADDPG(std::vector<Animal*>& population, size_t buffer_capacity, size_t batch_size, size_t update_interval, int step_count = 0);
 
     // Ajout d'une expérience au buffer
     void store_experience(torch::Tensor state, torch::Tensor action, float reward, torch::Tensor next_state, bool done);
