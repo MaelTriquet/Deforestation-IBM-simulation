@@ -8,6 +8,10 @@ bool appendCSV(const std::string& filename, Simulation& sim);
 bool emptyCSV(const std::string& filename);
 int main() {
 
+    std::srand(std::time(nullptr));
+    long long seed = std::rand();
+    Random::setSeed(seed);
+
     // Create window
     constexpr int32_t window_width = WINDOW_WIDTH;
     constexpr int32_t window_height = WINDOW_HEIGHT;
@@ -32,7 +36,7 @@ int main() {
 
     emptyCSV("../../res/plot_info.csv");
 
-    while (max_pop_frame > 0 && simulation.nb_pred > 1 && simulation.nb_prey > 1) {
+    while (window.isOpen()) {
 
         sf::Event event{};
         while (window.pollEvent(event)) {
