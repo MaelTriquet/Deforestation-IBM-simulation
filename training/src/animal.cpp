@@ -23,23 +23,27 @@ void Animal::considerate_bounds(int window_width, int window_height) {
 }
 
 // look, think and act
-void Animal::move(int window_width, int window_height) {
+torch::Tensor Animal::move(int window_width, int window_height, Actor actor, torch::Tensor obs) {
 
     // look
     look();
 
-    // think 
-    brain.think(vision, decision);
+    auto action = actor->forward(obs);
 
-    // act
-    velocity = sf::Vector2f(cos(decision[0]*M_PI_2), sin(decision[0]*M_PI_2));
-    if (decision[1] > 1)
-        velocity *= max_velocity;
-    else if (decision[1] < -1)
-        velocity *= -max_velocity;
-    else 
-        velocity *= decision[1] * max_velocity;
-    position += velocity;
+    std::cout << "Action: " << action << std::endl;
+
+    // Extraire les deux valeurs
+    auto angle_norm = action[0][0].item<float>();  // Valeur entre -1 et 1
+    auto percent = action[0][1].item<float>();       // Valeur entre -1 et 1
+
+    // Transformer l'angle en une plage [-π, π]
+    float angle = angle_norm * M_PI;
+
+    // Calculer la vélocité réelle en multipliant par la vitesse max
+    float vitesse_max = max_velocity;
+    float vitesse = percent * vitesse_max;
+
+    position += sf::Vector2f(std::cos(angle) * vitesse, std::sin(angle) * vitesse);
     
     // loose energy
     if (energy > 0) {
@@ -60,6 +64,8 @@ void Animal::move(int window_width, int window_height) {
 
     // stay in the tore-like world
     considerate_bounds(window_width, window_height);
+
+    return action;
 };
 
 // an animal dies if its health reaches 0
@@ -116,3 +122,5 @@ void Animal::update() {
 
     reproduction_timeout--;
 }
+
+

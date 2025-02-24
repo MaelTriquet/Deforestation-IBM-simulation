@@ -3,9 +3,13 @@
 #include <fstream>
 #include "simulation.hpp"
 #include "thread_pool.hpp"
+#include "actor.hpp"
+#include "critic.hpp"
+#include "replayBuffer.hpp"
 
 bool appendCSV(const std::string& filename, Simulation& sim);
 bool emptyCSV(const std::string& filename);
+
 int main() {
 
     std::srand(std::time(nullptr));
@@ -36,6 +40,18 @@ int main() {
 
     emptyCSV("../../res/plot_info.csv");
 
+    int obs_dim = 4 + 2 * NB_RAY;
+    int action_dim = 2;
+
+    Actor actorPrey(obs_dim, action_dim);
+    Critic criticPrey(obs_dim, action_dim);
+
+    Actor actorPreda(obs_dim, action_dim);
+    Critic criticPreda(obs_dim, action_dim);
+
+    //Création d'un replay buffer
+    ReplayBuffer replayBuffer(1000);
+
     while (window.isOpen()) {
 
         sf::Event event{};
@@ -47,59 +63,29 @@ int main() {
 
         // update and show each frame
         for (int i = 0; i < 1; i++) {
-            simulation.update();
-            if (pred_low && simulation.nb_pred > .6 * MAX_POP_PRED) {
-                score++;
-                pred_low = false;
-                delta_t_pred = 0;
-                max_pop_frame = 5000;
-            }
-
-            if (!pred_low && simulation.nb_pred < .4 * MAX_POP_PRED) {
-                score++;
-                pred_low = true;
-                max_pop_frame = 5000;
-            }
-
-            if (prey_low && simulation.nb_prey > .6 * MAX_POP_PREY) {
-                score++;
-                prey_low = false;
-                delta_t_prey = 0;
-                max_pop_frame = 5000;
-            }
-
-            if (!prey_low && simulation.nb_prey < .4 * MAX_POP_PREY) {
-                score++;
-                prey_low = true;
-                max_pop_frame = 5000;
-            }
-            if (pred_low)
-                delta_t_pred++;
-            if (prey_low)
-                delta_t_prey++;
-            appendCSV("../../res/plot_info.csv", simulation);
-            if (simulation.nb_pred == MAX_POP_PRED || simulation.nb_prey == MAX_POP_PREY)
-                max_pop_frame--;
+            simulation.update(actorPrey, criticPrey, actorPreda, criticPreda, replayBuffer);
         }
+
+
         window.clear(sf::Color::Black);
         renderer.render(simulation);
 		window.display();
     }
 
-    if (simulation.nb_pred <= 1) {
-        if (delta_t_pred >= 10000)
-            score += .999;
-        else
-            score += ((float)delta_t_pred)/10000.;
-    }
-    if (simulation.nb_prey <= 1) {
-        if (delta_t_prey >= 10000)
-            score += .999;
-        else
-            score += ((float)delta_t_prey)/10000.;
-    }
+    // if (simulation.nb_pred <= 1) {
+    //     if (delta_t_pred >= 10000)
+    //         score += .999;
+    //     else
+    //         score += ((float)delta_t_pred)/10000.;
+    // }
+    // if (simulation.nb_prey <= 1) {
+    //     if (delta_t_prey >= 10000)
+    //         score += .999;
+    //     else
+    //         score += ((float)delta_t_prey)/10000.;
+    // }
 
-    std::cout << score << "\n";
+    // std::cout << score << "\n";
     std::cout << Random::seed << std::endl;
 
     for (int i = 0; i < simulation.m_pop.size(); i++) {

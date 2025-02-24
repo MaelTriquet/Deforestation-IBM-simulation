@@ -6,6 +6,9 @@
 #include "prey.hpp"
 #include "grid.hpp"
 #include "thread_pool.hpp"
+#include "actor.hpp"
+#include "critic.hpp"
+#include "replayBuffer.hpp"
 
 class Simulation {
 private:
@@ -29,7 +32,7 @@ public:
     Simulation(int window_width_, int window_height_, tp::ThreadPool& thread_pool_);
     ~Simulation();
 
-    void update();
+    void update(Actor actorPrey, Critic criticPrey, Actor actorPreda, Critic criticPreda, ReplayBuffer replayBuffer);
     void fill_ray_visions();
     void fill_ray_visions(int start, int end);
     void detect_collisions();
@@ -37,4 +40,7 @@ public:
     void collide(Tree* t, Animal* a);
     void collide(Animal* animal_1, Animal* animal_2);
     void detect_collisions_threaded(int start, int end);
+    torch::Tensor get_observation(Animal* a);
+
+
 };

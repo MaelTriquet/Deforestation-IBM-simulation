@@ -8,6 +8,7 @@
 #include "brain.hpp"
 #include "random.hpp"
 #include "const.hpp"
+#include "actor.hpp"
 
 class Animal {
 public:
@@ -39,7 +40,7 @@ public:
 
     void considerate_bounds(int window_width, int window_height);
 
-    void move(int window_width, int window_height);
+    torch::Tensor move(int window_width, int window_height, Actor actor, torch::Tensor obs);
     void die();
     void look();
     void update();
