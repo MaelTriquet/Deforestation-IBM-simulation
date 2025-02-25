@@ -41,7 +41,7 @@ Predator::Predator(Predator* parent_1_, Predator* parent_2_, int id_) :
 };
 
 void Predator::eat(Animal* prey) {
-    reward += 20;
+    reward += 50;
     if (energy <= MAX_ENERGY)
         energy += PRED_GAIN_ENERGY_EATING;
     else 
@@ -57,7 +57,7 @@ void Predator::fight(Animal* prey) {
 }
 
 Predator* Predator::reproduce(Predator* parent, int id) {
-    reward += 30;
+    reward += 40;
     parent->energy -= LOST_ENERGY_REPRODUCTION;
     energy -= LOST_ENERGY_REPRODUCTION;
     has_eaten = false;

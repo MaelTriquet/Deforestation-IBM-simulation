@@ -28,161 +28,159 @@ void soft_update(torch::nn::Module& target, torch::nn::Module& source, double ta
 
 int main() {
 
-    std::srand(std::time(nullptr));
-    long long seed = std::rand();
-    Random::setSeed(seed);
-
+    
     // Create window
     constexpr int32_t window_width = WINDOW_WIDTH;
     constexpr int32_t window_height = WINDOW_HEIGHT;
-
+    
     tp::ThreadPool thread_pool(10);
-
+    
     sf::ContextSettings settings;
     settings.antialiasingLevel = 1;
-    sf::RenderWindow window(sf::VideoMode(window_width, window_height), "PFE", sf::Style::Default, settings);
     const uint32_t frame_rate = 60;
+    
+    
+    sf::RenderWindow window(sf::VideoMode(window_width, window_height), "PFE", sf::Style::Default, settings);
     window.setFramerateLimit(frame_rate);
-
-    int max_pop_frame = 5000;
-    float score = 0.;
-    bool pred_low = false;
-    int delta_t_prey = 0;
-    int delta_t_pred = 0;
-    bool prey_low = false;
-
-    Simulation simulation{window_width, window_height, thread_pool};
     Renderer renderer{window};
-
+    
+    
+    
     emptyCSV("../../res/plot_info.csv");
-
+    
     int obs_dim = 4 + 2 * NB_RAY;
     int action_dim = 2;
-
     
-
+    
+    
     // Preys NN
     Actor actorPrey(obs_dim, action_dim);
     Critic criticPrey(obs_dim, action_dim);
-
+    
     Actor actorPrey_target(obs_dim, action_dim);
     Critic criticPrey_target(obs_dim, action_dim);
-
+    
     // Predators NN
     Actor actorPreda(obs_dim, action_dim);
     Critic criticPreda(obs_dim, action_dim);
-
+    
     Actor actorPreda_target(obs_dim, action_dim);
     Critic criticPreda_target(obs_dim, action_dim);
-
+    
     //Copie des réseaux dans les réseaux cibles
-
+    
     {
         // On désactive la mise à jour automatique des gradients pendant la copie
         torch::NoGradGuard no_grad;
-    
+        
         // Copier les paramètres de l'acteur vers l'acteur cible
         auto actorPrey_params = actorPrey->named_parameters();
         auto actorPrey_target_params = actorPrey_target->named_parameters();
         for (auto& item : actorPrey_params) {
-             actorPrey_target_params[item.key()].copy_(item.value());
+            actorPrey_target_params[item.key()].copy_(item.value());
         }
-    
+        
         // Copier les paramètres du critic vers le critic cible
         auto criticPrey_params = criticPrey->named_parameters();
         auto criticPrey_target_params = criticPrey_target->named_parameters();
         for (auto& item : criticPrey_params) {
-             criticPrey_target_params[item.key()].copy_(item.value());
+            criticPrey_target_params[item.key()].copy_(item.value());
         }
-
+        
         // Copier les paramètres de l'acteur vers l'acteur cible
         auto actorPreda_params = actorPreda->named_parameters();
         auto actorPreda_target_params = actorPreda_target->named_parameters();
         for (auto& item : actorPreda_params) {
-                actorPreda_target_params[item.key()].copy_(item.value());
+            actorPreda_target_params[item.key()].copy_(item.value());
         }
-    
+        
         // Copier les paramètres du critic vers le critic cible
         auto criticPreda_params = criticPreda->named_parameters();
         auto criticPreda_target_params = criticPreda_target->named_parameters();
         for (auto& item : criticPreda_params) {
-                criticPreda_target_params[item.key()].copy_(item.value());
+            criticPreda_target_params[item.key()].copy_(item.value());
         }
     }
-
+    
     //Création d'un replay buffer
     ReplayBuffer replayBufferPrey(1000);
     ReplayBuffer replayBufferPreda(1000);
-
+    
     size_t batch_size = 64;
     float tau = 0.005;
     float gamma = 0.99;
-
+    
     torch::optim::Adam actorPrey_optimizer(actorPrey->parameters(), torch::optim::AdamOptions(1e-4));
     torch::optim::Adam criticPrey_optimizer(criticPrey->parameters(), torch::optim::AdamOptions(1e-4));
-
+    
     torch::optim::Adam actorPreda_optimizer(actorPreda->parameters(), torch::optim::AdamOptions(1e-4));
     torch::optim::Adam criticPreda_optimizer(criticPreda->parameters(), torch::optim::AdamOptions(1e-4));
-
-    while (window.isOpen()) {
-
-        sf::Event event{};
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-                window.close();
+    
+    //Boule for pour les épisodes
+    for (int episode = 0; episode < 50; episode++)
+    {
+        std::cout << "Episode " << episode << std::endl;
+        Simulation simulation = Simulation{window_width, window_height, thread_pool};
+        int count = 200;
+        do{
+            count--;
+            std::srand(std::time(nullptr));
+            long long seed = std::rand();
+            Random::setSeed(seed);
+            
+            sf::Event event{};
+            while (window.pollEvent(event)) {
+                if (event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+                    window.close();
+                }
             }
-        }
-
-        for (int i = 0; i < 1; i++) {
-            simulation.update(actorPrey, criticPrey, actorPreda, criticPreda, replayBufferPrey, replayBufferPreda);
-            std::cout << "Buffers size :" << std::endl;
-            std::cout << replayBufferPrey.size() << std::endl;
-            std::cout << replayBufferPreda.size() << std::endl;
-
-            if (replayBufferPrey.size() > batch_size) {
-                auto batch = replayBufferPrey.sample(batch_size);
-        
-                auto loss1 = compute_critic_loss(batch, criticPrey, criticPrey_target, actorPrey_target, gamma);
-
-                criticPrey_optimizer.zero_grad();
-                loss1.backward();
-                criticPrey_optimizer.step();
-        
-                update_actor(batch, actorPrey, criticPrey, actorPrey_optimizer);
-                
-                soft_update(*criticPrey_target, *criticPrey, tau);
-                soft_update(*actorPrey_target, *actorPrey, tau);
+    
+            for (int i = 0; i < 1; i++) {
+                simulation.update(actorPrey, criticPrey, actorPreda, criticPreda, replayBufferPrey, replayBufferPreda);
+    
+                if (replayBufferPrey.size() > batch_size) {
+                    auto batch = replayBufferPrey.sample(batch_size);
+            
+                    auto loss1 = compute_critic_loss(batch, criticPrey, criticPrey_target, actorPrey_target, gamma);
+    
+                    criticPrey_optimizer.zero_grad();
+                    loss1.backward();
+                    criticPrey_optimizer.step();
+            
+                    update_actor(batch, actorPrey, criticPrey, actorPrey_optimizer);
+                    
+                    soft_update(*criticPrey_target, *criticPrey, tau);
+                    soft_update(*actorPrey_target, *actorPrey, tau);
+                }
+    
+                if (replayBufferPreda.size() > batch_size) {
+                    auto batch = replayBufferPreda.sample(batch_size);
+            
+                    auto loss2 = compute_critic_loss(batch, criticPreda, criticPreda_target, actorPreda_target, gamma);
+    
+                    criticPreda_optimizer.zero_grad();
+                    loss2.backward();
+                    criticPreda_optimizer.step();
+            
+                    update_actor(batch, actorPreda, criticPreda, actorPreda_optimizer);
+                    
+                    soft_update(*criticPreda_target, *criticPreda, tau);
+                    soft_update(*actorPreda_target, *actorPreda, tau);
+                }
+            
             }
+    
+    
+            window.clear(sf::Color::Black);
+            renderer.render(simulation);
+            window.display();
+        } while (simulation.nb_pred != 0 && simulation.nb_prey != 0 && count > 0);
 
-            if (replayBufferPreda.size() > batch_size) {
-                std::cout << "Updating Preds" << std::endl;
-                auto batch = replayBufferPreda.sample(batch_size);
-        
-                auto loss2 = compute_critic_loss(batch, criticPreda, criticPreda_target, actorPreda_target, gamma);
-
-                criticPreda_optimizer.zero_grad();
-                loss2.backward();
-                criticPreda_optimizer.step();
-        
-                update_actor(batch, actorPreda, criticPreda, actorPreda_optimizer);
-                
-                soft_update(*criticPreda_target, *criticPreda, tau);
-                soft_update(*actorPreda_target, *actorPreda, tau);
-            }
-        
-        }
-
-
-        window.clear(sf::Color::Black);
-        renderer.render(simulation);
-		window.display();
     }
-
     std::cout << Random::seed << std::endl;
 
-    for (int i = 0; i < simulation.m_pop.size(); i++) {
-        simulation.m_pop[i]->brain.delete_content();
-    }
+    torch::save(actorPrey, "../../res/actorPrey.pt");
+    torch::save(actorPreda, "../../res/criticPreda.pt");
 }
 
 bool emptyCSV(const std::string& filename) {
