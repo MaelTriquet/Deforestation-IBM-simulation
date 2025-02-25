@@ -32,7 +32,7 @@ public:
     Simulation(int window_width_, int window_height_, tp::ThreadPool& thread_pool_);
     ~Simulation();
 
-    void update(Actor actorPrey, Critic criticPrey, Actor actorPreda, Critic criticPreda, ReplayBuffer replayBuffer);
+    void update(Actor actorPrey, Critic criticPrey, Actor actorPreda, Critic criticPreda, ReplayBuffer &replayBufferPrey, ReplayBuffer &replayBufferPreda);
     void fill_ray_visions();
     void fill_ray_visions(int start, int end);
     void detect_collisions();

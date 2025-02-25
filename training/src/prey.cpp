@@ -30,6 +30,7 @@ Prey::Prey(Prey* parent_1_, Prey* parent_2_, int id_) :
 
 
 void Prey::eat() {
+    reward += 30;
     if (in_tree->is_dead){
         in_tree = nullptr;
         return;
@@ -44,6 +45,7 @@ void Prey::eat() {
 }
 
 Prey* Prey::reproduce(Prey* parent, int id) {
+    reward += 30;
     parent->energy -= LOST_ENERGY_REPRODUCTION;
     energy -= LOST_ENERGY_REPRODUCTION;
     has_eaten = false;

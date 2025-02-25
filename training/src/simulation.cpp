@@ -40,7 +40,7 @@ Simulation::~Simulation()
         delete m_trees[i];
 }
 
-void Simulation::update(Actor actorPrey, Critic criticPrey, Actor actorPreda, Critic criticPreda, ReplayBuffer replayBuffer)
+void Simulation::update(Actor actorPrey, Critic criticPrey, Actor actorPreda, Critic criticPreda, ReplayBuffer &replayBufferPrey, ReplayBuffer &replayBufferPreda)
 {
     // update trees
     if (Random::rand() < PROB_TREE_RANDOM_SPAWN)
@@ -79,20 +79,24 @@ void Simulation::update(Actor actorPrey, Critic criticPrey, Actor actorPreda, Cr
             torch::Tensor obs = get_observation(m_pop[i]);
 
             torch::Tensor action;
-            thread_pool.addTask([this, i, actorPreda, actorPrey, obs, &action]
-                                {
-                if (m_pop[i]->is_prey) {
-                    action = m_pop[i]->move(WINDOW_WIDTH, WINDOW_HEIGHT, actorPrey, obs);
-                } else {
-                    action = m_pop[i]->move(WINDOW_WIDTH, WINDOW_HEIGHT, actorPreda, obs);
-                } });
 
+            if (m_pop[i]->is_prey)
+            {
+                action = m_pop[i]->move(WINDOW_WIDTH, WINDOW_HEIGHT, actorPrey, obs);
                 torch::Tensor new_obs = get_observation(m_pop[i]);
+                Transition transition{obs, action, torch::tensor({m_pop[i]->reward}), new_obs, m_pop[i]->is_dead};
+                replayBufferPrey.add(transition);
+            }
+            else
+            {
+                action = m_pop[i]->move(WINDOW_WIDTH, WINDOW_HEIGHT, actorPreda, obs);
+                torch::Tensor new_obs = get_observation(m_pop[i]);
+                Transition transition{obs, action, torch::tensor({m_pop[i]->reward}), new_obs, m_pop[i]->is_dead};
+                replayBufferPreda.add(transition);
+            }
 
-            Transition transition{obs, action, 0, new_obs, m_pop[i]->is_dead};
         }
     }
-    thread_pool.waitForCompletion();
 
     // for (int i = m_pop.size() - 1; i > -1; i--) {
     //     m_pop[i]->update();
@@ -488,5 +492,5 @@ torch::Tensor Simulation::get_observation(Animal *a)
     {
         obs.push_back(a->vision.rays[i]);
     }
-    return torch::tensor(obs);
+    return torch::tensor(obs).unsqueeze(0);
 }

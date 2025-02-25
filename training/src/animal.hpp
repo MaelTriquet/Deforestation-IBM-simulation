@@ -35,6 +35,7 @@ public:
     int invisible = 0; // camouflage counter when hiding in a tree successfully
     int reproduction_timeout = 0;
     sf::Color color;
+    int reward = 0;
 
     Animal(sf::Vector2f position_, int index_);
 

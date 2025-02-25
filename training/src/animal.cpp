@@ -30,8 +30,6 @@ torch::Tensor Animal::move(int window_width, int window_height, Actor actor, tor
 
     auto action = actor->forward(obs);
 
-    std::cout << "Action: " << action << std::endl;
-
     // Extraire les deux valeurs
     auto angle_norm = action[0][0].item<float>();  // Valeur entre -1 et 1
     auto percent = action[0][1].item<float>();       // Valeur entre -1 et 1
@@ -70,6 +68,7 @@ torch::Tensor Animal::move(int window_width, int window_height, Actor actor, tor
 
 // an animal dies if its health reaches 0
 void Animal::die() {
+    reward = 0;
     is_dead = (health <= 0);
 };
 
@@ -88,6 +87,7 @@ bool Animal::has_in_rays(Animal* animal) {
     bool in_rays = false;
     for (int i = 0; i < NB_RAY; i++) {
         if ((is_pred && !animal->is_pred && vision.rays[i] > 0 && vision.rays[i+NB_RAY] > 0) || (is_prey && vision.rays[i] > 0 && vision.rays[i+NB_RAY] < 0)) {
+            reward += 10;
             in_rays = true;
             break;
         }
