@@ -25,7 +25,7 @@ if [ $? -eq 0 ]; then
     echo "Compilation successful!"
 
     # Create a directory named "run_i" where i is the iteration
-    RUN_DIR="$SETTINGS_DIR/run_1"
+    RUN_DIR="$SETTINGS_DIR"
     mkdir -p "$RUN_DIR"
 
     # Run the executable

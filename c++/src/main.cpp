@@ -17,15 +17,17 @@ int main() {
     // sf::ContextSettings settings;
     // settings.antialiasingLevel = 1;
     // sf::RenderWindow window(sf::VideoMode(window_width, window_height), "PFE", sf::Style::Default, settings);
-    // const uint32_t frame_rate = 60;
+    // const uint32_t frame_rate = FRAME_RATE;
     // window.setFramerateLimit(frame_rate);
 
-    int max_pop_frame = 1500;
+    int MAX_POP_FRAME = 50;
+    int max_pop_frame = MAX_POP_FRAME;
     float score = 0.;
     bool pred_low = false;
     int delta_t_prey = 0;
     int delta_t_pred = 0;
     bool prey_low = false;
+    int frame = 0;
 
     Simulation simulation{window_width, window_height, thread_pool};
     // Renderer renderer{window};
@@ -33,6 +35,23 @@ int main() {
     emptyCSV("../../res/plot_info.csv");
 
     while (max_pop_frame > 0 && simulation.nb_pred > 1 && simulation.nb_prey > 1) {
+
+        // if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+        // {
+        //     sf::Vector2i localPosition = sf::Mouse::getPosition(window);
+
+        //     for (int i = simulation.m_trees.size()-1; i > -1; i--)
+        //         if (sqrt((simulation.m_trees[i]->position.x - localPosition.x) * (simulation.m_trees[i]->position.x - localPosition.x) + (simulation.m_trees[i]->position.y - localPosition.y) * (simulation.m_trees[i]->position.y - localPosition.y)) < 200) {
+        //             delete simulation.m_trees[i];
+        //             simulation.m_trees.erase(simulation.m_trees.begin() + i);
+        //         }
+        //     simulation.grid.init_trees(simulation.m_trees);
+        //     simulation.ray_grid.init_trees(simulation.m_trees);
+
+        // }
+        
+        frame++;
+
         // check for user closing the window
         // sf::Event event{};
         // while (window.pollEvent(event)) {
@@ -40,41 +59,39 @@ int main() {
         //         window.close();
         //     }
         // }
-
+        
         // update and show each frame
         for (int i = 0; i < 1; i++) {
             simulation.update();
-            if (pred_low && simulation.nb_pred > .6 * MAX_POP_PRED) {
+            if (frame > 400 && pred_low && simulation.nb_pred > 1.4 * simulation.nb_prey) {
                 score++;
                 pred_low = false;
                 delta_t_pred = 0;
-                max_pop_frame = 1500;
             }
 
-            if (!pred_low && simulation.nb_pred < .4 * MAX_POP_PRED) {
+            if (frame > 400 && !pred_low && simulation.nb_pred < .6 * simulation.nb_prey) {
                 score++;
                 pred_low = true;
-                max_pop_frame = 1500;
             }
 
-            if (prey_low && simulation.nb_prey > .6 * MAX_POP_PREY) {
+            if (frame > 400 && prey_low && simulation.nb_prey > 1.4 * simulation.nb_pred) {
                 score++;
                 prey_low = false;
                 delta_t_prey = 0;
-                max_pop_frame = 1500;
+                max_pop_frame = MAX_POP_FRAME;
             }
 
-            if (!prey_low && simulation.nb_prey < .4 * MAX_POP_PREY) {
+            if (frame > 400 && !prey_low && simulation.nb_prey < 0.6 * simulation.nb_pred) {
                 score++;
                 prey_low = true;
-                max_pop_frame = 1500;
+                max_pop_frame = MAX_POP_FRAME;
             }
             if (pred_low)
                 delta_t_pred++;
             if (prey_low)
                 delta_t_prey++;
             appendCSV("../../res/plot_info.csv", simulation);
-            if (simulation.nb_pred >= MAX_POP_PRED * .95 || simulation.nb_prey >= MAX_POP_PREY * .95)
+            if (simulation.nb_prey >= 4000)
                 max_pop_frame--;
         }
         // window.clear(sf::Color::Black);

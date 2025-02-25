@@ -42,9 +42,10 @@ void Renderer::render(const Simulation& simulation) const {
             }
         }
         sf::CircleShape shape(a->radius);
-        if (a->invisible > 0) {
-            shape.setFillColor(sf::Color::White);
-        } else if (a->is_dead) {
+        // if (a->invisible > 0) {
+        //     shape.setFillColor(sf::Color::White);
+        // } 
+        if (a->is_dead) {
             shape.setFillColor(sf::Color{255, 0, 255});//, (sf::Uint8)((float) a->rotting / ROT_TIME * 255)});
         } else {
             shape.setFillColor(sf::Color{a->color.r, a->color.g, a->color.b, (sf::Uint8)(a->health / (float)MAX_HEALTH * 255)});
