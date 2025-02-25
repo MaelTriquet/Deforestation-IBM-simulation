@@ -6,9 +6,9 @@ Tree::Tree(sf::Vector2f position_, float hiding_prob_) :
 {};
 
 Tree* Tree::update() {
-    // if (radius < MIN_TREES_RADIUS)
-    //     is_dead = true;
-    // if (is_dead) return 0x0;
+    if (radius < MIN_TREES_RADIUS)
+        is_dead = true;
+    if (is_dead) return 0x0;
     Tree* new_tree = 0x0;
     if (radius < max_radius) {
         if (radius < (float)max_radius * TREE_RADIUS_BEFORE_REPRODUCTION_PERCENT)

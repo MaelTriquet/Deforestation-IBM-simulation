@@ -30,6 +30,8 @@ Prey::Prey(Prey* parent_1_, Prey* parent_2_, int id_) :
 
 
 void Prey::eat() {
+    if (in_tree == nullptr) 
+        return;
     if (in_tree->is_dead){
         in_tree = nullptr;
         return;

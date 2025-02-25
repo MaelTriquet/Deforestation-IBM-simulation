@@ -40,24 +40,25 @@ Simulation::~Simulation() {
 
 void Simulation::update() {
 
-    // if (Random::rand() < PROB_TREE_RANDOM_SPAWN)
-    //     m_trees.push_back(new Tree(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, 0.25));
+    int old_nb_tree = nb_tree;
+    if (Random::rand() < PROB_TREE_RANDOM_SPAWN && old_nb_tree < MAX_POP_TREE)
+        m_trees.push_back(new Tree(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, 0.25));
     Tree* new_tree;
     nb_tree = 0;
     for (int i = 0; i < m_trees.size(); i++) {
         if (m_trees[i]->is_dead) continue;
         nb_tree++;
         new_tree = m_trees[i]->update();
-        // if (new_tree != 0x0) {
-        //     m_trees.push_back(new_tree);
-        // }
+        if (new_tree != 0x0 && old_nb_tree < MAX_POP_TREE) {
+            m_trees.push_back(new_tree);
+        }
     }
     nb_prey = 0;
     nb_pred = 0;
 
     for (int i = m_pop.size() - 1; i > -1; i--) {
         if (m_pop[i] == 0x0)
-        m_pop.erase(m_pop.begin() + i);
+            m_pop.erase(m_pop.begin() + i);
     }
 
     for (int i = 0; i < m_pop.size(); i++) {
