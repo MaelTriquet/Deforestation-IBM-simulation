@@ -15,8 +15,10 @@ Tree* Tree::update() {
             has_reproduced = false;
         radius += (float)MAX_TREES_RADIUS / (float)TIME_TREE_GROWTH;
     } else if (!has_reproduced) {
-        float x = (Random::rand()*2-1) * max_radius * 3;
-        float y = (Random::rand()*2-1) * max_radius * 3;
+        float rand1 = (float)((int)std::floor(position.x * 1237) % 189) / 189.;
+        float rand2 = (float)((int)std::floor(position.y * 1237) % 189) / 189.;
+        float x = (rand1*2-1) * max_radius * 3;
+        float y = (rand2*2-1) * max_radius * 3;
         if (position.x + x < 0)
             x += WINDOW_WIDTH;
         if (position.x + x >= WINDOW_WIDTH)

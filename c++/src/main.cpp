@@ -6,6 +6,7 @@
 
 bool appendCSV(const std::string& filename, Simulation& sim);
 bool emptyCSV(const std::string& filename);
+void remove_trees(int& count, Simulation& simulation);
 int main() {
 
     // Create window
@@ -14,89 +15,80 @@ int main() {
 
     tp::ThreadPool thread_pool(10);
 
-    // sf::ContextSettings settings;
-    // settings.antialiasingLevel = 1;
-    // sf::RenderWindow window(sf::VideoMode(window_width, window_height), "PFE", sf::Style::Default, settings);
-    // const uint32_t frame_rate = FRAME_RATE;
-    // window.setFramerateLimit(frame_rate);
+    sf::ContextSettings settings;
+    settings.antialiasingLevel = 1;
+    sf::RenderWindow window(sf::VideoMode(window_width, window_height), "PFE", sf::Style::Default, settings);
+    const uint32_t frame_rate = 60;
+    window.setFramerateLimit(frame_rate);
 
-    int MAX_POP_FRAME = 50;
-    int max_pop_frame = MAX_POP_FRAME;
+    int max_pop_frame = 1500;
     float score = 0.;
     bool pred_low = false;
     int delta_t_prey = 0;
     int delta_t_pred = 0;
     bool prey_low = false;
-    int frame = 0;
 
     Simulation simulation{window_width, window_height, thread_pool};
-    // Renderer renderer{window};
+    Renderer renderer{window};
 
     emptyCSV("../../res/plot_info.csv");
 
+    int count = 0;
+
     while (max_pop_frame > 0 && simulation.nb_pred > 1 && simulation.nb_prey > 1) {
+        // check for user closing the window
+        sf::Event event{};
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+                window.close();
+            }
+        }
 
         // if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
         // {
-        //     sf::Vector2i localPosition = sf::Mouse::getPosition(window);
-
-        //     for (int i = simulation.m_trees.size()-1; i > -1; i--)
-        //         if (sqrt((simulation.m_trees[i]->position.x - localPosition.x) * (simulation.m_trees[i]->position.x - localPosition.x) + (simulation.m_trees[i]->position.y - localPosition.y) * (simulation.m_trees[i]->position.y - localPosition.y)) < 200) {
-        //             delete simulation.m_trees[i];
-        //             simulation.m_trees.erase(simulation.m_trees.begin() + i);
-        //         }
-        //     simulation.grid.init_trees(simulation.m_trees);
-        //     simulation.ray_grid.init_trees(simulation.m_trees);
-
+        //     sf::Vector2i center = sf::Mouse::getPosition(window);
         // }
-        
-        frame++;
 
-        // check for user closing the window
-        // sf::Event event{};
-        // while (window.pollEvent(event)) {
-        //     if (event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-        //         window.close();
-        //     }
-        // }
-        
         // update and show each frame
         for (int i = 0; i < 1; i++) {
             simulation.update();
-            if (frame > 400 && pred_low && simulation.nb_pred > 1.4 * simulation.nb_prey) {
+            remove_trees(count, simulation);
+            if (pred_low && simulation.nb_pred > .6 * MAX_POP_PRED) {
                 score++;
                 pred_low = false;
                 delta_t_pred = 0;
+                max_pop_frame = 1500;
             }
 
-            if (frame > 400 && !pred_low && simulation.nb_pred < .6 * simulation.nb_prey) {
+            if (!pred_low && simulation.nb_pred < .4 * MAX_POP_PRED) {
                 score++;
                 pred_low = true;
+                max_pop_frame = 1500;
             }
 
-            if (frame > 400 && prey_low && simulation.nb_prey > 1.4 * simulation.nb_pred) {
+            if (prey_low && simulation.nb_prey > .6 * MAX_POP_PREY) {
                 score++;
                 prey_low = false;
                 delta_t_prey = 0;
-                max_pop_frame = MAX_POP_FRAME;
+                max_pop_frame = 1500;
             }
 
-            if (frame > 400 && !prey_low && simulation.nb_prey < 0.6 * simulation.nb_pred) {
+            if (!prey_low && simulation.nb_prey < .4 * MAX_POP_PREY) {
                 score++;
                 prey_low = true;
-                max_pop_frame = MAX_POP_FRAME;
+                max_pop_frame = 1500;
             }
             if (pred_low)
                 delta_t_pred++;
             if (prey_low)
                 delta_t_prey++;
             appendCSV("../../res/plot_info.csv", simulation);
-            if (simulation.nb_prey >= 4000)
+            if (simulation.nb_pred >= MAX_POP_PRED * .95 || simulation.nb_prey >= MAX_POP_PREY * .95)
                 max_pop_frame--;
         }
-        // window.clear(sf::Color::Black);
-        // renderer.render(simulation);
-		// window.display();
+        window.clear(sf::Color::Black);
+        renderer.render(simulation);
+		window.display();
     }
 
     if (simulation.nb_pred <= 1) {
@@ -152,4 +144,38 @@ bool appendCSV(const std::string& filename, Simulation& sim) {
     // Close the file
     file.close();
     return true;
+}
+
+void remove_trees(int& count, Simulation& simulation) {
+    std::cout << ", frame : " << count << "\n";
+    int frame_to_remove = 1600;
+    if (count++ == frame_to_remove) {
+        // delete simulation.m_trees[1];
+        // simulation.m_trees.erase(simulation.m_trees.begin() + 1);
+        // bool remove_uniform = true;
+        // sf::Vector2f center{400, 400};
+        // int remove_radius = 150;
+        // int nb_remove = 1;
+
+        // if (remove_uniform) {
+        //     for (; nb_remove > 0; nb_remove--) {
+        //         int i = Random::randint(simulation.m_trees.size());
+        //         delete simulation.m_trees[i];
+        //         simulation.m_trees.erase(simulation.m_trees.begin() + i);
+        //     }
+        //     simulation.grid.init_trees(simulation.m_trees);
+        //     simulation.ray_grid.init_trees(simulation.m_trees);
+        //     return;
+        // }
+        // int nb_removed = 0;
+        // for (int i = simulation.m_trees.size()-1; i > -1; i--)
+        //     if (sqrt((simulation.m_trees[i]->position.x - center.x) * (simulation.m_trees[i]->position.x - center.x) + (simulation.m_trees[i]->position.y - center.y) * (simulation.m_trees[i]->position.y - center.y)) < remove_radius) {
+        //         delete simulation.m_trees[i];
+        //         simulation.m_trees.erase(simulation.m_trees.begin() + i);
+        //         nb_removed++;
+        //     }
+        // simulation.grid.init_trees(simulation.m_trees);
+        // simulation.ray_grid.init_trees(simulation.m_trees);
+        // std::cout << nb_removed << "\n";
+    }
 }

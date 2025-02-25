@@ -20,7 +20,7 @@ Simulation::Simulation(int window_width_, int window_height_, tp::ThreadPool& th
         m_pop.push_back(pred);
     }
     for (int i = 0; i < TREE_START; i++) {
-        m_trees.push_back(new Tree(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, 0.25));
+        m_trees.push_back(new Tree(sf::Vector2f{Random::rand() * window_width, Random::rand() * window_height}, 0.25));
         m_trees[m_trees.size()-1]->radius = MAX_TREES_RADIUS;
     }
 
@@ -101,11 +101,11 @@ void Simulation::update() {
     //     m_pop.push_back(pred);
     // } 
 
-    // std::cout << "Prédateurs : " << nb_pred << ", ";
-    // std::cout << "Proies : " << nb_prey << ", ";
-    // std::cout << "Morts : " << m_pop.size() - nb_pred - nb_prey << ", ";
-    // std::cout << "Arbres : " << nb_tree << ", ";
-    // std::cout << "Population : " << m_pop.size() << std::endl;
+    std::cout << "Prédateurs : " << nb_pred << ", ";
+    std::cout << "Proies : " << nb_prey << ", ";
+    std::cout << "Morts : " << m_pop.size() - nb_pred - nb_prey << ", ";
+    std::cout << "Arbres : " << nb_tree << ", ";
+    std::cout << "Population : " << m_pop.size();
    
     for (Animal* a : m_pop)
         a->considerate_bounds(window_width, window_height);
@@ -402,7 +402,7 @@ void Simulation::collide(Tree* t, Animal* a) {
     }
     if (a->in_tree == t) return;
     a->in_tree = t;
-    if (Random::rand() < t->hiding_prob) {
+    if ((int)(a->energy) % 5 == 0) {
         a->invisible = INVISIBILITY_TIME;
     }
 }
