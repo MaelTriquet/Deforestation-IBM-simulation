@@ -74,6 +74,7 @@ int main() {
             if (up_prey && simulation.nb_prey < extremum_prey * .8) {
                 up_prey = !up_prey;
                 extremum_prey = simulation.nb_prey;
+                if (extremum_prey > 30)
                 score++;
             }
 
@@ -84,6 +85,7 @@ int main() {
             if (!up_prey && simulation.nb_prey > extremum_prey * 1.2) {
                 up_prey = !up_prey;
                 extremum_prey = simulation.nb_prey;
+                if (extremum_prey > 30)
                 score++;
             }
 
@@ -95,6 +97,7 @@ int main() {
             if (up_pred && simulation.nb_pred < extremum_pred * .8) {
                 up_pred = !up_pred;
                 extremum_pred = simulation.nb_pred;
+                if (extremum_pred > 30)
                 score++;
             }
 
@@ -105,6 +108,7 @@ int main() {
             if (!up_pred && simulation.nb_pred > extremum_pred * 1.2) {
                 up_pred = !up_pred;
                 extremum_pred = simulation.nb_pred;
+                if (extremum_pred > 30)
                 score++;
             }
 
@@ -117,6 +121,7 @@ int main() {
             if (up_tree && simulation.nb_tree < extremum_tree * .8) {
                 up_tree = !up_tree;
                 extremum_tree = simulation.nb_tree;
+                if (extremum_tree > 30)
                 score++;
             }
 
@@ -127,6 +132,7 @@ int main() {
             if (!up_tree && simulation.nb_tree > extremum_tree * 1.2) {
                 up_tree = !up_tree;
                 extremum_tree = simulation.nb_tree;
+                if (extremum_tree > 30)
                 score++;
             }
             appendCSV("../../res/plot_info.csv", simulation);
