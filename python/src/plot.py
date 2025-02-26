@@ -28,7 +28,6 @@ def plot_pop(preys_list, predators_list, trees_list, save_path="../../data/graph
     # add the labels and title
     plt.xlabel("Frame")
     plt.ylabel("Population")
-    # plt.title("Evolution of prey and predator populations over time")
     plt.legend()
     plt.grid(True, linestyle="--", alpha=0.7)
 
@@ -57,7 +56,6 @@ def plot_pop_sum(preys_list, predators_list, save_path="../../data/graphics/temp
     # display settings
     ax.set_xlabel("Frame")
     ax.set_ylabel("Population")
-    # ax.set_title("Evolution of the total population over time")
     ax.legend()
 
     # save the figure
@@ -81,16 +79,23 @@ if __name__ == "__main__" :
     a, b = (int(sys.argv[3]), int(sys.argv[4])) if len(sys.argv) >= 5 else (0, 100000)
 
     # manage the files and folders
-    file_path = os.path.join("..", "..", "res" if file_name == "plot_info" else "data", f"{file_name}.csv")
+    file_path = os.path.join(
+        "..", 
+        "..", 
+        "res" if file_name == "plot_info" else "data", 
+        "" if file_name == "plot_info" else "csv", 
+        f"{file_name}.csv"
+    )
+    uniform = file_name.startswith("uniform")
     if temp :
         save_path_1 = os.path.join("..", "..", "data", "graphics", "temp1.png")
         save_path_2 = os.path.join("..", "..", "data", "graphics", "temp2.png")
     else :
-        results_path = os.path.join("..", "..", "data", "graphics", file_name)
+        results_path = os.path.join("..", "..", "data", "graphics", "deforestation_impact", "uniform" if uniform else "zone", file_name)
         if not os.path.exists(results_path) :
             os.makedirs(results_path)
-        save_path_1 = os.path.join(results_path, "fig1.png")
-        save_path_2 = os.path.join(results_path, "fig2.png")
+        save_path_1 = os.path.join(results_path, f"{file_name}_1.png")
+        save_path_2 = os.path.join(results_path, f"{file_name}_2.png")
 
     # load the data
     data = pd.read_csv(file_path)

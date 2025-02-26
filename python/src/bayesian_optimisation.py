@@ -28,8 +28,6 @@ CONST_PARAMETERS = {
     "TREE_RADIUS_BEFORE_REPRODUCTION_PERCENT" : "0.8",
     "RADIUS_PERCENT_ROTTING" : "0.8", 
     "ROTTING_PER_FRAME" : "1",
-    "MAX_ENERGY" : "5725",
-    "MAX_HEALTH" : "1058",
     "PRED_GAIN_ENERGY_EATING" : "122",
     "MAX_POP_PRED" : "1000000",
     "MAX_POP_PREY" : "1000000",
@@ -37,19 +35,19 @@ CONST_PARAMETERS = {
     "MAX_POP_PREY_PERCENT" : "0",
     "PRED_LOST_ENERGY_FIGHT_BY_PREY" : "MAX_ENERGY / 8",
     "PREY_LOST_ENERGY_FIGHT_BY_PRED" : "MAX_ENERGY / 4",
-    "MAX_POP_TREE" : "2000", 
+    "MAX_POP_TREE" : "2500", 
     "PROB_TREE_RANDOM_SPAWN" : "0.22146097663799377"
 }
 SIGOPT_PARAMETERS = [
-    {"name": "PRED_START", "type": "int", "bounds": {"min": 50, "max": 180}},
-    {"name": "PREY_START", "type": "int", "bounds": {"min": 50, "max": 150}},
-    {"name": "TREE_START", "type": "int", "bounds": {"min": 150, "max": 400}},
-    {"name": "MAX_ENERGY", "type": "int", "bounds": {"min": 700, "max": 2000}},
-    {"name": "MAX_HEALTH", "type": "int", "bounds": {"min": 500, "max": 1000}},
-    {"name": "FRUIT_ENERGY", "type": "int", "bounds": {"min": 50, "max": 150}},
-    {"name": "TIME_TREE_GROWTH", "type": "int", "bounds": {"min": 150, "max": 500}},
-    {"name": "ROT_TIME", "type": "int", "bounds": {"min": 250, "max": 700}},
-    {"name": "REPRODUCTION_TIMEOUT", "type": "int", "bounds": {"min": 150, "max": 300}},
+    {"name": "PRED_START", "type": "int", "bounds": {"min": 86, "max": 106}},
+    {"name": "PREY_START", "type": "int", "bounds": {"min": 117, "max": 137}},
+    {"name": "TREE_START", "type": "int", "bounds": {"min": 300, "max": 340}},
+    {"name": "MAX_ENERGY", "type": "int", "bounds": {"min": 730, "max": 760}},
+    {"name": "MAX_HEALTH", "type": "int", "bounds": {"min": 644, "max": 664}},
+    {"name": "FRUIT_ENERGY", "type": "int", "bounds": {"min": 90, "max": 115}},
+    {"name": "TIME_TREE_GROWTH", "type": "int", "bounds": {"min": 260, "max": 285}},
+    {"name": "ROT_TIME", "type": "int", "bounds": {"min": 415, "max": 435}},
+    {"name": "REPRODUCTION_TIMEOUT", "type": "int", "bounds": {"min": 225, "max": 250}},
     {"name": "PRED_PASSIVE_ENERGY_LOSS", "type": "categorical", "categorical_values": [str(i/4) for i in range(1, 20)]},
     {"name": "PRED_N_MIN_CHILDREN", "type": "int", "bounds": {"min": 1, "max": 2}},
     {"name": "PRED_N_MAX_CHILDREN", "type": "int", "bounds": {"min": 2, "max": 4}},
@@ -133,41 +131,43 @@ def dict_to_hpp(const_dict, file_path="../../c++/src/const2.hpp") :
 
 
 # get all the previous scores and associate them with the previous number of iterations
-def get_previous_scores(path="../../res/bayes/*/**/results.txt") :
+def get_previous_scores(path="../../res/bayes/full_trees_impact/new_version/*/results.txt") :
 
     # initialisation
     scores_dict = {}
     path_list = glob.glob(path, recursive=True)
 
     # delete unuseful paths
-    path_list = [path for path in path_list if not path.split("/")[4].startswith("settings")]
-    path_list = [path for path in path_list if int(path.split("/")[4]) >= 6]
+    # path_list = [path for path in path_list if not path.split("/")[4].startswith("settings")]
+    # path_list = [path for path in path_list if int(path.split("/")[4]) >= 6]
 
     # get all the files "results.txt"
     for file_path in path_list :
         with open(file_path, "r") as f :
             content = f.readlines()
         score = float(content[0].strip())
-        id_iter = f"{file_path.split('/')[4]}_{file_path.split('/')[5].split('_')[1].strip('_')}"
+        # id_iter = f"{file_path.split('/')[4]}_{file_path.split('/')[5].split('_')[1].strip('_')}"
+        id_iter = file_path.split("/")[-2].split("_")[1].strip("_")
         scores_dict[id_iter] = score
     
     return scores_dict
 
 
 # get all constants from the .hpp files for each iteration
-def get_previous_constants(path="../../res/bayes/*/**/const.hpp") :
+def get_previous_constants(path="../../res/bayes/full_trees_impact/new_version/*/const.hpp") :
 
     # initialisation
     constants_dict = {}
     path_list = glob.glob(path, recursive=True)
 
     # delete unuseful paths
-    path_list = [path for path in path_list if not path.split("/")[4].startswith("settings")]
-    path_list = [path for path in path_list if int(path.split("/")[4]) >= 6]
+    # path_list = [path for path in path_list if not path.split("/")[4].startswith("settings")]
+    # path_list = [path for path in path_list if int(path.split("/")[4]) >= 6]
     
     # get all the files "const.hpp"
     for file_path in path_list :
-        id_iter = f"{file_path.split('/')[4]}_{file_path.split('/')[5].split('_')[1].strip('_')}"
+        # id_iter = f"{file_path.split('/')[4]}_{file_path.split('/')[5].split('_')[1].strip('_')}"
+        id_iter = file_path.split("/")[-2].split("_")[1].strip("_")
         constants_dict[id_iter] = hpp_to_dict(file_path)
 
     return constants_dict
@@ -198,8 +198,6 @@ def main() :
     # reuse of all previous attempts
     # dict_prev_scores = get_previous_scores()
     # dict_prev_constants = get_previous_constants()
-    # dict_prev_scores = {k : v for k, v in dict_prev_scores.items() if v >= 3.1}
-    # dict_prev_constants = {k : v for k, v in dict_prev_constants.items() if k in dict_prev_scores.keys()}
     # for iter in sorted(list((dict_prev_constants.keys()))) :
     #     conn.experiments(experiment.id).observations().create(
     #         assignments = dict_prev_constants[iter],

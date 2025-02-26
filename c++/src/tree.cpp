@@ -3,7 +3,10 @@
 Tree::Tree(sf::Vector2f position_, float hiding_prob_) :
     position(position_),
     hiding_prob(hiding_prob_)
-{};
+{
+    float rand = (float)((int)std::floor(position.x * 1237 + position.y * 389) % 213) / 213.;
+    radius = rand*(MAX_TREES_RADIUS - MIN_TREES_RADIUS) + MIN_TREES_RADIUS;
+};
 
 Tree* Tree::update() {
     if (radius < MIN_TREES_RADIUS)
@@ -11,8 +14,8 @@ Tree* Tree::update() {
     if (is_dead) return 0x0;
     Tree* new_tree = 0x0;
     if (radius < max_radius) {
-        if (radius < (float)max_radius * TREE_RADIUS_BEFORE_REPRODUCTION_PERCENT)
-            has_reproduced = false;
+        // if (radius < (float)max_radius * TREE_RADIUS_BEFORE_REPRODUCTION_PERCENT)
+        //     has_reproduced = false;
         radius += (float)MAX_TREES_RADIUS / (float)TIME_TREE_GROWTH;
     } else if (!has_reproduced) {
         float rand1 = (float)((int)std::floor(position.x * 1237) % 189) / 189.;

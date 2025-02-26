@@ -4,7 +4,7 @@
 #include "random.hpp"
 class Tree {
 public:
-    float radius = Random::randint(3, MAX_TREES_RADIUS);
+    float radius = 3;
     sf::Color color{0, 255, 0};
     float hiding_prob;
     sf::Vector2f position;

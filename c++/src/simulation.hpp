@@ -13,6 +13,7 @@ public:
     static int id; // next animal id
     std::vector<Animal*> m_pop{2 * (MAX_POP_PRED + MAX_POP_PREY)}; // alive pop
     std::vector<Tree*> m_trees; // tree pop
+    std::vector<Tree*> dead_trees;
     int window_width;
     int window_height;
     // collision grid

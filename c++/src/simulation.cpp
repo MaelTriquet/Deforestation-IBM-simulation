@@ -35,6 +35,10 @@ Simulation::~Simulation() {
 
     for (int i = 0; i < m_trees.size(); i++)
         delete m_trees[i];
+    
+    for (int i = 0; i < dead_trees.size(); i++) {
+        delete dead_trees[i];
+    }
 }   
 
 
@@ -45,8 +49,12 @@ void Simulation::update() {
         m_trees.push_back(new Tree(sf::Vector2f{(float)Random::randint(window_width), (float)Random::randint(window_height)}, 0.25));
     Tree* new_tree;
     nb_tree = 0;
-    for (int i = 0; i < m_trees.size(); i++) {
-        if (m_trees[i]->is_dead) continue;
+    for (int i = m_trees.size()-1; i > 0; i--) {
+        if (m_trees[i]->is_dead)  {
+            dead_trees.push_back(m_trees[i]);
+            m_trees.erase(m_trees.begin() + i);
+            continue;
+        }
         nb_tree++;
         new_tree = m_trees[i]->update();
         if (new_tree != 0x0 && old_nb_tree < MAX_POP_TREE) {
@@ -101,11 +109,11 @@ void Simulation::update() {
     //     m_pop.push_back(pred);
     // } 
 
-    std::cout << "Prédateurs : " << nb_pred << ", ";
-    std::cout << "Proies : " << nb_prey << ", ";
-    std::cout << "Morts : " << m_pop.size() - nb_pred - nb_prey << ", ";
-    std::cout << "Arbres : " << nb_tree << ", ";
-    std::cout << "Population : " << m_pop.size();
+    // std::cout << "Prédateurs : " << nb_pred << ", ";
+    // std::cout << "Proies : " << nb_prey << ", ";
+    // std::cout << "Morts : " << m_pop.size() - nb_pred - nb_prey << ", ";
+    // std::cout << "Arbres : " << nb_tree << ", ";
+    // std::cout << "Population : " << m_pop.size();
    
     for (Animal* a : m_pop)
         a->considerate_bounds(window_width, window_height);
@@ -310,7 +318,7 @@ void Simulation::fill_ray_visions(int start, int end) {
                         offset.y = window_width;
                     
                     for (Animal* a2 : neigh->animals) {
-                        if (a-> index == a2->index) continue;
+                        if (a-> index == a2->index || a2->invisible > 0) continue;
                         float dist = std::sqrt((a->position.x - a2->position.x-offset.x) * (a->position.x - a2->position.x - offset.x) + (a->position.y - a2->position.y - offset.y) * (a->position.y - a2->position.y - offset.y));
                         if (dist > RAY_LENGTH + ANIMALS_RADIUS) continue;
                         float res = segmentIntersectsCircle(a->position, ray, a2->position + offset, ANIMALS_RADIUS);
